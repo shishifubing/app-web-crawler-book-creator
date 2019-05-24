@@ -3,9 +3,10 @@ package com.makeepub;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 final class Container_xml {
-	private static String encoding = "UTF-8";
+	private static String encoding = StandardCharsets.UTF_8.name();
 	private static String path = "META-INF/container.xml";
 	private static String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
 	private static String container_start = "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n";

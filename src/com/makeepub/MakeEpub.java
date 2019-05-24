@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adobe.epubcheck.api.EpubCheck;
+
 public class MakeEpub {
 
     @SuppressWarnings("unused")
@@ -14,14 +16,14 @@ public class MakeEpub {
 	Folders folders = new Folders(epubDir);
 	Mimetype mimetype = new Mimetype(epubDir);
 	Container_xml container = new Container_xml(epubDir);
-	//Cover_xhtml cover = new Cover_xhtml(epubDir);
-	//Stylesheet_css stylesheet = new Stylesheet_css(epubDir);
-	//Page_Styles_css pageStyles = new Page_Styles_css(epubDir);
-	//String url = "https://www.wuxiaworld.com/novel/martial-god-asura/mga-chapter-1";
-	//int lastChapterIndex = 5;
-	//Chapters chapters = new Chapters(url, lastChapterIndex);
-	//Toc_ncx toc = new Toc_ncx(epubDir, lastChapterIndex);
-	//Content_opf content = new Content_opf(epubDir, lastChapterIndex);
+	Cover_xhtml cover = new Cover_xhtml(epubDir);
+	Stylesheet_css stylesheet = new Stylesheet_css(epubDir);
+	Page_Styles_css pageStyles = new Page_Styles_css(epubDir);
+	String url = "https://www.wuxiaworld.com/novel/martial-god-asura/mga-chapter-1";
+	int lastChapterIndex = 5;
+	Chapters chapters = new Chapters(url, lastChapterIndex);
+	Toc_ncx toc = new Toc_ncx(epubDir, lastChapterIndex);
+	Content_opf content = new Content_opf(epubDir, lastChapterIndex);
 	List<String> epubFiles = new ArrayList<String>();
 	try {
 	    listFiles(epubFiles, epubDirFile);
@@ -29,6 +31,12 @@ public class MakeEpub {
 	    System.out.println("[!] Issues with the creation of the list of files");
 	}
 	EpubContainer epubContainer = new EpubContainer(epubDir, epubFiles);
+	EpubCheck epubcheck = new EpubCheck(epubContainer.getFile());
+	if (epubcheck.validate()) {
+	    System.out.println("[EPUB FILE IS VALID]");
+	} else {
+	    System.out.println("[EPUB FILE IS NOT VALID]");
+	}
     }
 
     static List<String> listFiles(List<String> epubFiles, File dir) throws IOException {

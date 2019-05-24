@@ -3,9 +3,10 @@ package com.makeepub;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 final class Toc_ncx {
-    private static String encoding = "UTF-8";
+    private static String encoding = StandardCharsets.UTF_8.name();
     private static String path = "OEBPS/toc.ncx";
     private static String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n";
     private static String docType = "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\"\r\n"
@@ -32,7 +33,7 @@ final class Toc_ncx {
 	    writer.print(header+docType+ncx_start+head_start
 		    +meta_id+meta_depth+meta_pageCount
 		    +meta_maxPageNumber+head_end+docTitle+navMap_start);
-	    for (int i = 1; i < index; i++) {
+	    for (int i = 1; i <= index; i++) {
 		writer.print(
 			"    <navPoint id=\"navPoint-" + i + "\" playOrder=\"" + i + "\">\r\n" + navLabel_start
 				+ "        <text>Chapter " + i + "</text>\r\n" + navLabel_end

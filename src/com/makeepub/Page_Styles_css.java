@@ -3,9 +3,10 @@ package com.makeepub;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class Page_Styles_css {
-	private static String encoding = "UTF-8";
+	private static String encoding = StandardCharsets.UTF_8.name();
 	private static String path = "OEBPS/Styles/page_styles.css";
 	private static String content = 
 			"@page {\r\n"

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 final class Chapters {
-	private static String encoding = "UTF-8";
+	private static String encoding = StandardCharsets.UTF_8.name();
 	
 	Chapters(String url, int lastChapterIndex) {
 		int chapterIndex = 1;

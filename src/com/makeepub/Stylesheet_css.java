@@ -3,9 +3,10 @@ package com.makeepub;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public final class Stylesheet_css {
-    private static String encoding = "UTF-8";
+    private static String encoding = StandardCharsets.UTF_8.name();
     private static String path = "OEBPS/Styles/stylesheet.css";
     private static String h1_start = "h1 {\r\n";
     private static String h1_1 = "	text-align: center;\r\n";

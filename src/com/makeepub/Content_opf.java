@@ -3,9 +3,10 @@ package com.makeepub;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class Content_opf {
-    private static String encoding = "UTF-8";
+    private static String encoding = StandardCharsets.UTF_8.name();
     private static String path = "OEBPS/content.opf";
     private static String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
     private static String package_start = "<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n";
@@ -44,13 +45,13 @@ public class Content_opf {
 		    +contributor2+publisher+rights+metaName+metadata_end
 		    +manifest_start+item_toc+item_cover
 		    +item_stylesheet+item_pageStyle+item_cover_src);
-	    for (int i = 1; i < index; i++) {
+	    for (int i = 1; i <= index; i++) {
 		writer.print("    <item href=\"Text/Chapter_" + i + ".xhtml\" id=\"Chapter_" + i
-			+ ".xhtml\" media-type=\"application/xhtml+xml\" />");
+			+ ".xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
 	    }
 	    writer.print(
 		    manifest_end + spine_toc_start + itemref_cover);
-	    for (int i = 1; i < index; i++) {
+	    for (int i = 1; i <= index; i++) {
 		writer.print("    <itemref idref=\"Chapter_" + i + ".xhtml\" />\r\n");
 	    }
 	    writer.print(spine_toc_end + guide_start
