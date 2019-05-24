@@ -1,6 +1,5 @@
 package com.makeepub;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -16,8 +15,6 @@ final class Mimetype {
 			writer.print(content);
 			writer.close();
 			System.out.println("[Created] mimetype");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 		    e.printStackTrace();
 		} 

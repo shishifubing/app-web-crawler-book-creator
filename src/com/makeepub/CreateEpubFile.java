@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.adobe.epubcheck.api.EpubCheck;
 
-public class MakeEpub {
+public class CreateEpubFile {
 
     @SuppressWarnings("unused")
     public static void main(String[] args) {
@@ -18,7 +18,6 @@ public class MakeEpub {
 	Container_xml container = new Container_xml(epubDir);
 	Cover_xhtml cover = new Cover_xhtml(epubDir);
 	Stylesheet_css stylesheet = new Stylesheet_css(epubDir);
-	Page_Styles_css pageStyles = new Page_Styles_css(epubDir);
 	String url = "https://www.wuxiaworld.com/novel/martial-god-asura/mga-chapter-1";
 	int lastChapterIndex = 5;
 	Chapters chapters = new Chapters(url, lastChapterIndex);
@@ -30,12 +29,12 @@ public class MakeEpub {
 	} catch (IOException e1) {
 	    System.out.println("[!] Issues with the creation of the list of files");
 	}
-	EpubContainer epubContainer = new EpubContainer(epubDir, epubFiles);
-	EpubCheck epubcheck = new EpubCheck(epubContainer.getFile());
+	EpubFile epubFile = new EpubFile(epubDir, epubFiles);
+	EpubCheck epubcheck = new EpubCheck(epubFile.getFile());
 	if (epubcheck.validate()) {
 	    System.out.println("[EPUB FILE IS VALID]");
 	} else {
-	    System.out.println("[EPUB FILE IS NOT VALID]");
+	    System.out.println("[EPUB FILE HAS ERRORS]");
 	}
     }
 

@@ -8,30 +8,68 @@ import java.nio.charset.StandardCharsets;
 public final class Stylesheet_css {
     private static String encoding = StandardCharsets.UTF_8.name();
     private static String path = "OEBPS/Styles/stylesheet.css";
-    private static String h1_start = "h1 {\r\n";
-    private static String h1_1 = "	text-align: center;\r\n";
-    private static String h1_2 = "	page-break-before:always;\r\n";
-    private static String h1_3 = "	margin-bottom: 10%;\r\n";
-    private static String h1_4 = "	margin-top: 10%;\r\n";
-    private static String h1_end = "}\r\n";
-    private static String p_start = "p {\r\n";
-    private static String p_1 = "	text-align : justify;\r\n";
-    private static String p_end = "}\r\n";
-    private static String img_start = "img {\r\n";
-    private static String img_1 = "	width : 100%;\r\n";
-    private static String img_2 = "	text-align : center;\r\n";
-    private static String image_end = "}\r\n";
+    private static String[] stylesheet = {
+    	"h1, h2, h3, h4, h5, h6 {\r\n" , 
+    	"	color:#333333;\r\n" , 
+    	"	text-decoration:none;\r\n" , 
+    	"	padding:0px;\r\n" , 
+    	"	margin: 0px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"h1 {\r\n" , 
+    	"	font-family: \"Ovo\", Sans-serif;\r\n" , 
+    	"	font-size: 56px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"h2 {\r\n" , 
+    	"	font-family: \"Andalus\", Sans-serif;\r\n" , 
+    	"	font-size: 30px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"h3 {\r\n" , 
+    	"	font-family: \"Ovo\", Sans-serif;\r\n" , 
+    	"	font-size: 36px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"h4 {\r\n" , 
+    	"	font-family: \"Ovo\", Sans-serif;\r\n" , 
+    	"	font-size: 26px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"h5 {\r\n" , 
+    	"	font-family: \"Mage Script\", Sans-serif;\r\n" , 
+    	"	font-size: 36px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"h6 {\r\n" , 
+    	"	font-family: \"Moon Rune\", Sans-serif;\r\n" , 
+    	"	font-size: 36px;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"img.alignleft {\r\n" , 
+    	"	float: left;\r\n" , 
+    	"	padding-right: 30px\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"body {\r\n" , 
+    	"	font-family: \"Ovo\", Sans-serif;\r\n" , 
+    	"	font-size: 20px;\r\n" , 
+    	"	color: #000000;\r\n" , 
+    	"}\r\n" , 
+    	"\r\n" , 
+    	"a {\r\n" , 
+    	"	color: #3366aa;\r\n" , 
+    	"}\r\n"};
 
     Stylesheet_css(String epubDir) {
 	try {
-	    PrintWriter writer = new PrintWriter((epubDir+path), encoding);
-	    writer.print(h1_start+h1_1+h1_2+h1_3+h1_4+h1_end
-		    +p_start+p_1+p_end+img_start+img_1+img_2+image_end);
+	    PrintWriter writer = new PrintWriter(epubDir+path, encoding);
+	    for (String string : stylesheet) {
+		writer.print(string);
+	    }
 	    writer.close();
 	    System.out.println("[Created] Stylesheet.css");
-	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
-	} catch (UnsupportedEncodingException e) {
+	} catch (FileNotFoundException | UnsupportedEncodingException e) {
 	    e.printStackTrace();
 	}
     }

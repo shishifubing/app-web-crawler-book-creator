@@ -29,7 +29,7 @@ final class Toc_ncx {
     
     Toc_ncx(String epubDir, int index) {
 	try {
-	    PrintWriter writer = new PrintWriter((epubDir+path), encoding);
+	    PrintWriter writer = new PrintWriter(epubDir+path, encoding);
 	    writer.print(header+docType+ncx_start+head_start
 		    +meta_id+meta_depth+meta_pageCount
 		    +meta_maxPageNumber+head_end+docTitle+navMap_start);
@@ -37,14 +37,12 @@ final class Toc_ncx {
 		writer.print(
 			"    <navPoint id=\"navPoint-" + i + "\" playOrder=\"" + i + "\">\r\n" + navLabel_start
 				+ "        <text>Chapter " + i + "</text>\r\n" + navLabel_end
-				+ "      <content src=\"Text/Chapter_" + i + ".xhtml\"/>\r\n" + navPoint_end);
+				+ "      <content src=\"Text/chapter_" + i + ".xhtml\"/>\r\n" + navPoint_end);
 	    }
 	    writer.print(navMap_end+ncx_end);
 	    writer.close();
 	    System.out.println("[Created] Toc.ncx");
-	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
-	} catch (UnsupportedEncodingException e) {
+	} catch (FileNotFoundException | UnsupportedEncodingException e) {
 	    e.printStackTrace();
 	} 
     }

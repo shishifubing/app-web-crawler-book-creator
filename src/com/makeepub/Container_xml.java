@@ -6,27 +6,27 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 final class Container_xml {
-	private static String encoding = StandardCharsets.UTF_8.name();
-	private static String path = "META-INF/container.xml";
-	private static String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
-	private static String container_start = "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n";
-	private static String rootFiles_start = "    <rootfiles>\r\n";
-	private static String fullPath = "        <rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\r\n";
-	private static String rootFiles_end = "   </rootfiles>\r\n";
-	private static String container_end = "</container>";
-			
+    	private static String encoding = StandardCharsets.UTF_8.name();
+    	private static String path = "META-INF/container.xml";
+    	private static String[] container = {
+    		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n",
+    		"<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n",
+    		"    <rootfiles>\r\n",
+    		"        <rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\r\n",
+    		"   </rootfiles>\r\n",
+    		"</container>"
+    	};
 	
 	Container_xml(String epubDir) {
 		try {
-		    	PrintWriter writer = new PrintWriter((epubDir+path), encoding);
-			writer.print(header+container_start+rootFiles_start
-				+fullPath+rootFiles_end+container_end);
+		    	PrintWriter writer = new PrintWriter(epubDir+path, encoding);
+		    	for (String string : container) {
+		    	    writer.print(string);
+		    	}
 			writer.close();
 			System.out.println("[Created] Container.xml");
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-		    e.printStackTrace();
-		} 
+		}
 	}
 }
