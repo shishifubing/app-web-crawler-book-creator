@@ -5,34 +5,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-class EpubFile {
+class EpubFile extends CreateEpub {
     
-    private static Charset encoding = StandardCharsets.UTF_8;
     private File epubFile = null;
     
-    EpubFile(String epubDir, List<String> outputFiles) {
+    protected static void create() throws IOException {
 	
 	try {
-	    File dir = new File(epubDir);
+	    File dir = new File(CreateEpub.path);
 	    String dirPath = dir.getAbsolutePath();
-	    File zipFile = new File(epubDir+"output.epub");
+	    File zipFile = new File(CreateEpub.path+CreateEpub.title+".epub");
 	    FileOutputStream fos = new FileOutputStream(zipFile);
 	    BufferedOutputStream bos = new BufferedOutputStream(fos);
-	    ZipOutputStream zos = new ZipOutputStream(bos, encoding);
+	    ZipOutputStream zos = new ZipOutputStream(bos, encodingCharset);
 	    zos.setMethod(ZipOutputStream.DEFLATED);
-	    for (String path : outputFiles) {
-		String zenPath = path.substring(dirPath.length()+1).replaceAll("\\\\","/");
+	    for (String oldPath : CreateEpub.epubFiles) {
+		String zenPath = oldPath.substring(dirPath.length()+1).replaceAll("\\\\","/");
 		ZipEntry zen = new ZipEntry(zenPath);
-		File ipfile = new File(path);
+		File ipfile = new File(oldPath);
 		if (ipfile.getName().contentEquals("mimetype") ||
 			ipfile.getName().endsWith(".jpg")) {
 		    zen.setMethod(ZipEntry.STORED);
@@ -51,13 +47,13 @@ class EpubFile {
 		System.out.println("[Zipped] " + zenPath);
 		zos.closeEntry();
 		fis.close();
-		Files.deleteIfExists(Paths.get(path));
+		Files.deleteIfExists(Paths.get(oldPath));
 	    }
 	    zos.close();
 	    fos.close();
-	    Folders.delete(epubDir);
+	    Folders.delete();
 	    if (zipFile.exists()) {
-		this.epubFile = zipFile;
+		CreateEpub.epubFile = zipFile;
 		System.out.println("[EPUB FILE IS CREATED]");
 	    } else {
 		System.out.println("[CAN'T CREATE EPUB FILE]");

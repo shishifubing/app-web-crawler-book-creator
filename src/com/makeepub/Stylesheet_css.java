@@ -3,10 +3,8 @@ package com.makeepub;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
-public final class Stylesheet_css {
-    private static String encoding = StandardCharsets.UTF_8.name();
+public final class Stylesheet_css extends CreateEpub {
     private static String path = "OEBPS/Styles/stylesheet.css";
     private static String[] stylesheet = {
     	"h1, h2, h3, h4, h5, h6 {\r\n" , 
@@ -54,16 +52,21 @@ public final class Stylesheet_css {
     	"body {\r\n" , 
     	"	font-family: \"Ovo\", Sans-serif;\r\n" , 
     	"	font-size: 20px;\r\n" , 
-    	"	color: #000000;\r\n" , 
+    	"	color: #000000;\r\n" ,
+    	"	margin-left: 2%;\r\n" , 
+    	"    	margin-right: 2%;\r\n" , 
+    	"    	margin-top: 2%;\r\n" , 
+    	"    	margin-bottom: 2%\r\n",
+    	"    	padding: 5%\r\n",
     	"}\r\n" , 
     	"\r\n" , 
     	"a {\r\n" , 
     	"	color: #3366aa;\r\n" , 
-    	"}\r\n"};
+    	"}\r\n",};
 
-    Stylesheet_css(String epubDir) {
+    protected static void create() {
 	try {
-	    PrintWriter writer = new PrintWriter(epubDir+path, encoding);
+	    PrintWriter writer = new PrintWriter(CreateEpub.path+path, encoding);
 	    for (String string : stylesheet) {
 		writer.print(string);
 	    }
