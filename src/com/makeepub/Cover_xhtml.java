@@ -1,7 +1,8 @@
 package com.makeepub;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 final class Cover_xhtml extends CreateEpub {
     private static String path = "OEBPS/Text/cover.xhtml";
@@ -38,8 +39,8 @@ final class Cover_xhtml extends CreateEpub {
 	    "</body>\r\n", 
 	    "</html>" };
 
-    protected static void create() throws IOException {
-	PrintWriter writer = new PrintWriter(CreateEpub.path + path, encoding);
+    protected static void create() {
+	try (PrintWriter writer = new PrintWriter(CreateEpub.tempDir + path, encoding)) {
 	for (String string : cover) {
 	    writer.print(string);
 	}
@@ -49,8 +50,10 @@ final class Cover_xhtml extends CreateEpub {
 	for (String string : coverEnd) {
 	    writer.print(string);
 	}
-	writer.close();
-	System.out.println("[Created] Cover.xhtml");
+	} catch (FileNotFoundException | UnsupportedEncodingException e) {
+	    System.out.println("[!] Can't create cover.xhtml");
+	}
+	System.out.println("[Created] cover.xhtml");
     }
 
 }

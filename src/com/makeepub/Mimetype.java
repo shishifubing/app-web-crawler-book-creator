@@ -8,7 +8,7 @@ final class Mimetype extends CreateEpub {
 	static String content = "application/epub+zip";
 	
 	static void create() throws IOException {
-	    PrintWriter writer = new PrintWriter(CreateEpub.path+path, encoding);
+	    PrintWriter writer = new PrintWriter(CreateEpub.tempDir+path, encoding);
 	    writer.print(content);
 	    writer.close();
 	    System.out.println("[Created] mimetype");

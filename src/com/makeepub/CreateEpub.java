@@ -4,74 +4,79 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.adobe.epubcheck.api.EpubCheck;
+public class CreateEpub {
 
-public class CreateEpub  {
-    
-    protected static String path;
-    protected static List<String> epubFiles = new ArrayList<String>();
+    protected static String tempDir;
+    protected static String outputPath = "";
+    protected static List<String> supportFiles = new ArrayList<String>();
+    protected static List<String> allFiles = new ArrayList<String>();
     protected static String encoding = StandardCharsets.UTF_8.name();
     protected static Charset encodingCharset = StandardCharsets.UTF_8;
-    protected static String title;
-    protected static String author = "Toy Car";
+    protected static String title = "UNDEFINED_TITLE";
+    protected static String author = "UNDEFINED_AUTHOR";
     protected static List<String> summary = new ArrayList<String>();
     protected static String url;
     protected static File epubFile;
     protected static String timeNow;
-    protected static int lastChapterIndex = -1;
-    protected static String bookID = "XiaoNiang-"+timeNow+"-"+title+"-"+"-WuxiaWorld.com";
-    protected static long timeTakenMills;
+    protected static String bookID;
+
     public static void main(String[] args) {
 	try {
-	    path = "output/";
-	    url = "https://www.wuxiaworld.com/novel/trash-of-the-counts-family";
-	    LocalDate date = LocalDate.now();
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    timeNow = ""+date.format(formatter);
-	    File epubDirFile = new File(path);
+	    url = "https://www.wuxiaworld.com/novel/sage-monarch";
+	    timeNow = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+	    bookID = "XiaoNiang-" + timeNow + "-" + title + "-" + "-WuxiaWorld.com";
+	    String currentTime = timeNow + '-' + LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
+	    tempDir = "XiaoNiang-" + currentTime + "-WuxiaWorld.com"+File.separatorChar;
+	    File epubDir = new File(tempDir);
 	    Folders.create();
 	    Mimetype.create();
 	    Container_xml.create();
 	    Stylesheet_css.create();
+	    listFiles(epubDir, supportFiles);
 	    Chapters.create();
-	    Cover_xhtml.create();
-	    Toc_ncx.create(lastChapterIndex);
-	    Content_opf.create(lastChapterIndex);
-	    try {
-	        listFiles(epubFiles, epubDirFile);
-	    } catch (IOException e1) {
-	        System.out.println("[!] Issues with the creation of the list of files");
+	    listFiles(new File(CreateEpub.tempDir + "OEBPS/Text"), allFiles);
+	    for (String filePath : supportFiles) {
+		Files.deleteIfExists(Paths.get(filePath));
 	    }
-	    EpubFile.create();
-	EpubCheck epubcheck = new EpubCheck(CreateEpub.epubFile);
-	if (epubcheck.validate()) {
-	    System.out.println("[EPUB FILE IS VALID]");
-	} else {
-	    System.out.println("[EPUB FILE HAS ERRORS]");
-	}
+	    Folders.delete();
 	} catch (IOException e) {
 	    System.out.println("[!]FAILURE: Couldn't create required files");
 	}
-	System.out.println("[Time to get the chapters] "+ timeTakenMills +" milliseconds");
-	System.out.println("[Average time to get a chapter] "+ timeTakenMills/lastChapterIndex +" milliseconds");
     }
 
-    static List<String> listFiles(List<String> epubFiles, File dir) throws IOException {
+    static List<String> listFiles(File dir, List<String> epubFiles) throws IOException {
 	File[] files = dir.listFiles();
 	for (File file : files) {
-	    if (file.getName().contentEquals("mimetype"))
-		epubFiles.add(0, file.getAbsolutePath());
-	    else if (file.isDirectory()) {
-		listFiles(epubFiles, file);
+	    if (file.isDirectory()) {
+		listFiles(file, epubFiles);
 	    } else {
-		epubFiles.add(file.getAbsolutePath());
+		addFileToList(file, dir, epubFiles);
 	    }
 	}
 	return epubFiles;
+    }
+
+    static void addFileToList (File file, File dir, List<String> epubFiles) {
+	String name = file.getName();
+	String filePath = file.getAbsolutePath();
+	String dirPath = dir.getAbsolutePath();
+	String epubPath = filePath.substring(dirPath.length()+1);
+	if (epubPath.isEmpty() && name.contentEquals("mimetype")) {
+	    epubFiles.add(0, file.getAbsolutePath());
+	} else if (epubPath.startsWith("META-INF") && name.contentEquals("container.xml")){
+	    epubFiles.add(file.getAbsolutePath());
+	} else if (epubPath.startsWith("OEBPS") && (name.contentEquals("container.xml") ||
+		name.contentEquals("content.opf") || name.contentEquals("toc.ncx") ||
+		name.contentEquals("stylesheet.css"))) {
+	    epubFiles.add(file.getAbsolutePath());
+	}
     }
 }

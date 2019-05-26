@@ -1,7 +1,8 @@
 package com.makeepub;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 public class Content_opf extends CreateEpub {
     private static String path = "OEBPS/content.opf";
@@ -30,15 +31,15 @@ public class Content_opf extends CreateEpub {
     private static String guide_end = "  </guide>\r\n";
     private static String package_end = "</package>";
     
-    protected static void create(int index) throws IOException {
-	    PrintWriter writer = new PrintWriter(CreateEpub.path+path, encoding);
+    protected static void create(int start, int end) {
+	    try (PrintWriter writer = new PrintWriter(CreateEpub.tempDir+path, encoding)) {
 	    writer.print(header+package_start+metadata_start+identifier
 		    +title+creator+language+dateOfCreation+publisher+rights+metaName+metadata_end
 		    +manifest_start+item_toc+item_cover
 		    +item_stylesheet);
-	    for (int i = 1; i <= index; i++) {
+	    for (int i = start; i <= end; i++) {
 		String chapterFileIndex = ""+i;
-		while (chapterFileIndex.length()<(""+CreateEpub.lastChapterIndex).length()) {
+		while (chapterFileIndex.length()<(""+end).length()) {
 		    chapterFileIndex = "0" + chapterFileIndex;
 		}
 		writer.print("    <item href=\"Text/chapter_" + chapterFileIndex + ".xhtml\" id=\"Chapter_" + chapterFileIndex
@@ -46,9 +47,9 @@ public class Content_opf extends CreateEpub {
 	    }
 	    writer.print(
 		    manifest_end + spine_toc_start + itemref_cover);
-	    for (int i = 1; i <= index; i++) {
+	    for (int i = start; i <= end; i++) {
 		String chapterFileIndex = ""+i;
-		while (chapterFileIndex.length()<(""+CreateEpub.lastChapterIndex).length()) {
+		while (chapterFileIndex.length()<(""+end).length()) {
 		    chapterFileIndex = "0" + chapterFileIndex;
 		}
 		writer.print("    <itemref idref=\"Chapter_" + chapterFileIndex + ".xhtml\" />\r\n");
@@ -56,8 +57,10 @@ public class Content_opf extends CreateEpub {
 	    writer.print(spine_toc_end + guide_start
 		    + guide_coverRef
 		    + guide_end + package_end);
-	    writer.close();
-	    System.out.println("[Created] Content.opf");
+	    } catch (FileNotFoundException | UnsupportedEncodingException e) {
+		System.out.println("[!] Couldn't create content.opf");
+	    }
+	    System.out.println("[Created] content.opf");
     }
 
 }

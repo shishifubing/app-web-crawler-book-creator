@@ -66,14 +66,14 @@ public final class Stylesheet_css extends CreateEpub {
 
     protected static void create() {
 	try {
-	    PrintWriter writer = new PrintWriter(CreateEpub.path+path, encoding);
+	    PrintWriter writer = new PrintWriter(CreateEpub.tempDir+path, encoding);
 	    for (String string : stylesheet) {
 		writer.print(string);
 	    }
 	    writer.close();
-	    System.out.println("[Created] Stylesheet.css");
+	    System.out.println("[Created] stylesheet.css");
 	} catch (FileNotFoundException | UnsupportedEncodingException e) {
-	    e.printStackTrace();
+	    System.out.println("[!] Couldn't create stylesheet.css");
 	}
     }
 }

@@ -1,7 +1,8 @@
 package com.makeepub;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 final class Container_xml extends CreateEpub {
     	private static String path = "META-INF/container.xml";
@@ -14,12 +15,14 @@ final class Container_xml extends CreateEpub {
     		"</container>"
     	};
 	
-	protected static void create() throws IOException {
-		    	PrintWriter writer = new PrintWriter(CreateEpub.path+path, encoding);
+	protected static void create() {
+		    	try (PrintWriter writer = new PrintWriter(CreateEpub.tempDir+path, encoding)) {
 		    	for (String string : container) {
 		    	    writer.print(string);
 		    	}
-			writer.close();
-			System.out.println("[Created] Container.xml");
+		    	} catch (FileNotFoundException | UnsupportedEncodingException e) {
+		    	    System.out.println("[!] Couldn't create container.xml");
+			} 
+			System.out.println("[Created] container.xml");
 	}
 }
