@@ -22,17 +22,9 @@ final class Chapters {
 	    "  <link href=\"../Styles/stylesheet.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n", "</head>\r\n",
 	    "\r\n", "<body>\r\n" };
 
-    protected static void create(Document frontPage, EpubFile epubFile) {
-	Elements summary = frontPage.select("div.p-15 > div.fr-view > *");
-	for (Element paragraph : summary) {
-	    String text = paragraph.text();
-	    if ((!epubFile.summary().equals(null) && !epubFile.summary().isEmpty())
-		    && (text.equals(null) || text.isEmpty()))
-		break;
-	    epubFile.summary().add(text);
-	}
+    protected static void create(EpubFile epubFile) {
 	String linkRoot = "https://www.wuxiaworld.com";
-	Elements volumes = frontPage.select("div.panel-group > *");
+	Elements volumes = epubFile.getFrontPage().select("div.panel-group > *");
 	String volumeName = "";
 	int index = 1;
 	int volumeIndex = 1;
@@ -45,17 +37,18 @@ final class Chapters {
 	    int volumeEnd = index + chapterLinks.size();
 	    for (Element chapterLink : chapterLinks) {
 		if (getChapter(linkRoot + chapterLink.attr("href"), index, volumeEnd)) {
+		    epubFile.addToChapterFilesPaths(epubFile.getTempPath() + epubFile.getInnerFoldersPath(4) + "chapter_" + index + ".xhtml");
 		    System.out.println("[Created Chapter] " + index++);
-		    epubFile.chap
 		}
 	    }
-	    Toc_ncx.create(volumeStart, volumeEnd);
-	    Content_opf.create(volumeStart, volumeEnd);
+	    TocNCX toc = new TocNCX(epubFile);
+	    toc.fill(epubFile, volumeStart, volumeEnd);
+	    ContentOPF.create(volumeStart, volumeEnd);
 	    String volumeTitle = epubFile.title() +" Volume " + volumeIndex++;
 	    try {
 		allFiles = supportFiles;
 		listFiles(new File(CreateEpub.tempDir + "OEBPS/Text/"), allFiles);
-		EpubFile.create(allFiles);
+		EpubFile.createIn(allFiles);
 		EpubCheck epubcheck = new EpubCheck(CreateEpub.epubFile);
 		if (epubcheck.validate()) {
 		    System.out.println("[EPUB FILE IS VALID]");

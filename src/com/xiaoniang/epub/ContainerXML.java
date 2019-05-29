@@ -3,8 +3,8 @@ package com.xiaoniang.epub;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-final class Container_xml {
-    	private static String path = "META-INF/container.xml";
+final class ContainerXML {
+    	private static String innerPath = "META-INF/container.xml";
     	private static String[] container = {
     		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n",
     		"<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n",
@@ -15,14 +15,15 @@ final class Container_xml {
     	};
 	
 	protected static void create(EpubFile epubFile) throws IOException {
-		    	try (PrintWriter writer = new PrintWriter(epubFile.outputPath()+path, epubFile.encoding())) {
+		    	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())) {
 		    	    for (String string : container) {
 		    		writer.print(string);
 		    	}
-		    	epubFile.addToSupportFiles(epubFile.outputPath()+path);
+		    	epubFile.addToSupportFilesPaths(epubFile.getPath()+innerPath);
 		    	} catch (IOException e) {
 		    	    System.out.println("[!] Couldn't create container.xml");
 			} 
+		    	epubFile.addToSupportFilesPaths(epubFile.getPath()+innerPath);
 			System.out.println("[Created] container.xml");
 	}
 }

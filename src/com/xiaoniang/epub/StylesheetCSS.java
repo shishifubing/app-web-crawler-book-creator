@@ -3,8 +3,8 @@ package com.xiaoniang.epub;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public final class Stylesheet_css {
-    private static String path = "OEBPS/Styles/stylesheet.css";
+public final class StylesheetCSS {
+    private static String innerPath = "OEBPS/Styles/stylesheet.css";
     private static String[] stylesheet = {
     	"h1, h2, h3, h4, h5, h6 {\r\n" , 
     	"	color:#333333;\r\n" , 
@@ -64,11 +64,11 @@ public final class Stylesheet_css {
     	"}\r\n",};
 
     protected static void create(EpubFile epubFile) {
-	try (PrintWriter writer = new PrintWriter(epubFile.outputPath()+path, epubFile.encoding())){
+	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())){
 	    for (String string : stylesheet) {
 		writer.print(string);
 	    }
-	    epubFile.addToSupportFiles(epubFile.outputPath()+path);
+	    epubFile.addToSupportFilesPaths(epubFile.getPath()+innerPath);
 	    System.out.println("[Created] stylesheet.css");
 	} catch (IOException e) {
 	    System.out.println("[!] Couldn't create stylesheet.css");

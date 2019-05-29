@@ -21,78 +21,82 @@ import java.util.zip.ZipOutputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 class EpubFile {
     
-    private File file; 
-    public File file() {return file;}
-    private Charset encodingCharset; 
-    public Charset encodingCharset() {return encodingCharset;}
-    private List<String> supportFiles = new ArrayList(); 
-    public List<String> supportFiles() {return supportFiles;}
-    public void addToSupportFiles(String absPath) {supportFiles.add(absPath);}
-    public void addToSupportFiles(int index, String absPath) {supportFiles.add(index, absPath);}
-    private List<String> chapterFiles = new ArrayList(); 
-    public List<String> chapterFiles() {return chapterFiles;}
-    public void addToChapterFiles(String absPath) {chapterFiles.add(absPath);}
-    private List<String> summary; 
-    public List<String> summary() {return summary;}
-    private String tempDir; 
-    public String tempDir() {return tempDir;}
-    private String outputPath; 
-    public String outputPath() {return outputPath;}
-    private String encoding; 
-    public String encoding() {return encoding;}
-    private String title; 
-    public String title() {return title;}
-    private String author; 
-    public String author() {return author;}
-    private String url; 
-    public String url() {return url;}
-    private String dateOfCreation; 
-    public String dateOfCreation() {return dateOfCreation;}
-    private String timeOfCreation; 
-    public String timeOfCreation() {return timeOfCreation;}
-    private String bookID; 
-    public String bookID() {return bookID;}
+    private final File file;  
+    private final List<String> supportFilesPaths; 
+    private final List<String> chapterFilesPaths; 
+    private final List<String> summary; 
+    private final String[] innerFoldersPaths = { "OEBPS"+File.separator, "META-INF"+File.separator, "OEBPS"+File.separator+"Styles"+File.separator, "OEBPS"+File.separator+"Text"+File.separator};
+    private final String url;
+    private final Document frontPage;
+    private final String path;
+    private final String tempPath;
+    private final String encoding;
+    private final Charset encodingCharset;
+    private final String title;
+    private final String author;
+    private final String bookID;
+    private final String timeOfCreation;
+    private final String dateOfCreation;
         
-    EpubFile (String outputPath, String url) throws IOException {
-	this.url = url;
-	Document frontPage = null;
-	while (frontPage == null) {
+    EpubFile (String outputPath, String link) throws IOException {
+	url = link;
+	file = new File(outputPath);
+	path = file.getAbsolutePath();
+	supportFilesPaths = new ArrayList<String>();
+	chapterFilesPaths = new ArrayList<String>();
+	summary = new ArrayList<String>();
+	Document document = null;
+	while (document == null) {
 	    try {
-		frontPage = Jsoup.connect(url).get();
+		document = Jsoup.connect(link).get();
 	    } catch (IOException e) {
-		System.out.println("[!] Cannot connect to the " + url);
+		System.out.println("[!] Cannot connect to the " + link);
 	    }
 	}
-	Element title = frontPage.select("div.p-15 > *").first();
-	this.title = title.text();
-	file = new File(outputPath+title+".epub");
-	encoding = StandardCharsets.UTF_8.name();
-	encodingCharset = StandardCharsets.UTF_8;
+	frontPage = document;
+	Element titleElement = frontPage.select("div.p-15 > *").first();
+	title = titleElement.text();
+	Elements summary = frontPage.select("div.p-15 > div.fr-view > *");
+	for (Element paragraph : summary) {
+	    String text = paragraph.text();
+	    if ((!getSummary().equals(null) && !getSummary().isEmpty())
+		    && (text.equals(null) || text.isEmpty())) {
+		break;
+	    }
+	    addToSummary(text);
+	}
 	dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 	bookID = "WuxiaWorld.com-" + "XiaoNiang-" + title+ "-" + dateOfCreation;
-	tempDir = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + '-' + timeOfCreation + File.separator;
-	createInnerFiles(frontPage);
+	File tempDir = new File ("WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + '-' + timeOfCreation + File.separator);
+	tempDir.mkdir();
+	tempPath = tempDir.getAbsolutePath();
+	encodingCharset = StandardCharsets.UTF_8;
+	encoding = encodingCharset.name();
+	author = "UNDEFINED_AUTHOR";
+	createInnerFiles();
+	packInnerFiles();
     }
     
-    protected void createInnerFiles(Document frontPage) throws IOException {
-	    Folders.create(this);
+    protected void createInnerFiles() throws IOException {
+	    Folders.createIn(this);
 	    Mimetype.create(this);
-	    Container_xml.create(this);
-	    Stylesheet_css.create(this);
-	    Chapters.create(frontPage, this);
+	    ContainerXML.create(this);
+	    StylesheetCSS.create(this);
+	    Chapters.create(this);
     }
     
-    protected void packInnerFiles(List<String> chapterEpubFiles) throws IOException {
+    protected void packInnerFiles() throws IOException {
 	    FileOutputStream fos = new FileOutputStream(this.file);
 	    BufferedOutputStream bos = new BufferedOutputStream(fos);
 	    ZipOutputStream zos = new ZipOutputStream(bos, encodingCharset);
 	    zos.setMethod(ZipOutputStream.DEFLATED);
-	    for (String filePath : chapterEpubFiles) {
-		String zenPath = filePath.substring(outputPath.length()+1).replaceAll("\\\\","/");
+	    for (String filePath : chapterFilesPaths) {
+		String zenPath = filePath.substring(this.path.length()+1).replaceAll("\\\\","/");
 		ZipEntry zen = new ZipEntry(zenPath);
 		File ipFile = new File(filePath);
 		if (ipFile.getName().contentEquals("mimetype") ||
@@ -119,9 +123,70 @@ class EpubFile {
 	    }
 	    zos.close();
 	    fos.close();
-	    System.out.println("[Created Epub File] "+this.title());
+	    System.out.println("[Created Epub File] "+this.getTitle());
     }
-    void setTitle(String title) {
-	this.title = title;
+    public File getFile() {
+	return this.file;
+    }
+    public List<String> getSupportFilesPaths() {
+	return this.supportFilesPaths;
+    }
+    public void addToSupportFilesPaths(String filePath) {
+	this.supportFilesPaths.add(filePath);
+    }
+    public void addToSupportFilesPaths(int index, String filePath) {
+	this.supportFilesPaths.add(index, filePath);
+    }
+    public List<String> getChapterFilesPaths() {
+	return this.chapterFilesPaths;
+    }
+    public void addToChapterFilesPaths(String filePath) {
+	this.chapterFilesPaths.add(filePath);
+    }
+    public List<String> getSummary() {
+	return this.summary;
+    }
+    public void addToSummary(String line) {
+	this.summary.add(line);
+    }
+    
+    public String[] getInnerFoldersPaths() {
+	return this.innerFoldersPaths;
+    }
+    public String getInnerFoldersPath(int index) {
+	return this.innerFoldersPaths[index];
+    }
+    public String getUrl() {
+	return this.url;
+    }
+    public String getPath() {
+	return this.path;
+    }
+    public String getTempPath() {
+	return this.tempPath;
+    }
+    public String getEncoding() {
+	return this.encoding;
+    }
+    public Charset getEncodingCharset() {
+	return this.encodingCharset;
+    }
+    public String getTitle() {
+	return this.title;
+    }
+    public String getAuthor() {
+	return this.author;
+    }
+    public String getBookID() {
+	return this.bookID;
+    }
+    public String getTimeOfCreation() {
+	return this.timeOfCreation;
+    }
+    public String getDateOfCreation() {
+	return this.dateOfCreation;
+    }
+    public Document getFrontPage() {
+	return this.frontPage;
     }
 }

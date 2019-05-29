@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-final class Cover_xhtml {
+final class CoverXHTML {
     private static String path = "OEBPS/Text/cover.xhtml";
     private static String[] cover = { 
 	    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n",
