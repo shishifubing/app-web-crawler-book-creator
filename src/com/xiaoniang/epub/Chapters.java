@@ -13,52 +13,43 @@ import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
 
-final class Chapters {
+final class Chapters extends InnerFiles {
 
-    private static String[] chapterHeader = { "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n",
-	    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\r\n",
-	    "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n", "\r\n",
-	    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n", "<head>\r\n", "  <title></title>\r\n",
-	    "  <link href=\"../Styles/stylesheet.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n", "</head>\r\n",
-	    "\r\n", "<body>\r\n" };
-
-    protected static void create(EpubFile epubFile) {
+    Chapters(EpubBook file) {
+	addContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n");
+	addContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\r\n");
+	addContent("  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n");
+	addContent("\r\n");
+	addContent("<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n");
+	addContent("<head>\r\n");
+	addContent("  <title></title>\r\n");
+	addContent("  <link href=\"../Styles/stylesheet.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n");
+	addContent("</head>\r\n");
+	addContent("\r\n");
+	addContent("<body>\r\n");
+	
+    }
+    
+    protected void download(EpubBook epubFile) {
 	String linkRoot = "https://www.wuxiaworld.com";
 	Elements volumes = epubFile.getFrontPage().select("div.panel-group > *");
-	String volumeName = "";
-	int index = 1;
-	int volumeIndex = 1;
+	Elements allChapters = epubFile.getFrontPage().select("li.chapter-item");
+	int volumeIndex = 0;
+	int[] volumeChaptersAmounts = new int[volumes.size()-1];
+	addContent("" + allChapters.size());
 	for (Element volumeChapters : volumes) {
 	    Elements chapterLinks = volumeChapters.select("li.chapter-item");
 	    if (chapterLinks.isEmpty()) {
 		continue;
 	    }
-	    int volumeStart = index;
-	    int volumeEnd = index + chapterLinks.size();
-	    for (Element chapterLink : chapterLinks) {
-		if (getChapter(linkRoot + chapterLink.attr("href"), index, volumeEnd)) {
-		    epubFile.addToChapterFilesPaths(epubFile.getTempPath() + epubFile.getInnerFoldersPath(4) + "chapter_" + index + ".xhtml");
-		    System.out.println("[Created Chapter] " + index++);
-		}
-	    }
-	    TocNCX toc = new TocNCX(epubFile);
-	    toc.fill(epubFile, volumeStart, volumeEnd);
-	    ContentOPF.create(volumeStart, volumeEnd);
-	    String volumeTitle = epubFile.title() +" Volume " + volumeIndex++;
-	    try {
-		allFiles = supportFiles;
-		listFiles(new File(CreateEpub.tempDir + "OEBPS/Text/"), allFiles);
-		EpubFile.createIn(allFiles);
-		EpubCheck epubcheck = new EpubCheck(CreateEpub.epubFile);
-		if (epubcheck.validate()) {
-		    System.out.println("[EPUB FILE IS VALID]");
-		} else {
-		    System.out.println("[!] EPUB FILE HAS ERRORS");
-		}
-	    } catch (IOException e) {
-		System.out.println("[!] Can't list files in OEBPS/Text");
-	    }
+	    volumeChaptersAmounts[volumeIndex++] = chapterLinks.size();
 	}
+	int index = 1;
+	for (Element chapterLink : allChapters) {
+		while (!getChapter(linkRoot + chapterLink.attr("href"), index, volumeEnd));
+		epubFile.addToChapterFilesPaths(epubFile.getTempPath() + epubFile.getInnerFoldersPath(4) + "chapter_" + index++ + ".xhtml");
+		    System.out.println("[Created Chapter] " + index);
+	    }
     }
 
     private static boolean getChapter(String url, int index, int volumeEnd) {

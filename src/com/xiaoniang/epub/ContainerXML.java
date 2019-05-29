@@ -14,7 +14,7 @@ final class ContainerXML {
     		"</container>"
     	};
 	
-	protected static void create(EpubFile epubFile) throws IOException {
+	protected static void create(EpubBook epubFile) throws IOException {
 		    	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())) {
 		    	    for (String string : container) {
 		    		writer.print(string);

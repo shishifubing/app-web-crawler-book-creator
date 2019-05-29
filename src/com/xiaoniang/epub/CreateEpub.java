@@ -7,7 +7,7 @@ public class CreateEpub {
 
     public static void main(String[] args) {
 	try {
-	    EpubFile epubFile = new EpubFile("", "https://www.wuxiaworld.com/novel/sage-monarch");
+	    EpubBook epubFile = new EpubBook("", "https://www.wuxiaworld.com/novel/sage-monarch");
 	    EpubCheck check = new EpubCheck(epubFile.getFile());
 	    check.validate();
 	    System.out.println("Epub book is created");

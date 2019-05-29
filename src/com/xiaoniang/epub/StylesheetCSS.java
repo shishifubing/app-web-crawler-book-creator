@@ -63,7 +63,7 @@ public final class StylesheetCSS {
     	"	color: #3366aa;\r\n" , 
     	"}\r\n",};
 
-    protected static void create(EpubFile epubFile) {
+    protected static void create(EpubBook epubFile) {
 	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())){
 	    for (String string : stylesheet) {
 		writer.print(string);

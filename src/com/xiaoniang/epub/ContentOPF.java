@@ -12,7 +12,7 @@ public class ContentOPF {
     
     private List<String> content = new ArrayList<String>();
     
-    ContentOPF (EpubFile epubFile) {
+    ContentOPF (EpubBook epubFile) {
 	content.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
 	content.add("<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");
 	content.add("  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\r\n");
@@ -55,7 +55,7 @@ public class ContentOPF {
 	
     }
     
-    protected void fill(EpubFile epubFile, int start, int end) {
+    protected void fill(EpubBook epubFile, int start, int end) {
 	String innerPath = epubFile.getInnerFoldersPath(0)+"content.opf";
 	File file = new File(innerPath);    
 	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())) {

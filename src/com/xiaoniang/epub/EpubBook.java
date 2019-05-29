@@ -23,7 +23,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-class EpubFile {
+class EpubBook {
     
     private final File file;  
     private final List<String> supportFilesPaths; 
@@ -42,7 +42,7 @@ class EpubFile {
     private final String timeOfCreation;
     private final String dateOfCreation;
         
-    EpubFile (String outputPath, String link) throws IOException {
+    EpubBook (String outputPath, String link) throws IOException {
 	url = link;
 	file = new File(outputPath);
 	path = file.getAbsolutePath();

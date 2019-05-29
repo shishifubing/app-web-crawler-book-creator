@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 final class Folders {
 
-    protected static void createIn(EpubFile epubFile) {
+    protected static void createIn(EpubBook epubFile) {
 	File file;
 	for (String innerPath : epubFile.getInnerFoldersPaths()) {
 	    file = new File(epubFile.getPath() + innerPath);
@@ -16,7 +16,7 @@ final class Folders {
 	}
     }
 
-    protected static void deleteIn(EpubFile epubFile) throws IOException {
+    protected static void deleteIn(EpubBook epubFile) throws IOException {
 	for (int i = epubFile.getInnerFoldersPaths().length - 1; i >= 1; i--) {
 	    Files.deleteIfExists(Paths.get(epubFile.getPath() + epubFile.getInnerFoldersPath(i)));
 	}

@@ -6,13 +6,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-final class TocNCX extends SupportFiles {
+final class TocNCX extends InnerFiles {
     
     private List<String> content = new ArrayList<String>();
 
     final String innerPath;
     
-    TocNCX(EpubFile epubFile){
+    TocNCX(EpubBook epubFile){
 	innerPath = epubFile.getInnerFoldersPath(1)+ "toc.ncx";
 	content.add("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n");
 	content.add("<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\"\r\n");
@@ -46,7 +46,7 @@ final class TocNCX extends SupportFiles {
 	content.add("</ncx>");
     }
     
-    protected void fill(EpubFile epubFile, int start, int end) {
+    protected void fill(EpubBook epubFile, int start, int end) {
 	try (PrintWriter writer = new PrintWriter(innerPath, epubFile.getEncoding())) {
 	    for (int i=0; i<=16; i++) {
 		writer.print(content.get(i));

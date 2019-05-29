@@ -4,12 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-final class Mimetype {
+final class Mimetype extends InnerFiles {
 
-	static String innerPath = "mimetype";
-	static String content = "application/epub+zip";
-	
-	static void create(EpubFile epubFile) {
+	Mimetype(EpubBook epubFile) {
+	    innerPath = "mimetype";
+	    addContent("application/epub+zip");
+	}
+	void create(EpubBook epubFile) {
 	    try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())) {
 	    writer.print(content);
 	    } catch (FileNotFoundException | UnsupportedEncodingException e) {

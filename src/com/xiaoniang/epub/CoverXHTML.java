@@ -39,7 +39,7 @@ final class CoverXHTML {
 	    "</body>\r\n", 
 	    "</html>" };
 
-    protected static void create(EpubFile epubFile) {
+    protected static void create(EpubBook epubFile) {
 	try (PrintWriter writer = new PrintWriter(epubFile.tempDir() + path, epubFile.encoding())) {
 	for (String string : cover) {
 	    writer.print(string);
