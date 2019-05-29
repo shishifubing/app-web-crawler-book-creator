@@ -1,4 +1,4 @@
-package com.makeepub;
+package com.xiaoniang.epub;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
 
-final class Chapters extends CreateEpub {
+final class Chapters {
 
     private static String[] chapterHeader = { "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n",
 	    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\r\n",
@@ -22,23 +22,14 @@ final class Chapters extends CreateEpub {
 	    "  <link href=\"../Styles/stylesheet.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n", "</head>\r\n",
 	    "\r\n", "<body>\r\n" };
 
-    protected static void create() {
-	Document frontPage = null;
-	try {
-	    frontPage = Jsoup.connect(CreateEpub.url).get();
-	} catch (IOException e) {
-	    System.out.println("[!] Cannot connect to the " + url);
-	}
-	Element title = frontPage.select("div.p-15 > *").first();
-	CreateEpub.title = title.text();
-	Cover_xhtml.create();
+    protected static void create(Document frontPage, EpubFile epubFile) {
 	Elements summary = frontPage.select("div.p-15 > div.fr-view > *");
 	for (Element paragraph : summary) {
 	    String text = paragraph.text();
-	    if ((!CreateEpub.summary.equals(null) && !CreateEpub.summary.isEmpty())
+	    if ((!epubFile.summary().equals(null) && !epubFile.summary().isEmpty())
 		    && (text.equals(null) || text.isEmpty()))
 		break;
-	    CreateEpub.summary.add(text);
+	    epubFile.summary().add(text);
 	}
 	String linkRoot = "https://www.wuxiaworld.com";
 	Elements volumes = frontPage.select("div.panel-group > *");
@@ -55,11 +46,12 @@ final class Chapters extends CreateEpub {
 	    for (Element chapterLink : chapterLinks) {
 		if (getChapter(linkRoot + chapterLink.attr("href"), index, volumeEnd)) {
 		    System.out.println("[Created Chapter] " + index++);
+		    epubFile.chap
 		}
 	    }
 	    Toc_ncx.create(volumeStart, volumeEnd);
 	    Content_opf.create(volumeStart, volumeEnd);
-	    CreateEpub.title = CreateEpub.title +" Volume " + volumeIndex++;
+	    String volumeTitle = epubFile.title() +" Volume " + volumeIndex++;
 	    try {
 		allFiles = supportFiles;
 		listFiles(new File(CreateEpub.tempDir + "OEBPS/Text/"), allFiles);

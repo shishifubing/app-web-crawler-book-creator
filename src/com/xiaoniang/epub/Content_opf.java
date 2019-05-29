@@ -1,10 +1,10 @@
-package com.makeepub;
+package com.xiaoniang.epub;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-public class Content_opf extends CreateEpub {
+public class Content_opf {
     private static String path = "OEBPS/content.opf";
     private static String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
     private static String package_start = "<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n";
@@ -31,8 +31,8 @@ public class Content_opf extends CreateEpub {
     private static String guide_end = "  </guide>\r\n";
     private static String package_end = "</package>";
     
-    protected static void create(int start, int end) {
-	    try (PrintWriter writer = new PrintWriter(CreateEpub.tempDir+path, encoding)) {
+    protected static void create(EpubFile epubFile, int start, int end) {
+	    try (PrintWriter writer = new PrintWriter(epubFile.outputPath()+path, epubFile.encoding())) {
 	    writer.print(header+package_start+metadata_start+identifier
 		    +title+creator+language+dateOfCreation+publisher+rights+metaName+metadata_end
 		    +manifest_start+item_toc+item_cover
@@ -60,6 +60,7 @@ public class Content_opf extends CreateEpub {
 	    } catch (FileNotFoundException | UnsupportedEncodingException e) {
 		System.out.println("[!] Couldn't create content.opf");
 	    }
+	    epubFile.addToSupportFiles(epubFile.outputPath()+path);
 	    System.out.println("[Created] content.opf");
     }
 

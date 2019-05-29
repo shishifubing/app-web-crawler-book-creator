@@ -1,10 +1,9 @@
-package com.makeepub;
+package com.xiaoniang.epub;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 
-public final class Stylesheet_css extends CreateEpub {
+public final class Stylesheet_css {
     private static String path = "OEBPS/Styles/stylesheet.css";
     private static String[] stylesheet = {
     	"h1, h2, h3, h4, h5, h6 {\r\n" , 
@@ -64,15 +63,14 @@ public final class Stylesheet_css extends CreateEpub {
     	"	color: #3366aa;\r\n" , 
     	"}\r\n",};
 
-    protected static void create() {
-	try {
-	    PrintWriter writer = new PrintWriter(CreateEpub.tempDir+path, encoding);
+    protected static void create(EpubFile epubFile) {
+	try (PrintWriter writer = new PrintWriter(epubFile.outputPath()+path, epubFile.encoding())){
 	    for (String string : stylesheet) {
 		writer.print(string);
 	    }
-	    writer.close();
+	    epubFile.addToSupportFiles(epubFile.outputPath()+path);
 	    System.out.println("[Created] stylesheet.css");
-	} catch (FileNotFoundException | UnsupportedEncodingException e) {
+	} catch (IOException e) {
 	    System.out.println("[!] Couldn't create stylesheet.css");
 	}
     }
