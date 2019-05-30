@@ -30,10 +30,10 @@ final class Chapters extends InnerFiles {
 	
     }
     
-    protected void download(EpubBook epubFile) {
+    protected void download(EpubBook epubBook) {
 	String linkRoot = "https://www.wuxiaworld.com";
-	Elements volumes = epubFile.getFrontPage().select("div.panel-group > *");
-	Elements allChapters = epubFile.getFrontPage().select("li.chapter-item");
+	Elements volumes = epubBook.getFrontPage().select("div.panel-group > *");
+	Elements allChapters = epubBook.getFrontPage().select("li.chapter-item");
 	int volumeIndex = 0;
 	int[] volumeChaptersAmounts = new int[volumes.size()-1];
 	addContent("" + allChapters.size());
@@ -46,13 +46,13 @@ final class Chapters extends InnerFiles {
 	}
 	int index = 1;
 	for (Element chapterLink : allChapters) {
-		while (!getChapter(linkRoot + chapterLink.attr("href"), index, volumeEnd));
-		epubFile.addToChapterFilesPaths(epubFile.getTempPath() + epubFile.getInnerFoldersPath(4) + "chapter_" + index++ + ".xhtml");
+		while (!getChapter(linkRoot + chapterLink.attr("href"), index));
+		epubBook.addToChapterFilesPaths(epubBook.getTempPath() + epubBook.getInnerFoldersPath(4) + "chapter_" + index++ + ".xhtml");
 		    System.out.println("[Created Chapter] " + index);
 	    }
     }
 
-    private static boolean getChapter(String url, int index, int volumeEnd) {
+    private boolean getChapter(String url, int chapterIndex) {
 	Document chapter = null;
 	try {
 	    chapter = Jsoup.connect(url).get();
@@ -61,13 +61,13 @@ final class Chapters extends InnerFiles {
 	    return false;
 	}
 	Elements text = chapter.select("div.p-15 > * > *");
-	String chapterFileIndex = "" + index;
-	while (chapterFileIndex.length() < ("" + volumeEnd).length()) {
+	String chapterFileIndex = "" + chapterIndex;
+	while (chapterFileIndex.length() < getContent(11).length()) {
 	    chapterFileIndex = "0" + chapterFileIndex;
 	}
 	try (PrintWriter chapterWriter = new PrintWriter(
-		CreateEpub.tempDir + "OEBPS/Text/chapter_" + chapterFileIndex + ".xhtml", encoding)) {
-	    for (String string : chapterHeader) {
+		epubBook.getTempDir() + "OEBPS/Text/chapter_" + chapterFileIndex + ".xhtml", encoding)) {
+	    for (String string : getContent()) {
 		chapterWriter.print(string);
 	    }
 	    boolean check = false;
@@ -76,7 +76,7 @@ final class Chapters extends InnerFiles {
 		String line = escapeXHtml(paragraph.text());
 		if (!check && !line.contentEquals("Previous Chapter") && !line.equals(null) && !line.isEmpty()) {
 		    chapterTitle = line;
-		    line = "  <h1 id=\"chapter_" + index + "\">" + line + "</h1>\r\n";
+		    line = "  <h1 id=\"chapter_" + chapterIndex + "\">" + line + "</h1>\r\n";
 		    chapterWriter.print(line);
 		    check = true;
 
@@ -90,7 +90,7 @@ final class Chapters extends InnerFiles {
 	    }
 	    chapterWriter.print("</body>\r\n" + "</html>");
 	} catch (IOException e) {
-	    System.out.println("[!] Issues with the file of the chapter " + index);
+	    System.out.println("[!] Issues with the file of the chapter " + chapterIndex);
 	    return false;
 	}
 	return true;
