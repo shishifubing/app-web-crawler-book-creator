@@ -11,19 +11,26 @@ abstract class InnerFiles {
     private String innerPath;
     private File file;
     private EpubBook epubBook;
+    private int volume = -1;
     
     protected boolean fill() {
 	try (PrintWriter writer = new PrintWriter(file, epubBook.encoding())) {
 	    for (String string : content) {
 		writer.print(string);
 	    }
-	    } catch (IOException e) {
+	} catch (IOException e) {
 		System.out.println("[!] Couldn't create "+ innerPath);
 		return false;
-	    }
-	    epubBook.addToSupportFilesPaths(epubBook.tempPath()+innerPath);
-	    System.out.println("[Created] "+innerPath);
-	    return true;
+	}
+	if (volume!=-1) {
+	    epubBook.addToChapterFiles(volume, file);
+	} else if (file.getName().contentEquals("mimetype")) {
+	    epubBook.addToSupportFiles(0, file);
+	} else {
+	    epubBook.addToSupportFiles(file);
+	}
+	System.out.println("[Created] "+innerPath);
+	return true;
     }
     
     protected static String escapeHtml(String input) {
@@ -61,5 +68,11 @@ abstract class InnerFiles {
     }
     protected EpubBook epubBook() {
 	return epubBook;
+    }
+    protected void setVolume(int index) {
+	volume = index;
+    }
+    protected int volume() {
+	return volume;
     }
 }

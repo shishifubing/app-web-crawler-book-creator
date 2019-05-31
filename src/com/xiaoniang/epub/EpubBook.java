@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -23,11 +22,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.adobe.epubcheck.api.EpubCheck;
+
 class EpubBook {
     
-    private final File file;  
-    private final List<String> supportFilesPaths; 
-    private final List<String> chapterFilesPaths; 
+    private final List<ArrayList<File>> chapterFiles;
+    private final List<File> supportFiles;
     private final List<String> summary; 
     private final String[] innerFoldersPaths = { "OEBPS"+File.separator, "META-INF"+File.separator, "OEBPS"+File.separator+"Styles"+File.separator, "OEBPS"+File.separator+"Text"+File.separator};
     private final String url;
@@ -42,12 +42,11 @@ class EpubBook {
     private final String timeOfCreation;
     private final String dateOfCreation;
         
-    EpubBook (String outputPath, String link) throws IOException {
+    EpubBook (String outputPath, String link, int ...volumes) throws IOException {
 	url = link;
-	file = new File(outputPath);
-	path = file.getAbsolutePath();
-	supportFilesPaths = new ArrayList<String>();
-	chapterFilesPaths = new ArrayList<String>();
+	path = outputPath;
+	chapterFiles = new ArrayList<ArrayList<File>>();
+	supportFiles = new ArrayList<File>();
 	summary = new ArrayList<String>();
 	Document document = null;
 	while (document == null) {
@@ -78,75 +77,93 @@ class EpubBook {
 	encodingCharset = StandardCharsets.UTF_8;
 	encoding = encodingCharset.name();
 	author = "UNDEFINED_AUTHOR";
-	createInnerFiles();
-	packInnerFiles();
+	Folders.createFor(this);
+	Mimetype mimetype = new Mimetype(this);
+	mimetype.fill();
+	ContainerXML container = new ContainerXML(this);
+	container.fill();
+	StylesheetCSS stylesheet = new StylesheetCSS(this);
+	stylesheet.fill();
+	CoverXHTML cover = new CoverXHTML(this);
+	cover.fill();
+	for (int volume : volumes) {
+	    Chapters.download(this, volume);
+	    packInnerFiles(volume);
+	}
     }
     
-    protected void createInnerFiles() throws IOException {
-	    Folders.createFor(this);
-	    Mimetype mimetype = new Mimetype(this);
-	    mimetype.fill();
-	    ContainerXML container = new ContainerXML(this);
-	    container.fill();
-	    StylesheetCSS stylesheet = new StylesheetCSS(this);
-	    stylesheet.fill();
-	    CoverXHTML cover = new CoverXHTML(this);
-	    cover.fill();
-	    Chapters.download(this);
-    }
-    
-    protected void packInnerFiles() throws IOException {
-	    FileOutputStream fos = new FileOutputStream(this.file);
+    protected void packInnerFiles(int volume) throws IOException {
+	    String epubTitle = null;
+	    if (volume == 0) {
+		 epubTitle = title; 
+	    } else {
+		epubTitle = title+" Volume "+volume;
+	    }
+	    File epubFile = new File(path+epubTitle+".epub");
+	    FileOutputStream fos = new FileOutputStream(epubFile);
 	    BufferedOutputStream bos = new BufferedOutputStream(fos);
 	    ZipOutputStream zos = new ZipOutputStream(bos, encodingCharset);
 	    zos.setMethod(ZipOutputStream.DEFLATED);
-	    for (String filePath : chapterFilesPaths) {
-		String zenPath = filePath.substring(this.path.length()+1).replaceAll("\\\\","/");
-		ZipEntry zen = new ZipEntry(zenPath);
-		File ipFile = new File(filePath);
-		if (ipFile.getName().contentEquals("mimetype") ||
-			ipFile.getName().endsWith(".jpg")) {
-		    zen.setMethod(ZipEntry.STORED);
-		    CRC32 crc = new CRC32();
-		    crc.update(Files.readAllBytes(ipFile.toPath()));
-		    zen.setCrc(crc.getValue());
-		    zen.setSize(ipFile.length());
-		    zen.setCompressedSize(ipFile.length());
+	    for (File file : supportFiles) {
+		packFile(zos, file);
+	    }
+	    if (volume == 0) {
+		for (List<File> list : chapterFiles) {
+		    for (File file : list) {
+			packFile(zos, file);
+		    }
 		}
-		zos.putNextEntry(zen);
-		FileInputStream fis = new FileInputStream(ipFile);
-		int len; byte[] buffer = new byte[(int) ipFile.length()];
-		while ((len = fis.read(buffer)) >= 0) {
-		    zos.write(buffer, 0, len);
-		}
-		System.out.println("[Zipped] " + zenPath);
-		zos.closeEntry();
-		fis.close();
-		if (ipFile.getName().startsWith("chapter_")) {
-		    Files.deleteIfExists(Paths.get(filePath));
+	    } else {
+		for (File file : chapterFiles.get(volume)) {
+		    packFile(zos, file);
 		}
 	    }
 	    zos.close();
 	    fos.close();
+	    EpubCheck check = new EpubCheck(epubFile);
+	    check.validate();
 	    System.out.println("[Created Epub File] "+this.title());
     }
-    public File file() {
-	return this.file;
+    private void packFile(ZipOutputStream zos, File file) throws IOException {
+	String filePath = file.getAbsolutePath();
+	String zenPath = filePath.substring(this.tempPath.length()).replaceAll("\\\\","/");
+	ZipEntry zen = new ZipEntry(zenPath);
+	if (file.getName().contentEquals("mimetype") ||
+		file.getName().endsWith(".jpg")) {
+	    zen.setMethod(ZipEntry.STORED);
+	    CRC32 crc = new CRC32();
+	    crc.update(Files.readAllBytes(file.toPath()));
+	    zen.setCrc(crc.getValue());
+	    zen.setSize(file.length());
+	    zen.setCompressedSize(file.length());
+	}
+	zos.putNextEntry(zen);
+	FileInputStream fis = new FileInputStream(file);
+	int len; byte[] buffer = new byte[(int) file.length()];
+	while ((len = fis.read(buffer)) >= 0) {
+	    zos.write(buffer, 0, len);
+	}
+	System.out.println("[Zipped] " + file.getName());
+	zos.closeEntry();
+	fis.close();
     }
-    public List<String> supportFilesPaths() {
-	return this.supportFilesPaths;
+    public List<File> supportFiles() {
+	return supportFiles;
     }
-    public void addToSupportFilesPaths(String filePath) {
-	this.supportFilesPaths.add(filePath);
+    public void addToSupportFiles(File file) {
+	supportFiles.add(file);
     }
-    public void addToSupportFilesPaths(int index, String filePath) {
-	this.supportFilesPaths.add(index, filePath);
+    public void addToSupportFiles(int index, File file) {
+	supportFiles.add(index, file);
     }
-    public List<String> chapterFilesPaths() {
-	return this.chapterFilesPaths;
+    public List<ArrayList<File>> chapterFiles() {
+	return chapterFiles;
     }
-    public void addToChapterFilesPaths(String filePath) {
-	this.chapterFilesPaths.add(filePath);
+    public void addVolumeToChapterFiles(int chaptersAmount) {
+	chapterFiles.add(new ArrayList<File>(chaptersAmount));
+    }
+    public void addToChapterFiles(int volume, File file) {
+	chapterFiles.get(volume-1).add(file);
     }
     public List<String> summary() {
 	return this.summary;

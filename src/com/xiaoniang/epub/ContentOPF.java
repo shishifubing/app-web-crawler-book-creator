@@ -5,6 +5,9 @@ import java.io.File;
 public class ContentOPF extends InnerFiles {
 
     ContentOPF(EpubBook epubBook, int start, int end) {
+	setInnerPath(epubBook.innerFolderPath(0) + "content.opf");
+	setFile(new File(epubBook.tempPath()+innerPath()));
+	setEpubBook(epubBook);
 	addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
 	addContent(
 		"<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");
@@ -29,8 +32,6 @@ public class ContentOPF extends InnerFiles {
 	addContent(
 		"    <item href=\"Text/cover.xhtml\" id=\"cover.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
 	addContent("    <item href=\"Styles/stylesheet.css\" id=\"stylesheet.css\" media-type=\"text/css\" />\r\n");
-	setInnerPath(epubBook.innerFolderPath(0) + "content.opf");
-	setFile(new File(epubBook.tempPath() + innerPath()));
 	for (int i = start; i <= end; i++) {
 	    String chapterFileIndex = "" + i;
 	    while (chapterFileIndex.length() < ("" + end).length()) {
