@@ -1,22 +1,35 @@
 package com.xiaoniang.epub;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 abstract class InnerFiles {
-    protected final List<String> content = new ArrayList<String>();;
-    protected String innerPath;
-    protected void fill(EpubBook epubFile) {
-	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())) {
-	    writer.print(content);
+    private final List<String> content = new ArrayList<String>();
+    private String innerPath;
+    private File file;
+    private EpubBook epubBook;
+    
+    protected boolean fill() {
+	try (PrintWriter writer = new PrintWriter(file, epubBook.encoding())) {
+	    for (String string : content) {
+		writer.print(string);
+	    }
 	    } catch (IOException e) {
 		System.out.println("[!] Couldn't create "+ innerPath);
+		return false;
 	    }
-	    epubFile.addToSupportFilesPaths(epubFile.getTempPath()+innerPath);
-	    System.out.println("[Created] mimetype");
+	    epubBook.addToSupportFilesPaths(epubBook.tempPath()+innerPath);
+	    System.out.println("[Created] "+innerPath);
+	    return true;
     }
+    
+    protected static String escapeHtml(String input) {
+	return input.replaceAll("&", "&amp;").replaceAll("'", "&apos;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+    
     protected void addContent(String ...line) {
 	for (String string : line) {
 	    content.add(string);
@@ -25,10 +38,28 @@ abstract class InnerFiles {
     protected void addContent(int index, String line) {
 	content.add(index, line);
     }
-    protected List<String> getContent() {
+    protected List<String> content() {
 	return content;
     }
-    protected String getContent(int index) {
+    protected String content(int index) {
 	return content.get(index);
+    }
+    protected void setInnerPath(String string) {
+	innerPath = string;
+    }
+    protected String innerPath() {
+	return innerPath;
+    }
+    protected void setFile(File file) {
+	this.file = file;
+    }
+    protected File file() {
+	return file;
+    }
+    protected void setEpubBook(EpubBook book) {
+	epubBook = book;
+    }
+    protected EpubBook epubBook() {
+	return epubBook;
     }
 }

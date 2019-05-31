@@ -7,18 +7,19 @@ import java.nio.file.Paths;
 
 final class Folders {
 
-    protected static void createIn(EpubBook epubFile) {
+    protected static void createFor(EpubBook epubBook) {
 	File file;
-	for (String innerPath : epubFile.getInnerFoldersPaths()) {
-	    file = new File(epubFile.getPath() + innerPath);
-	    file.mkdir();
-	    System.out.println("[Created] " + epubFile.getPath() + innerPath);
+	for (String innerPath : epubBook.innerFoldersPaths()) {
+	    file = new File(epubBook.tempPath() + innerPath);
+	    if (file.mkdir()) {
+		System.out.println("[Created Folder] " + innerPath);
+	    }
 	}
     }
 
-    protected static void deleteIn(EpubBook epubFile) throws IOException {
-	for (int i = epubFile.getInnerFoldersPaths().length - 1; i >= 1; i--) {
-	    Files.deleteIfExists(Paths.get(epubFile.getPath() + epubFile.getInnerFoldersPath(i)));
+    protected static void deleteIn(EpubBook epubBook) throws IOException {
+	for (int i = epubBook.innerFoldersPaths().length - 1; i >= 1; i--) {
+	    Files.deleteIfExists(Paths.get(epubBook.path() + epubBook.innerFolderPath(i)));
 	}
     }
 }

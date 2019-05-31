@@ -1,29 +1,19 @@
 package com.xiaoniang.epub;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.File;
 
-final class ContainerXML {
-    	private static String innerPath = "META-INF/container.xml";
-    	private static String[] container = {
-    		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n",
-    		"<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n",
-    		"    <rootfiles>\r\n",
-    		"        <rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\r\n",
-    		"   </rootfiles>\r\n",
-    		"</container>"
-    	};
+final class ContainerXML extends InnerFiles {
 	
-	protected static void create(EpubBook epubFile) throws IOException {
-		    	try (PrintWriter writer = new PrintWriter(epubFile.getPath()+innerPath, epubFile.getEncoding())) {
-		    	    for (String string : container) {
-		    		writer.print(string);
-		    	}
-		    	epubFile.addToSupportFilesPaths(epubFile.getPath()+innerPath);
-		    	} catch (IOException e) {
-		    	    System.out.println("[!] Couldn't create container.xml");
-			} 
-		    	epubFile.addToSupportFilesPaths(epubFile.getPath()+innerPath);
-			System.out.println("[Created] container.xml");
-	}
+    	ContainerXML(EpubBook epubBook) {
+    	    setInnerPath(epubBook.innerFolderPath(1)+"container.xml");
+    	    setFile(new File(epubBook.tempPath()+innerPath()));
+    	    setEpubBook(epubBook);
+    	    addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+    	    addContent("<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n");
+    	    addContent("    <rootfiles>\r\n");
+    	    addContent("        <rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\r\n");
+    	    addContent("   </rootfiles>\r\n");
+    	    addContent("</container>");
+    	}
+    	
 }

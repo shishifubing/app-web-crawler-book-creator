@@ -63,7 +63,7 @@ class EpubBook {
 	Elements summary = frontPage.select("div.p-15 > div.fr-view > *");
 	for (Element paragraph : summary) {
 	    String text = paragraph.text();
-	    if ((!getSummary().equals(null) && !getSummary().isEmpty())
+	    if ((!summary().equals(null) && !summary().isEmpty())
 		    && (text.equals(null) || text.isEmpty())) {
 		break;
 	    }
@@ -74,7 +74,7 @@ class EpubBook {
 	bookID = "WuxiaWorld.com-" + "XiaoNiang-" + title+ "-" + dateOfCreation;
 	File tempDir = new File ("WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + '-' + timeOfCreation + File.separator);
 	tempDir.mkdir();
-	tempPath = tempDir.getAbsolutePath();
+	tempPath = tempDir.getAbsolutePath() + File.separator;
 	encodingCharset = StandardCharsets.UTF_8;
 	encoding = encodingCharset.name();
 	author = "UNDEFINED_AUTHOR";
@@ -83,11 +83,16 @@ class EpubBook {
     }
     
     protected void createInnerFiles() throws IOException {
-	    Folders.createIn(this);
-	    Mimetype.create(this);
-	    ContainerXML.create(this);
-	    StylesheetCSS.create(this);
-	    Chapters.create(this);
+	    Folders.createFor(this);
+	    Mimetype mimetype = new Mimetype(this);
+	    mimetype.fill();
+	    ContainerXML container = new ContainerXML(this);
+	    container.fill();
+	    StylesheetCSS stylesheet = new StylesheetCSS(this);
+	    stylesheet.fill();
+	    CoverXHTML cover = new CoverXHTML(this);
+	    cover.fill();
+	    Chapters.download(this);
     }
     
     protected void packInnerFiles() throws IOException {
@@ -123,12 +128,12 @@ class EpubBook {
 	    }
 	    zos.close();
 	    fos.close();
-	    System.out.println("[Created Epub File] "+this.getTitle());
+	    System.out.println("[Created Epub File] "+this.title());
     }
-    public File getFile() {
+    public File file() {
 	return this.file;
     }
-    public List<String> getSupportFilesPaths() {
+    public List<String> supportFilesPaths() {
 	return this.supportFilesPaths;
     }
     public void addToSupportFilesPaths(String filePath) {
@@ -137,56 +142,56 @@ class EpubBook {
     public void addToSupportFilesPaths(int index, String filePath) {
 	this.supportFilesPaths.add(index, filePath);
     }
-    public List<String> getChapterFilesPaths() {
+    public List<String> chapterFilesPaths() {
 	return this.chapterFilesPaths;
     }
     public void addToChapterFilesPaths(String filePath) {
 	this.chapterFilesPaths.add(filePath);
     }
-    public List<String> getSummary() {
+    public List<String> summary() {
 	return this.summary;
     }
     public void addToSummary(String line) {
 	this.summary.add(line);
     }
     
-    public String[] getInnerFoldersPaths() {
+    public String[] innerFoldersPaths() {
 	return this.innerFoldersPaths;
     }
-    public String getInnerFoldersPath(int index) {
+    public String innerFolderPath(int index) {
 	return this.innerFoldersPaths[index];
     }
-    public String getUrl() {
+    public String url() {
 	return this.url;
     }
-    public String getPath() {
+    public String path() {
 	return this.path;
     }
-    public String getTempPath() {
+    public String tempPath() {
 	return this.tempPath;
     }
-    public String getEncoding() {
+    public String encoding() {
 	return this.encoding;
     }
-    public Charset getEncodingCharset() {
+    public Charset encodingCharset() {
 	return this.encodingCharset;
     }
-    public String getTitle() {
+    public String title() {
 	return this.title;
     }
-    public String getAuthor() {
+    public String author() {
 	return this.author;
     }
-    public String getBookID() {
+    public String bookID() {
 	return this.bookID;
     }
-    public String getTimeOfCreation() {
+    public String timeOfCreation() {
 	return this.timeOfCreation;
     }
-    public String getDateOfCreation() {
+    public String dateOfCreation() {
 	return this.dateOfCreation;
     }
-    public Document getFrontPage() {
+    public Document frontPage() {
 	return this.frontPage;
     }
 }
