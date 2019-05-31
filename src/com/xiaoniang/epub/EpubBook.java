@@ -76,7 +76,7 @@ class EpubBook {
 	tempPath = tempDir.getAbsolutePath() + File.separator;
 	encodingCharset = StandardCharsets.UTF_8;
 	encoding = encodingCharset.name();
-	author = "UNDEFINED_AUTHOR";
+	author = "Er Gen";
 	Folders.createFor(this);
 	Mimetype mimetype = new Mimetype(this);
 	mimetype.fill();
@@ -114,7 +114,7 @@ class EpubBook {
 		    }
 		}
 	    } else {
-		for (File file : chapterFiles.get(volume)) {
+		for (File file : chapterFiles.get(volume-1)) {
 		    packFile(zos, file);
 		}
 	    }

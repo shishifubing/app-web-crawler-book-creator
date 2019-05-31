@@ -6,17 +6,19 @@ import org.jsoup.select.Elements;
 class Chapters {
 
     static void download(EpubBook epubBook, int targetVolume) {
-	Elements volumes = epubBook.frontPage().select("div.panel-group > div.*");
+	Elements volumes = epubBook.frontPage().select("div.panel-group > *");
 	int volumeIndex = 0;
 	int chapterIndex = 1;
 	int chapterIndexStart = 1;
 	for (Element volumeChapters : volumes) {
 	    Elements chaptersLinks = volumeChapters.select("li.chapter-item > a");
+	    System.out.println("[ ][chapterLinks Size] "+chaptersLinks.size());
 	    epubBook.addVolumeToChapterFiles(chaptersLinks.size());
+	    volumeIndex++;
 	    if (chaptersLinks.isEmpty()) {
 		continue;
 	    }
-	    if (targetVolume != 0 && ++volumeIndex < targetVolume) {
+	    if (targetVolume != 0 && volumeIndex != targetVolume) {
 		chapterIndex += chaptersLinks.size();
 	    } else {
 		if (targetVolume != 0) {
@@ -28,11 +30,12 @@ class Chapters {
 		    while (!chapter.fill())
 			;
 		}
+		if (targetVolume != 0) break;
 	    }
 	}
-	TocNCX toc = new TocNCX(epubBook, chapterIndexStart, chapterIndex);
+	TocNCX toc = new TocNCX(epubBook, chapterIndexStart, chapterIndex-1);
 	toc.fill();
-	ContentOPF content = new ContentOPF(epubBook, chapterIndexStart, chapterIndex);
+	ContentOPF content = new ContentOPF(epubBook, chapterIndexStart, chapterIndex - 1);
 	content.fill();
     }
 
