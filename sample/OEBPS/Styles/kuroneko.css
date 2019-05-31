@@ -1,0 +1,113 @@
+/*
+ * @info see README.txt file under Misc.
+ *
+ * @note Please use this framework for personal use only! Do not use to recreate published/licensed digital novels.
+ * @note01 Use this to insert a break between paragraphs. Use &nbsp; instead of <br /> since most reader ignore the BR tag. Non-block container such as span, em, etc will become blocks. This class resets the parameters of @note04.
+ * @note02 Use this to reset a paragraph that contains an image.
+ * @note03 Use this to make a drop cap of a paragraph's first letter.
+ * @note04 Content page paragraph formatting.
+ */
+
+/**
+ * You are looking at the CSS reset.
+ */
+.clear{clear:both;}
+.hidden{display:none}
+@font-face{font-family:CaudexR;font-weight:normal;font-style:normal;src:url( '../Fonts/Caudex-Regular.ttf' );}
+@font-face{font-family:CaudexI;font-weight:normal;font-style:italic;src:url( '../Fonts/Caudex-Italic.ttf' );}
+@font-face{font-family:CaudexB;font-weight:bold;font-style:normal;src:url( '../Fonts/Caudex-Bold.ttf' );}
+@font-face{font-family:CaudexBI;font-weight:bold;font-style:italic;src:url( '../Fonts/Caudex-BoldItalic.ttf' );}
+@font-face{font-family:JKG-M;font-weight:normal;font-style:normal;src:url( '../Fonts/JKG-M.ttf' );}
+@font-face{font-family:TCCM;font-weight:normal;font-style:normal;src:url( '../Fonts/TCCM.ttf' );}
+body{font-size:1em;font-family:'CaudexR',Tahoma,Arial !important;}
+b,strong{font-family:CaudexB;}
+i,em{font-family:CaudexI;}
+b i,i b,b em,em b,strong i,i strong,strong em,em strong{font-family:CaudexBI;}
+a{color:#0066cc;text-decoration:none;}
+a:hover{color:#c95757;text-decoration:none;}
+ul, ol{margin:0 0 0 5%;padding:0;text-align:justify;}
+ul li, ol li{line-height:1.5;}
+ul li{list-style-type:square;}
+.alignleft{text-align:left;}
+.alignright{text-align:right;}
+.aligncenter{text-align:center;}
+.gapsmall{margin-top:20%;}
+.gapmedium{margin-top:50%;}
+.gaplarge{margin-top:100%;}
+.noindent,body.page p.noindent{text-indent:0;display:block;}
+.break,.separator{display:block !important;margin:5% 0 5% 0;padding:0 !important;text-indent:0 !important;} /* @note01 */
+.image img{margin:0 !important;padding:0 !important;border:0 !important;} /* @note02 */
+h1, h2, h3, h4, h5, h6{line-height:1.2;font-size:1.2em;font-weight:normal;padding:0;margin:10% 0 10% 0;text-align:center;}
+h1 .series, h2 .series, h3 .series, h4 .series, h5 .series, h6 .series{}
+p{text-align:justify;margin:0;padding:0;}
+p{line-height:1.2;}
+body.page p{text-indent:2em;padding:0 5% 0 5%;} /** @note04 */
+body.page p.dropcaps{text-indent:0;} /** @note03 */
+body.page p.dropcaps big{float:left;font-style:normal;font-weight:normal;font-size:4em;padding:2% 2% 0 0;margin:0;line-height:.5;}
+p.version small{background-color:#75ff00;color:#397c00;padding:1%;}
+.support{background-color:#3366ff;border:1px solid #1f45ba;color:#fff;font-size:1.2em;padding:5%;display:inline-block;width:50%;}
+.support img{border-top:2px solid #1f45ba;border-right:4px solid #1f45ba;border-bottom:4px solid #1f45ba;border-left:2px solid #1f45ba;}
+
+/**
+ * You can start editing beyond this point...
+ */
+h1, h2, h3, h4, h5, h6{font-family:CaudexB;}
+img.bakatsuki{background-color:#fff !important;}
+span.odanobuna{font-family:'JKG-M',CaudexR,Tahoma;}
+ul.indent,ol.indent{margin-left:3.5em;}
+
+/** For the book title. */
+body.title h1{font-size:1.5em;font-weight:normal;}
+body.title h1 span.series{font-size:1.8em;font-family:CaudexB;}
+body.title h2{font-size:1.5em;font-family:CaudexR;}
+
+/** For the main article. */
+body.head h1, body.head h2{color:#07977b;font-family:TCCM;line-height:.8em;text-transform:normal;font-size:2em;}
+body.head h1 small, body.head h2 small{font-size:.6em;}
+body.head h1 span.series, body.head h2 span.series{font-size:1em !important;}
+body.page h1 img{margin-top:2%;}
+body.page p{line-height:1.5em !important;}
+body.page p a{text-decoration:none;}
+body.page p.break{text-align:center;}
+body.page p.separator{text-align:center;margin:10% 0 10% 0;text-indent:0 !important;}
+
+/** For the notes section. Not used in this novel but may be utilized so it remains. */
+body.notes ol{margin-top:2%;}
+body.notes ol li{text-align:left;margin:2% 0 2% 0;}
+body.notes ol li bdi{display:block;margin:-1%;}
+body.notes ol li ins{display:block;text-align:center;text-indent:0;margin:.8em 0 .8em 0;}
+body.notes ol li ins img{padding:.5em;border:1px solid #10404c;background-color:#196476;width:180px;}
+
+/** For specific pages such as copyright, afterword, apendix, etc. Basically bypass the paragraph default styling. */
+body.paragraph_is_margined p{margin:2% 0 2% 0;text-indent:0;display:block;}
+
+/** For the table of contents. */
+body.content ul{margin:0;padding:0;text-align:center;}
+body.content ul li{list-style-type:none;margin:0;padding:0;}
+
+/** For the illustrations page. */
+body.illustrations ul{text-align:center;margin:0;padding:0;}
+body.illustrations ul li{line-height:0;margin:1%;list-style-type:none;display:inline-block;}
+body.illustrations ul li img{padding:5%;margin:2% 0 2% 0;}
+body.illustrations ul li small{display:block;text-align:center;margin:.5em 0 0 0;font-size:.6em;padding:0;}
+body.illustrations ul li big{display:block;font-size:1em;}
+body.illustrations ul.character li{display:block;line-height:1.5;}
+body.illustrations ul.character li span{display:block;}
+body.illustrations ul.character li img{margin-bottom:0;padding-bottom:0;width:180px;height:180px;}
+
+table{border:1px solid #10404c;width:100%;margin:0 auto;border-collapse:collapse;border-spacing:0;font-size:.6em;}
+table tr th,table tr td{text-align:center;padding:.5em;}
+table tr th{background-color:#196476;color:#fff;}
+table tr td{border:1px solid #10404c;}
+table tr td ul li{text-align:left;}
+table tr.row-1{background-color:#dbf8ff;}
+table tr.row-2{background-color:#b3dde7;}
+
+p.bordered{text-indent:0 !important;} /*redundant but just in case... */
+p.bordered img{padding:.5em;border:1px solid #10404c;background-color:#196476;width:250px;}
+
+/**
+COVER:
+	BACKGROUND DOMINANT COLOR: 07977b
+	BORDER DOMINANT COLOR: 056351
+*/

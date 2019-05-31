@@ -9,10 +9,8 @@ public class ContentOPF extends InnerFiles {
 	setFile(new File(epubBook.tempPath()+innerPath()));
 	setEpubBook(epubBook);
 	addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
-	addContent(
-		"<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");
-	addContent(
-		"  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\r\n");
+	addContent("<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");
+	addContent("  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\r\n");
 	addContent("    <dc:identifier id=\"BookId\" opf:scheme=\"XN\">"+epubBook.bookID()
 		+"</dc:identifier>\r\n");
 	addContent("    <dc:title>"+epubBook.title()+"</dc:title>\r\n");
@@ -20,7 +18,7 @@ public class ContentOPF extends InnerFiles {
 		+epubBook.author());
 	addContent("</dc:creator>\r\n");
 	addContent("    <dc:language>en</dc:language>\r\n");
-	addContent("    <dc:date opf:event=\"creation\">"+epubBook.timeOfCreation()
+	addContent("    <dc:date opf:event=\"creation\">"+epubBook.dateOfCreation()
 		+"</dc:date>\r\n");
 	addContent("    <dc:publisher>WuxiaWorld.com</dc:publisher>\r\n");
 	addContent(
@@ -34,7 +32,7 @@ public class ContentOPF extends InnerFiles {
 	addContent("    <item href=\"Styles/stylesheet.css\" id=\"stylesheet.css\" media-type=\"text/css\" />\r\n");
 	for (int i = start; i <= end; i++) {
 	    String chapterFileIndex = "" + i;
-	    while (chapterFileIndex.length() < ("" + end).length()) {
+	    while (chapterFileIndex.length() < 4) {
 		chapterFileIndex = "0" + chapterFileIndex;
 	    }
 	    addContent("    <item href=\"Text/chapter_" + chapterFileIndex + ".xhtml\" id=\"Chapter_" + chapterFileIndex
@@ -45,7 +43,7 @@ public class ContentOPF extends InnerFiles {
 	addContent("    <itemref idref=\"cover.xhtml\" />\r\n");
 	for (int i = start; i <= end; i++) {
 	    String chapterFileIndex = "" + i;
-	    while (chapterFileIndex.length() < ("" + end).length()) {
+	    while (chapterFileIndex.length() < 4) {
 		chapterFileIndex = "0" + chapterFileIndex;
 	    }
 	    addContent("    <itemref idref=\"Chapter_" + chapterFileIndex + ".xhtml\" />\r\n");
@@ -55,11 +53,6 @@ public class ContentOPF extends InnerFiles {
 	addContent("    <reference href=\"Text/cover.xhtml\" title=\"Cover\" type=\"cover\" />\r\n");
 	addContent("  </guide>\r\n");
 	addContent("</package>");
-	addContent("    <item href=\"Text/chapter_");
-	addContent(".xhtml\" id=\"Chapter_");
-	addContent(".xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
-	addContent("    <itemref idref=\"Chapter_");
-	addContent(".xhtml\" />\r\n");
     }
 
 }

@@ -24,7 +24,7 @@ final class TocNCX extends InnerFiles {
 	addContent("  <navMap>\r\n");
 	for (int i = start; i <= end; i++) {
 		String chapterFileIndex = ""+i;
-		while (chapterFileIndex.length()<(""+end).length()) {
+		while (chapterFileIndex.length()<4) {
 		    chapterFileIndex = "0" + chapterFileIndex;
 		}
 		addContent("    <navPoint id=\"navPoint-" + i + "\" playOrder=\"" + i + "\">\r\n");
