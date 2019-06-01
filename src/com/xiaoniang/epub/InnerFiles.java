@@ -26,7 +26,7 @@ abstract class InnerFiles {
 	    epubBook.addToChapterFiles(volume, file);
 	} else if (file.getName().contentEquals("mimetype")) {
 	    epubBook.addToSupportFiles(0, file);
-	} else {
+	} else if (!epubBook.supportFiles().contains(file)){
 	    epubBook.addToSupportFiles(file);
 	}
 	System.out.println("[Created] "+innerPath);

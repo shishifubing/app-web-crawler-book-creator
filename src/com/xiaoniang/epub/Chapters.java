@@ -12,7 +12,6 @@ class Chapters {
 	int chapterIndexStart = 1;
 	for (Element volumeChapters : volumes) {
 	    Elements chaptersLinks = volumeChapters.select("li.chapter-item > a");
-	    System.out.println("[ ][chapterLinks Size] "+chaptersLinks.size());
 	    epubBook.addVolumeToChapterFiles(chaptersLinks.size());
 	    volumeIndex++;
 	    if (chaptersLinks.isEmpty()) {
@@ -33,9 +32,9 @@ class Chapters {
 		if (targetVolume != 0) break;
 	    }
 	}
-	TocNCX toc = new TocNCX(epubBook, chapterIndexStart, chapterIndex-1);
+	TocNCX toc = new TocNCX(epubBook, chapterIndexStart, chapterIndex-1, targetVolume);
 	toc.fill();
-	ContentOPF content = new ContentOPF(epubBook, chapterIndexStart, chapterIndex - 1);
+	ContentOPF content = new ContentOPF(epubBook, chapterIndexStart, chapterIndex - 1, targetVolume);
 	content.fill();
     }
 
