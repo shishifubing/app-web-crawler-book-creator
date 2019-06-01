@@ -2,9 +2,12 @@ package com.xiaoniang.epub;
 
 import java.io.File;
 
-final class Mimetype extends InnerFiles {
+import com.xiaoniang.epub.api.EpubBook;
+import com.xiaoniang.epub.api.InnerFiles;
 
-	Mimetype(EpubBook epubBook) {
+public final class Mimetype extends InnerFiles {
+
+	public Mimetype(EpubBook epubBook) {
 	    setEpubBook(epubBook); 
 	    setInnerPath("mimetype");
 	    setFile(new File(epubBook.tempPath() + innerPath()));

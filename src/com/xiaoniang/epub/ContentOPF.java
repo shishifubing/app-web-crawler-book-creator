@@ -2,6 +2,9 @@ package com.xiaoniang.epub;
 
 import java.io.File;
 
+import com.xiaoniang.epub.api.EpubBook;
+import com.xiaoniang.epub.api.InnerFiles;
+
 public class ContentOPF extends InnerFiles {
 
     ContentOPF(EpubBook epubBook, int start, int end, int volume) {

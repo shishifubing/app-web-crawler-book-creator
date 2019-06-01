@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-final class Folders {
+import com.xiaoniang.epub.api.EpubBook;
 
-    protected static void createFor(EpubBook epubBook) {
+public final class Folders {
+
+    public static void createFor(EpubBook epubBook) {
 	File file;
 	for (String innerPath : epubBook.innerFoldersPaths()) {
 	    file = new File(epubBook.tempPath() + innerPath);

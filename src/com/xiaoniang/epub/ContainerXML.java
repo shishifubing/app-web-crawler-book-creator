@@ -2,9 +2,12 @@ package com.xiaoniang.epub;
 
 import java.io.File;
 
-final class ContainerXML extends InnerFiles {
+import com.xiaoniang.epub.api.EpubBook;
+import com.xiaoniang.epub.api.InnerFiles;
+
+public final class ContainerXML extends InnerFiles {
 	
-    	ContainerXML(EpubBook epubBook) {
+    	public ContainerXML(EpubBook epubBook) {
     	    setInnerPath(epubBook.innerFolderPath(1)+"container.xml");
     	    setFile(new File(epubBook.tempPath()+innerPath()));
     	    setEpubBook(epubBook);

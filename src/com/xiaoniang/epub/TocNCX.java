@@ -2,6 +2,9 @@ package com.xiaoniang.epub;
 
 import java.io.File;
 
+import com.xiaoniang.epub.api.EpubBook;
+import com.xiaoniang.epub.api.InnerFiles;
+
 final class TocNCX extends InnerFiles {
     
     TocNCX(EpubBook epubBook, int start, int end, int volume){
@@ -22,7 +25,7 @@ final class TocNCX extends InnerFiles {
 	addContent("    <text>"+epubBook.title()+epubBook.volumeTitle(volume)+"</text>\r\n");
 	addContent("  </docTitle>\r\n");
 	addContent("  <navMap>\r\n");
-	for (int i = start, j = start; i <= end; i++, j++) {
+	for (int i = start, j = 1; i <= end; i++, j++) {
 		String chapterFileIndex = ""+i;
 		while (chapterFileIndex.length()<4) {
 		    chapterFileIndex = "0" + chapterFileIndex;

@@ -1,4 +1,4 @@
-package com.xiaoniang.epub;
+package com.xiaoniang.epub.api;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,17 +24,26 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
+import com.xiaoniang.epub.Chapter;
+import com.xiaoniang.epub.ContainerXML;
+import com.xiaoniang.epub.CoverXHTML;
+import com.xiaoniang.epub.Folders;
+import com.xiaoniang.epub.Mimetype;
+import com.xiaoniang.epub.StylesheetCSS;
 
-class EpubBook {
+public class EpubBook {
 
     private final List<ArrayList<File>> chapterFiles;
     private final List<File> supportFiles;
-    private final List<String> summary;
+    private final String description;
     private final List<String> volumeTitles;
     private final String[] innerFoldersPaths = { "OEBPS" + File.separator, "META-INF" + File.separator,
 	    "OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator };
-    private final String url;
-    private final Document frontPage;
+    private final String urlWuxiaWorld;
+    private final String urlNovelUpdates;
+    private final String coverLink;
+    private final Document wuxiaWorldPage;
+    private final Document novelUpdatesPage;
     private final String path;
     private final String tempPath;
     private final String encoding;
@@ -46,35 +55,38 @@ class EpubBook {
     private final String dateOfCreation;
 
     EpubBook(String outputPath, String link, int... volumes) throws IOException {
-	url = link;
+	urlWuxiaWorld = link;
+	urlNovelUpdates = "https://www.novelupdates.com/series/"+link.split("novel")[1].substring(1);
 	path = outputPath;
 	chapterFiles = new ArrayList<ArrayList<File>>();
 	supportFiles = new ArrayList<File>();
 	volumeTitles = new ArrayList<String>();
-	summary = new ArrayList<String>();
-	Document document = null;
-	while (document == null) {
+	Document wuxiaWorldPageDocument = null;
+	Document novelUpdatesPageDocument = null;
+	while (wuxiaWorldPageDocument == null) {
 	    try {
-		document = Jsoup.connect(link).get();
+		wuxiaWorldPageDocument = Jsoup.connect(urlWuxiaWorld).get();
 	    } catch (IOException e) {
-		System.out.println("[!] Cannot connect to the " + link);
+		System.out.println("[!] Cannot connect to the " + urlWuxiaWorld);
 	    }
 	}
-	frontPage = document;
-	Element titleElement = frontPage.select("div.p-15 > *").first();
-	title = titleElement.text();
-	Elements volumeTitlesElements = frontPage.select("div.panel-group").select("span.title");
+	while (novelUpdatesPageDocument == null) {
+	    try {
+		novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).get();
+	    } catch (IOException e) {
+		System.out.println("[!] Cannot connect to the " + urlNovelUpdates);
+	    }
+	}
+	wuxiaWorldPage = wuxiaWorldPageDocument;
+	novelUpdatesPage = novelUpdatesPageDocument;
+	title = wuxiaWorldPage.select("div.p-15 > *").first().text();
+	coverLink = novelUpdatesPage.select("div.seriesimg > img").first().attr("src");
+	description = novelUpdatesPage.select("div#editdescription").text();
+	author = novelUpdatesPage.select("div#showauthors > *").first().text();
+	Elements volumeTitlesElements = wuxiaWorldPage.select("div.panel-group").select("span.title");
 	volumeTitles.add("");
 	for (Element volumeTitle : volumeTitlesElements) {
 	    volumeTitles.add(" "+volumeTitle.text());
-	}
-	Elements summary = frontPage.select("div.p-15 > div.fr-view > *");
-	for (Element paragraph : summary) {
-	    String text = paragraph.text();
-	    if ((!summary().equals(null) && !summary().isEmpty()) && (text.equals(null) || text.isEmpty())) {
-		break;
-	    }
-	    addToSummary(text);
 	}
 	dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
@@ -85,7 +97,6 @@ class EpubBook {
 	tempPath = tempDir.getAbsolutePath() + File.separator;
 	encodingCharset = StandardCharsets.UTF_8;
 	encoding = encodingCharset.name();
-	author = "Er Gen";
 	Folders.createFor(this);
 	Mimetype mimetype = new Mimetype(this);
 	mimetype.fill();
@@ -97,13 +108,13 @@ class EpubBook {
 	cover.fill();
 	Arrays.sort(volumes);
 	if (volumes[0] == 0) {
-	    Chapters.download(this, 0);
+	    Chapter.downloadChapters(this, 0);
 	    for (int volume : volumes) {
 		packInnerFiles(volume);
 	    }
 	} else {
 	    for (int volume : volumes) {
-		Chapters.download(this, volume);
+		Chapter.downloadChapters(this, volume);
 		packInnerFiles(volume);
 	    }
 	}
@@ -192,12 +203,8 @@ class EpubBook {
     public String volumeTitle(int index) {
 	return volumeTitles.get(index);
     }
-    public List<String> summary() {
-	return this.summary;
-    }
-
-    public void addToSummary(String line) {
-	this.summary.add(line);
+    public String description() {
+	return this.description;
     }
 
     public String[] innerFoldersPaths() {
@@ -209,7 +216,7 @@ class EpubBook {
     }
 
     public String url() {
-	return this.url;
+	return this.urlWuxiaWorld;
     }
 
     public String path() {
@@ -249,6 +256,6 @@ class EpubBook {
     }
 
     public Document frontPage() {
-	return this.frontPage;
+	return this.wuxiaWorldPage;
     }
 }

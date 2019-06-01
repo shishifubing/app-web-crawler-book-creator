@@ -2,9 +2,12 @@ package com.xiaoniang.epub;
 
 import java.io.File;
 
+import com.xiaoniang.epub.api.EpubBook;
+import com.xiaoniang.epub.api.InnerFiles;
+
 public final class StylesheetCSS extends InnerFiles {
 
-    StylesheetCSS(EpubBook epubBook) {
+    public StylesheetCSS(EpubBook epubBook) {
 	setInnerPath(epubBook.innerFolderPath(2)+"stylesheet.css");
 	setEpubBook(epubBook);
 	setFile(new File(epubBook.tempPath() + innerPath()));

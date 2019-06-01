@@ -1,4 +1,4 @@
-package com.xiaoniang.epub;
+package com.xiaoniang.epub.api;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,14 +6,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class InnerFiles {
+public abstract class InnerFiles {
     private final List<String> content = new ArrayList<String>();
     private String innerPath;
     private File file;
     private EpubBook epubBook;
     private int volume = -1;
     
-    protected boolean fill() {
+    public boolean fill() {
 	try (PrintWriter writer = new PrintWriter(file, epubBook.encoding())) {
 	    for (String string : content) {
 		writer.print(string);
@@ -45,34 +45,34 @@ abstract class InnerFiles {
     protected void addContent(int index, String line) {
 	content.add(index, line);
     }
-    protected List<String> content() {
+    public List<String> content() {
 	return content;
     }
-    protected String content(int index) {
+    public String content(int index) {
 	return content.get(index);
     }
-    protected void setInnerPath(String string) {
+    public void setInnerPath(String string) {
 	innerPath = string;
     }
-    protected String innerPath() {
+    public String innerPath() {
 	return innerPath;
     }
-    protected void setFile(File file) {
+    public void setFile(File file) {
 	this.file = file;
     }
-    protected File file() {
+    public File file() {
 	return file;
     }
-    protected void setEpubBook(EpubBook book) {
+    public void setEpubBook(EpubBook book) {
 	epubBook = book;
     }
-    protected EpubBook epubBook() {
+    public EpubBook epubBook() {
 	return epubBook;
     }
-    protected void setVolume(int index) {
+    public void setVolume(int index) {
 	volume = index;
     }
-    protected int volume() {
+    public int volume() {
 	return volume;
     }
 }
