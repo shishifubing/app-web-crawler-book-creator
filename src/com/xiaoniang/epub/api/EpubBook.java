@@ -24,9 +24,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
-import com.xiaoniang.epub.Chapter;
+import com.xiaoniang.epub.ChapterXHTML;
 import com.xiaoniang.epub.ContainerXML;
 import com.xiaoniang.epub.CoverXHTML;
+import com.xiaoniang.epub.DescriptionXHTML;
 import com.xiaoniang.epub.Folders;
 import com.xiaoniang.epub.Mimetype;
 import com.xiaoniang.epub.StylesheetCSS;
@@ -35,13 +36,20 @@ public class EpubBook {
 
     private final List<ArrayList<File>> chapterFiles;
     private final List<File> supportFiles;
-    private final String description;
     private final List<String> volumeTitles;
+    private final List<String> genres;
+    private final List<String> tags;
+    private final String description;
+    private final String novelType;
     private final String[] innerFoldersPaths = { "OEBPS" + File.separator, "META-INF" + File.separator,
-	    "OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator };
+	    "OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator, 
+	    "OEBPS" + File.separator + "Images" + File.separator};
     private final String urlWuxiaWorld;
     private final String urlNovelUpdates;
     private final String coverLink;
+    private File coverImageFile;
+    private int coverHeight;
+    private int coverWidth;
     private final Document wuxiaWorldPage;
     private final Document novelUpdatesPage;
     private final String path;
@@ -61,6 +69,8 @@ public class EpubBook {
 	chapterFiles = new ArrayList<ArrayList<File>>();
 	supportFiles = new ArrayList<File>();
 	volumeTitles = new ArrayList<String>();
+	genres = new ArrayList<String>();
+	tags = new ArrayList<String>();
 	Document wuxiaWorldPageDocument = null;
 	Document novelUpdatesPageDocument = null;
 	while (wuxiaWorldPageDocument == null) {
@@ -82,7 +92,15 @@ public class EpubBook {
 	title = wuxiaWorldPage.select("div.p-15 > *").first().text();
 	coverLink = novelUpdatesPage.select("div.seriesimg > img").first().attr("src");
 	description = novelUpdatesPage.select("div#editdescription").text();
+	Element novelTypeElement = novelUpdatesPage.select("div#showtype").first();
+	novelType = "<a href=\""+novelTypeElement.attr("href")+"\">"+novelTypeElement.text()+"</a>";
 	author = novelUpdatesPage.select("div#showauthors > *").first().text();
+	for (Element genre : novelUpdatesPage.select("div#seriesgenre > *")) {
+	    genres.add("<a href=\""+genre.attr("href")+"\">"+genre.text()+"</a>");
+	}
+	for (Element tag : novelUpdatesPage.select("div#showtags > *")) {
+	    tags.add("<a href=\""+tag.attr("href")+"\">"+tag.text()+"</a>");
+	}
 	Elements volumeTitlesElements = wuxiaWorldPage.select("div.panel-group").select("span.title");
 	volumeTitles.add("");
 	for (Element volumeTitle : volumeTitlesElements) {
@@ -106,15 +124,17 @@ public class EpubBook {
 	stylesheet.fill();
 	CoverXHTML cover = new CoverXHTML(this);
 	cover.fill();
+	DescriptionXHTML description = new DescriptionXHTML(this);
+	description.fill();
 	Arrays.sort(volumes);
 	if (volumes[0] == 0) {
-	    Chapter.downloadChapters(this, 0);
+	    ChapterXHTML.downloadChapters(this, 0);
 	    for (int volume : volumes) {
 		packInnerFiles(volume);
 	    }
 	} else {
 	    for (int volume : volumes) {
-		Chapter.downloadChapters(this, volume);
+		ChapterXHTML.downloadChapters(this, volume);
 		packInnerFiles(volume);
 	    }
 	}
@@ -176,6 +196,7 @@ public class EpubBook {
 	zos.closeEntry();
 	fis.close();
     }
+    
 
     public List<File> supportFiles() {
 	return supportFiles;
@@ -204,58 +225,94 @@ public class EpubBook {
 	return volumeTitles.get(index);
     }
     public String description() {
-	return this.description;
+	return description;
     }
 
     public String[] innerFoldersPaths() {
-	return this.innerFoldersPaths;
+	return innerFoldersPaths;
     }
 
     public String innerFolderPath(int index) {
-	return this.innerFoldersPaths[index];
+	return innerFoldersPaths[index];
     }
 
     public String url() {
-	return this.urlWuxiaWorld;
+	return urlWuxiaWorld;
     }
 
     public String path() {
-	return this.path;
+	return path;
     }
 
     public String tempPath() {
-	return this.tempPath;
+	return tempPath;
     }
 
     public String encoding() {
-	return this.encoding;
+	return encoding;
     }
 
     public Charset encodingCharset() {
-	return this.encodingCharset;
+	return encodingCharset;
     }
 
     public String title() {
-	return this.title;
+	return title;
     }
 
     public String author() {
-	return this.author;
+	return author;
     }
 
     public String bookID() {
-	return this.bookID;
+	return bookID;
     }
 
     public String timeOfCreation() {
-	return this.timeOfCreation;
+	return timeOfCreation;
     }
 
     public String dateOfCreation() {
-	return this.dateOfCreation;
+	return dateOfCreation;
     }
 
     public Document frontPage() {
-	return this.wuxiaWorldPage;
+	return wuxiaWorldPage;
+    }
+    public int coverHeight() {
+	return coverHeight;
+    }
+    public void setCoverHeight(int i) {
+	coverHeight = i;
+    }
+    public int coverWidth() {
+	return coverWidth;
+    }
+    public void setCoverWidth(int i) {
+	coverWidth = i;
+    }
+    public String coverLink() {
+	return coverLink;
+    }
+    public File coverImageFile() {
+	return coverImageFile;
+    }
+    public void setCoverImageFile(File file) {
+	coverImageFile = file;
+    }
+    public List<String> genres() {
+	return genres;
+    }
+    public String genre(int index) {
+	return genres.get(index);
+    }
+    public String novelType() {
+	return novelType;
+    }
+    public List<String> tags() {
+	return tags;
+    }
+    public String tag(int index) {
+	return tags.get(index);
     }
 }
