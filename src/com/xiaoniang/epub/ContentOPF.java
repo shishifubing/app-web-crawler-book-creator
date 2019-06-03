@@ -32,9 +32,7 @@ public class ContentOPF extends InnerFiles {
 	addContent("    <item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\" />\r\n");
 	addContent(
 		"    <item href=\"Text/cover.xhtml\" id=\"cover.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
-	addContent("    <item href=\"Images/cover.jpg\" id=\"cover.jpg\" media-type=\"image/jpeg\"/>\r\n");
 	addContent("    <item href=\"Styles/stylesheet.css\" id=\"stylesheet.css\" media-type=\"text/css\" />\r\n");
-	addContent("    <item href=\"Text/description.xhtml\" id=\"description.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
 	for (int i = start; i <= end; i++) {
 	    String chapterFileIndex = "" + i;
 	    while (chapterFileIndex.length() < 4) {
@@ -46,7 +44,6 @@ public class ContentOPF extends InnerFiles {
 	addContent("  </manifest>\r\n");
 	addContent("  <spine toc=\"ncx\">\r\n");
 	addContent("    <itemref idref=\"cover.xhtml\" />\r\n");
-	addContent("    <itemref idref=\"description.xhtml\" />\r\n");
 	for (int i = start; i <= end; i++) {
 	    String chapterFileIndex = "" + i;
 	    while (chapterFileIndex.length() < 4) {
