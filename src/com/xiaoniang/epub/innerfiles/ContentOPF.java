@@ -1,15 +1,12 @@
 package com.xiaoniang.epub.innerfiles;
 
-import java.io.File;
-
 import com.xiaoniang.epub.api.EpubBook;
-import com.xiaoniang.epub.api.InnerFiles;
+import com.xiaoniang.epub.api.InnerFile;
 
-public class ContentOPF extends InnerFiles {
+public class ContentOPF extends InnerFile {
 
     ContentOPF(EpubBook epubBook, int start, int end, int volume) {
 	setInnerPath(epubBook.innerFolderPath(0) + "content.opf");
-	setFile(new File(epubBook.tempPath()+innerPath()));
 	setEpubBook(epubBook);
 	addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
 	addContent("<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");

@@ -1,15 +1,12 @@
 package com.xiaoniang.epub.innerfiles;
 
-import java.io.File;
-
 import com.xiaoniang.epub.api.EpubBook;
-import com.xiaoniang.epub.api.InnerFiles;
+import com.xiaoniang.epub.api.InnerFile;
 
-final class TocNCX extends InnerFiles {
+final class TocNCX extends InnerFile {
     
     TocNCX(EpubBook epubBook, int start, int end, int volume){
 	setInnerPath(epubBook.innerFolderPath(0) + "toc.ncx");
-	setFile(new File(epubBook.tempPath()+innerPath()));
 	setEpubBook(epubBook);
 	addContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n");
 	addContent("<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\"\r\n");

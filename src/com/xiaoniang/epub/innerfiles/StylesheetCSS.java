@@ -1,16 +1,13 @@
 package com.xiaoniang.epub.innerfiles;
 
-import java.io.File;
-
 import com.xiaoniang.epub.api.EpubBook;
-import com.xiaoniang.epub.api.InnerFiles;
+import com.xiaoniang.epub.api.InnerFile;
 
-public final class StylesheetCSS extends InnerFiles {
+public final class StylesheetCSS extends InnerFile {
 
     public StylesheetCSS(EpubBook epubBook) {
 	setInnerPath(epubBook.innerFolderPath(2)+"stylesheet.css");
 	setEpubBook(epubBook);
-	setFile(new File(epubBook.tempPath() + innerPath()));
 	addContent("h1, h2, h3, h4, h5, h6 {\r\n"); 
 	addContent("	color:#333333;\r\n"); 
 	addContent("	text-decoration:none;\r\n"); 

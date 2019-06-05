@@ -1,15 +1,12 @@
 package com.xiaoniang.epub.innerfiles;
 
-import java.io.File;
-
 import com.xiaoniang.epub.api.EpubBook;
-import com.xiaoniang.epub.api.InnerFiles;
+import com.xiaoniang.epub.api.InnerFile;
 
-public class DescriptionXHTML extends InnerFiles {
+public class DescriptionXHTML extends InnerFile {
     public DescriptionXHTML(EpubBook epubBook) {
 	setEpubBook(epubBook);
 	setInnerPath(epubBook.innerFolderPath(3) + "description.xhtml");
-	setFile(new File(epubBook.tempPath() + innerPath()));
 	addContent("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
 	addContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\r\n");
 	addContent("  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\r\n");

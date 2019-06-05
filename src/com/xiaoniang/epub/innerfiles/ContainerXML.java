@@ -1,15 +1,12 @@
 package com.xiaoniang.epub.innerfiles;
 
-import java.io.File;
-
 import com.xiaoniang.epub.api.EpubBook;
-import com.xiaoniang.epub.api.InnerFiles;
+import com.xiaoniang.epub.api.InnerFile;
 
-public final class ContainerXML extends InnerFiles {
+public final class ContainerXML extends InnerFile {
 	
     	public ContainerXML(EpubBook epubBook) {
     	    setInnerPath(epubBook.innerFolderPath(1)+"container.xml");
-    	    setFile(new File(epubBook.tempPath()+innerPath()));
     	    setEpubBook(epubBook);
     	    addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
     	    addContent("<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\r\n");
