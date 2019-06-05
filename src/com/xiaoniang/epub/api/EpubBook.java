@@ -55,6 +55,7 @@ public class EpubBook {
     private final Charset encodingCharset;
     private final String title;
     private final String author;
+    private final String translator;
     private final String bookID;
     private final String timeOfCreation;
     private final String dateOfCreation;
@@ -93,6 +94,7 @@ public class EpubBook {
 	coverLink = novelUpdatesPage.select("div.seriesimg > *").first().attr("src");
 	description = novelUpdatesPage.select("div#editdescription").text();
 	author = novelUpdatesPage.select("div#showauthors > *").first().text();
+	translator = wuxiaWorldPage.select("div.media-body > dl.dl-horizontal > dd").text();
 	storyType[0] = novelUpdatesPage.select("div#showtype > *").first().text();
 	storyType[1] = novelUpdatesPage.select("div#showtype > *").first().attr("href");
 	Elements volumeTitlesElements = wuxiaWorldPage.select("div.panel-group").select("span.title");
@@ -302,5 +304,8 @@ public class EpubBook {
     }
     public String storyType(int index) {
 	return storyType[index];
+    }
+    public String translator() {
+	return translator;
     }
 }

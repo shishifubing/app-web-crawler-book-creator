@@ -20,6 +20,13 @@ public class ContentOPF extends InnerFiles {
 	addContent("    <dc:language>en</dc:language>\r\n");
 	addContent("    <dc:date opf:event=\"creation\">"+epubBook.dateOfCreation()+"</dc:date>\r\n");
 	addContent("    <dc:publisher>WuxiaWorld.com</dc:publisher>\r\n");
+	addContent("<dc:description>"+escapeHtml(epubBook.description())+"</dc:description>");
+	addContent("<dc:contributor opf:file-as=\"Programmer\" opf:role=\"oth\">XiaoNiang [https://github.com/XiaoNiang]</dc:contributor>");
+	addContent("<dc:contributor opf:file-as=\"Translator\" opf:role=\"trl\">"+epubBook.translator()+"</dc:contributor>");
+	for (String genre : epubBook.genres(0)) {
+	    addContent("<dc:subject>"+genre+"</dc:subject>");
+	}
+	addContent("<dc:source>http://WuxiaWorld.com</dc:source>");
 	addContent("    <dc:rights>All materials' copyrights reserved by their respective authors and the associated publishers. Please respect their rights. Works will be deleted upon request by copyright holders.</dc:rights>\r\n");
 	addContent("    <meta name=\"cover\" content=\"cover.jpg\" />\r\n");
 	addContent("  </metadata>\r\n");
