@@ -1,4 +1,4 @@
-package com.xiaoniang.epub;
+package com.xiaoniang.epub.innerfiles;
 
 import java.io.File;
 
@@ -25,7 +25,19 @@ final class TocNCX extends InnerFiles {
 	addContent("    <text>"+epubBook.title()+epubBook.volumeTitle(volume)+"</text>\r\n");
 	addContent("  </docTitle>\r\n");
 	addContent("  <navMap>\r\n");
-	for (int i = start, j = 1; i <= end; i++, j++) {
+	addContent("    <navPoint id=\"navPoint-" + 1 + "\" playOrder=\"" + 1 + "\">\r\n");
+	addContent("      <navLabel>\r\n");
+	addContent("        <text>Cover</text>\r\n");
+	addContent("      </navLabel>\r\n");
+	addContent("      <content src=\"Text/cover.xhtml\"/>\r\n");
+	addContent("    </navPoint>\r\n");
+	addContent("    <navPoint id=\"navPoint-" + 2 + "\" playOrder=\"" + 2 + "\">\r\n");
+	addContent("      <navLabel>\r\n");
+	addContent("        <text>Description</text>\r\n");
+	addContent("      </navLabel>\r\n");
+	addContent("      <content src=\"Text/description.xhtml\"/>\r\n");
+	addContent("    </navPoint>\r\n");
+	for (int i = start, j = 3; i <= end; i++, j++) {
 		String chapterFileIndex = ""+i;
 		while (chapterFileIndex.length()<4) {
 		    chapterFileIndex = "0" + chapterFileIndex;

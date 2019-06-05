@@ -1,4 +1,4 @@
-package com.xiaoniang.epub;
+package com.xiaoniang.epub.innerfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import org.jsoup.select.Elements;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFiles;
 
-public class Chapter extends InnerFiles {
-    Chapter(EpubBook epubBook, String url, int chapterIndex) {
+public class ChapterXHTML extends InnerFiles {
+    ChapterXHTML(EpubBook epubBook, String url, int chapterIndex) {
 	setEpubBook(epubBook);
 	addContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n");
 	addContent("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\r\n");
@@ -81,9 +81,9 @@ public class Chapter extends InnerFiles {
 		    chapterIndexStart = chapterIndex;
 		}
 		for (Element chapterLink : chaptersLinks) {
-		    Chapter chapter = new Chapter(epubBook, chapterLink.attr("abs:href"), chapterIndex++);
-		    chapter.setVolume(volumeIndex);
-		    while (!chapter.fill())
+		    ChapterXHTML chapterXHTML = new ChapterXHTML(epubBook, chapterLink.attr("abs:href"), chapterIndex++);
+		    chapterXHTML.setVolume(volumeIndex);
+		    while (!chapterXHTML.fill())
 			;
 		}
 		if (targetVolume != 0) break;

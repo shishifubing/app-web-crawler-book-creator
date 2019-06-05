@@ -1,4 +1,4 @@
-package com.xiaoniang.epub;
+package com.xiaoniang.epub.innerfiles;
 
 import java.io.File;
 import java.io.IOException;

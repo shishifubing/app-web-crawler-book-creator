@@ -24,21 +24,26 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
-import com.xiaoniang.epub.Chapter;
-import com.xiaoniang.epub.ContainerXML;
-import com.xiaoniang.epub.CoverXHTML;
-import com.xiaoniang.epub.Folders;
-import com.xiaoniang.epub.Mimetype;
-import com.xiaoniang.epub.StylesheetCSS;
+import com.xiaoniang.epub.innerfiles.ChapterXHTML;
+import com.xiaoniang.epub.innerfiles.ContainerXML;
+import com.xiaoniang.epub.innerfiles.CoverXHTML;
+import com.xiaoniang.epub.innerfiles.DescriptionXHTML;
+import com.xiaoniang.epub.innerfiles.Folders;
+import com.xiaoniang.epub.innerfiles.Mimetype;
+import com.xiaoniang.epub.innerfiles.StylesheetCSS;
 
 public class EpubBook {
 
     private final List<ArrayList<File>> chapterFiles;
+    private final List<ArrayList<String>> genres;
+    private final List<String> tags;
     private final List<File> supportFiles;
     private final String description;
+    private final String[] storyType;
     private final List<String> volumeTitles;
     private final String[] innerFoldersPaths = { "OEBPS" + File.separator, "META-INF" + File.separator,
-	    "OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator };
+	    "OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator,
+	    "OEBPS" + File.separator + "Images" + File.separator};
     private final String urlWuxiaWorld;
     private final String urlNovelUpdates;
     private final String coverLink;
@@ -54,13 +59,18 @@ public class EpubBook {
     private final String timeOfCreation;
     private final String dateOfCreation;
 
-    EpubBook(String outputPath, String link, int... volumes) throws IOException {
+    EpubBook(String outputPath, String link, int[] volumes) throws IOException {
 	urlWuxiaWorld = link;
 	urlNovelUpdates = "https://www.novelupdates.com/series/"+link.split("novel")[1].substring(1);
 	path = outputPath;
 	chapterFiles = new ArrayList<ArrayList<File>>();
+	genres = new ArrayList<ArrayList<String>>();
+	genres.add(new ArrayList<String>());
+	genres.add(new ArrayList<String>());
 	supportFiles = new ArrayList<File>();
 	volumeTitles = new ArrayList<String>();
+	tags = new ArrayList<String>();
+	storyType = new String[2];
 	Document wuxiaWorldPageDocument = null;
 	Document novelUpdatesPageDocument = null;
 	while (wuxiaWorldPageDocument == null) {
@@ -80,13 +90,22 @@ public class EpubBook {
 	wuxiaWorldPage = wuxiaWorldPageDocument;
 	novelUpdatesPage = novelUpdatesPageDocument;
 	title = wuxiaWorldPage.select("div.p-15 > *").first().text();
-	coverLink = novelUpdatesPage.select("div.seriesimg > img").first().attr("src");
+	coverLink = novelUpdatesPage.select("div.seriesimg > *").first().attr("src");
 	description = novelUpdatesPage.select("div#editdescription").text();
 	author = novelUpdatesPage.select("div#showauthors > *").first().text();
+	storyType[0] = novelUpdatesPage.select("div#showtype > *").first().text();
+	storyType[1] = novelUpdatesPage.select("div#showtype > *").first().attr("href");
 	Elements volumeTitlesElements = wuxiaWorldPage.select("div.panel-group").select("span.title");
 	volumeTitles.add("");
 	for (Element volumeTitle : volumeTitlesElements) {
 	    volumeTitles.add(" "+volumeTitle.text());
+	}
+	for (Element genre : novelUpdatesPage.select("div#seriesgenre > *")) {
+	    genres.get(0).add(genre.text());
+	    genres.get(1).add("<a href=\"" + genre.attr("href") + "\">" + genre.text() + "</a>");
+	}
+	for (Element tag : novelUpdatesPage.select("div#showtags > *")) {
+	    tags.add("<a href=\"" + tag.attr("href") + "\">" + tag.text() + "</a>");
 	}
 	dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
@@ -106,15 +125,17 @@ public class EpubBook {
 	stylesheet.fill();
 	CoverXHTML cover = new CoverXHTML(this);
 	cover.fill();
+	DescriptionXHTML descriptionXHTML = new DescriptionXHTML(this);
+	descriptionXHTML.fill();
 	Arrays.sort(volumes);
 	if (volumes[0] == 0) {
-	    Chapter.downloadChapters(this, 0);
+	    ChapterXHTML.downloadChapters(this, 0);
 	    for (int volume : volumes) {
 		packInnerFiles(volume);
 	    }
 	} else {
 	    for (int volume : volumes) {
-		Chapter.downloadChapters(this, volume);
+		ChapterXHTML.downloadChapters(this, volume);
 		packInnerFiles(volume);
 	    }
 	}
@@ -204,58 +225,82 @@ public class EpubBook {
 	return volumeTitles.get(index);
     }
     public String description() {
-	return this.description;
+	return description;
     }
 
     public String[] innerFoldersPaths() {
-	return this.innerFoldersPaths;
+	return innerFoldersPaths;
     }
 
     public String innerFolderPath(int index) {
-	return this.innerFoldersPaths[index];
+	return innerFoldersPaths[index];
     }
 
-    public String url() {
-	return this.urlWuxiaWorld;
+    public String urlWuxiaWorld() {
+	return urlWuxiaWorld;
+    }
+    public String urlNovelUpdates() {
+	return urlNovelUpdates;
     }
 
     public String path() {
-	return this.path;
+	return path;
     }
 
     public String tempPath() {
-	return this.tempPath;
+	return tempPath;
     }
 
     public String encoding() {
-	return this.encoding;
+	return encoding;
     }
 
     public Charset encodingCharset() {
-	return this.encodingCharset;
+	return encodingCharset;
     }
 
     public String title() {
-	return this.title;
+	return title;
     }
 
     public String author() {
-	return this.author;
+	return author;
     }
 
     public String bookID() {
-	return this.bookID;
+	return bookID;
     }
 
     public String timeOfCreation() {
-	return this.timeOfCreation;
+	return timeOfCreation;
     }
 
     public String dateOfCreation() {
-	return this.dateOfCreation;
+	return dateOfCreation;
     }
 
     public Document frontPage() {
-	return this.wuxiaWorldPage;
+	return wuxiaWorldPage;
+    }
+    public String coverLink() {
+	return coverLink;
+    }
+    public List<String> tags() {
+	return tags;
+    }
+    public String tag(int index) {
+	return tags.get(index);
+    }
+    public List<ArrayList<String>> genres() {
+	return genres;
+    }
+    public List<String> genres(int type) {
+	return genres.get(type);
+    }
+    public String genre(int type, int index) {
+	return genres.get(type).get(index);
+    }
+    public String storyType(int index) {
+	return storyType[index];
     }
 }
