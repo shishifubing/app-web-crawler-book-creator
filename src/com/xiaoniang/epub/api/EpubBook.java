@@ -52,7 +52,7 @@ public class EpubBook {
     private final String timeOfCreation;
     private final String dateOfCreation;
 
-    EpubBook(String outputPath, String link) throws IOException {
+    public EpubBook(String outputPath, String link) throws IOException {
 	urlWuxiaWorld = link;
 	urlNovelUpdates = "https://www.novelupdates.com/series/" + link.split("novel")[1].substring(1);
 	path = outputPath;
