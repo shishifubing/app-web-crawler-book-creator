@@ -34,14 +34,22 @@ final class TocNCX extends InnerFile {
 	addContent("      </navLabel>\r\n");
 	addContent("      <content src=\"Text/description.xhtml\"/>\r\n");
 	addContent("    </navPoint>\r\n");
-	for (int i = start, j = 3; i <= end; i++, j++) {
+	int volumeIndex = volume;
+	if (volume==0) {
+	    volumeIndex = 1;
+	}
+	for (int i = start, j = 3, chapterIndex = 1; i <= end; i++, j++, chapterIndex++) {
 		String chapterFileIndex = ""+i;
 		while (chapterFileIndex.length()<4) {
 		    chapterFileIndex = "0" + chapterFileIndex;
 		}
 		addContent("    <navPoint id=\"navPoint-" + j + "\" playOrder=\"" + j + "\">\r\n");
 		addContent("      <navLabel>\r\n");
-		addContent("        <text>" + escapeHtml(epubBook.chapterTitle(volume, j-2)) + "</text>\r\n");
+		if (chapterIndex>epubBook.chapterTitles(volumeIndex).size()) {
+		    volumeIndex++;
+		    chapterIndex = 1;
+		}
+		addContent("        <text>" + escapeHtml(epubBook.chapterTitle(volumeIndex, chapterIndex)) + "</text>\r\n");
 		addContent("      </navLabel>\r\n");
 		addContent("      <content src=\"Text/chapter_" + chapterFileIndex + ".xhtml\"/>\r\n");
 		addContent("    </navPoint>\r\n");

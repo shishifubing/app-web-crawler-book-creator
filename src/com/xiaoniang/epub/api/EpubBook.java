@@ -126,7 +126,11 @@ public class EpubBook {
 
 	    }
 	    EpubCheck check = new EpubCheck(epubFile);
-	    check.validate();
+	    if (check.validate()) {
+		System.out.println("[Valdidation] Success!");
+	    } else {
+		System.out.println("[Valdidation] Failure!");
+	    }
 	}
     }
 
@@ -239,4 +243,5 @@ public class EpubBook {
     public List<String> chapterTitles(int volume) {
 	return chapterTitles.get(volume - 1);
     }
+
 }

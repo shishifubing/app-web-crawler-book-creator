@@ -18,18 +18,16 @@ public class DescriptionXHTML extends InnerFile {
 	addContent("</head>\r\n");
 	addContent("\r\n");
 	addContent("<body>\r\n");
-	addContent("  <h1 style=\"text-align: center;\">" + epubBook.title() + "<br/></h1>\r\n");
+	addContent("  <h3 style=\"text-align: center;\">" + epubBook.title() + "<br/></h3>\r\n");
 	addContent("\r\n");
 	addContent("  <h4 style=\"text-align: center;\">" + epubBook.author() + "</h4>\r\n");
 	addContent("\r\n");
-	addContent("  <div>\r");
-	addContent("    <span style=\"font-weight: normal;\"><br/></span>\r\n");
-	addContent("  </div>\r");
-	addContent("  <blockquote style=\"margin: 0 0 0 40px; border: none; padding: 5%;\">\r\n");
+	addContent("      <p>Summary:</p>\r\n");
+	addContent("  <blockquote style=\"margin: 0 0 0 0 px; border: none; padding: 0%;\">\r");
 	addContent("      <p>\r");
-	addContent("         " + escapeHtml(epubBook.description()) + "\r\n");
+	addContent("         " + escapeHtml(epubBook.description()) + "\r");
 	addContent("      </p>\r");
-	addContent("  </blockquote>\r\n");
+	addContent("  </blockquote>\r");
 	addContent("    <p>Story type: <a href=\"" + epubBook.storyType(1) + "\">" + epubBook.storyType(0)
 		+ "</a></p>\r\n");
 	addContent("    <p>Story source: <a href=\"" + epubBook.urlWuxiaWorld() + "\">" + epubBook.urlWuxiaWorld()

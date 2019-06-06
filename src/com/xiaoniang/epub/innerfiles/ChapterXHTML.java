@@ -40,7 +40,7 @@ public class ChapterXHTML extends InnerFile {
 	}
 	setInnerPath(epubBook.innerFolderPath(3) + "chapter_" + chapterFileIndex + ".xhtml");
 	String chapterTitle = epubBook.chapterTitle(volume, chapterTitleIndex);
-	addContent("  <h1 id=\"chapter_" + chapterIndex + "\">" + escapeHtml(chapterTitle) + "</h1>\r\n");
+	addContent("  <h3 id=\"chapter_" + chapterIndex + "\">" + escapeHtml(chapterTitle) + "</h3>\r\n");
 	chapterTitle = chapterTitle.replaceAll("[^a-zA-Z]", "");
 	for (Element paragraph : text) {
 	    String line = paragraph.text();
@@ -65,10 +65,10 @@ public class ChapterXHTML extends InnerFile {
 	    int chapterIndexVolumeStart = 1;
 	    for (Element volumeChapters : volumes) {
 		Elements chaptersLinks = volumeChapters.select("li.chapter-item > a");
-		volumeIndex++;
 		if (chaptersLinks.isEmpty()) {
-		    continue;
+		    break;
 		}
+		volumeIndex++;
 		if (targetVolume != 0 && volumeIndex != targetVolume) {
 		    chapterIndex += chaptersLinks.size();
 		} else {
@@ -78,13 +78,18 @@ public class ChapterXHTML extends InnerFile {
 			new ChapterXHTML(epubBook, chapterLink.attr("abs:href"),
 				volumeIndex, chapterIndex++, chapterIndex-chapterIndexVolumeStart).addToZip(zos);
 		    }
-		    if (targetVolume != 0)
-			chapterIndex--;
+		    if (targetVolume != 0) {
 			break;
+		    }
 		}
 	    }
-	    new TocNCX(epubBook, chapterIndexVolumeStart, chapterIndex, targetVolume).addToZip(zos);
-	    new ContentOPF(epubBook, chapterIndexVolumeStart, chapterIndex, targetVolume).addToZip(zos);
+	    chapterIndex--;
+	    if (targetVolume==0) {
+		chapterIndexVolumeStart = 1;
+		volumeIndex = 0;
+	    }
+	    new TocNCX(epubBook, chapterIndexVolumeStart, chapterIndex, volumeIndex).addToZip(zos);
+	    new ContentOPF(epubBook, chapterIndexVolumeStart, chapterIndex, volumeIndex).addToZip(zos);
     }
 
 }
