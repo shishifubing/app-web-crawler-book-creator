@@ -9,8 +9,10 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -33,9 +35,12 @@ public class MainWindow extends Application {
         root.setPadding(new Insets(0));
         VBox menuPanel = new VBox();
         VBox contentPanel = new VBox();
+        menuPanel.setMinSize(224, 600);
+        menuPanel.setMaxSize(224,600);
+        menuPanel.getChildren().add(new Button("1"));
+        contentPanel.getChildren().add(new Button("2"));
         root.getChildren().addAll(menuPanel, contentPanel);
         Scene scene = new Scene(root, 1024, 600);
-
         stage.setTitle("Main Window");
         stage.setScene(scene);
         stage.show();
