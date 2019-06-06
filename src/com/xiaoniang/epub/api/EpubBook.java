@@ -1,6 +1,8 @@
 package com.xiaoniang.epub.api;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -9,12 +11,20 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipOutputStream;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
+import com.adobe.epubcheck.api.EpubCheck;
 import com.xiaoniang.epub.innerfiles.ChapterXHTML;
+import com.xiaoniang.epub.innerfiles.ContainerXML;
+import com.xiaoniang.epub.innerfiles.CoverJPG;
+import com.xiaoniang.epub.innerfiles.CoverXHTML;
+import com.xiaoniang.epub.innerfiles.DescriptionXHTML;
+import com.xiaoniang.epub.innerfiles.Mimetype;
+import com.xiaoniang.epub.innerfiles.StylesheetCSS;
 
 public class EpubBook {
 
@@ -23,6 +33,7 @@ public class EpubBook {
     private final String description;
     private final String[] storyType;
     private final List<String> volumeTitles;
+    private final List<ArrayList<String>> chapterTitles;
     private final String[] innerFoldersPaths = { "OEBPS" + File.separator, "META-INF" + File.separator,
 	    "OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator,
 	    "OEBPS" + File.separator + "Images" + File.separator };
@@ -41,13 +52,14 @@ public class EpubBook {
     private final String timeOfCreation;
     private final String dateOfCreation;
 
-    EpubBook(String outputPath, String link, int[] volumes) throws IOException {
+    EpubBook(String outputPath, String link) throws IOException {
 	urlWuxiaWorld = link;
 	urlNovelUpdates = "https://www.novelupdates.com/series/" + link.split("novel")[1].substring(1);
 	path = outputPath;
 	genres = new ArrayList<ArrayList<String>>();
 	genres.add(new ArrayList<String>());
 	genres.add(new ArrayList<String>());
+	chapterTitles = new ArrayList<ArrayList<String>>();
 	volumeTitles = new ArrayList<String>();
 	tags = new ArrayList<String>();
 	storyType = new String[2];
@@ -76,10 +88,9 @@ public class EpubBook {
 	translator = wuxiaWorldPage.select("div.media-body > dl.dl-horizontal > dd").text();
 	storyType[0] = novelUpdatesPage.select("div#showtype > *").first().text();
 	storyType[1] = novelUpdatesPage.select("div#showtype > *").first().attr("href");
-	Elements volumeTitlesElements = wuxiaWorldPage.select("div.panel-group").select("span.title");
 	volumeTitles.add("");
-	for (Element volumeTitle : volumeTitlesElements) {
-	    volumeTitles.add(" " + volumeTitle.text());
+	for (Element volumeTitle : wuxiaWorldPage.select("div.panel-group").select("span.title")) {
+	    volumeTitles.add(volumeTitle.text());
 	}
 	for (Element genre : novelUpdatesPage.select("div#seriesgenre > *")) {
 	    genres.get(0).add(genre.text());
@@ -93,8 +104,29 @@ public class EpubBook {
 	bookID = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + "-";
 	encodingCharset = StandardCharsets.UTF_8;
 	encoding = encodingCharset.name();
+    }
+
+    public void create(int[] volumes) {
 	for (int volume : volumes) {
-	    ChapterXHTML.downloadChapters(this, volume);
+	    File epubFile = new File(path() + title() + " " + volumeTitle(volume) + ".epub");
+	    int duplicateIndex = 1;
+	    while (epubFile.exists()) {
+		epubFile = new File(
+			path() + title() + " " + volumeTitle(volume) + " (" + duplicateIndex++ + ")" + ".epub");
+	    }
+	    try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(epubFile)),
+		    encodingCharset())) {
+		new Mimetype(this).addToZip(zos);
+		new ContainerXML(this).addToZip(zos);
+		new CoverXHTML(this, new CoverJPG(this).addCoverToZip(zos)).addToZip(zos);
+		new DescriptionXHTML(this).addToZip(zos);
+		new StylesheetCSS(this).addToZip(zos);
+		ChapterXHTML.downloadChapters(this, volume, zos);
+	    } catch (IOException e) {
+
+	    }
+	    EpubCheck check = new EpubCheck(epubFile);
+	    check.validate();
 	}
     }
 
@@ -188,5 +220,23 @@ public class EpubBook {
 
     public String translator() {
 	return translator;
+    }
+
+    public String chapterTitle(int volume, int index) {
+	return chapterTitles.get(volume - 1).get(index - 1);
+    }
+
+    public void addChapterTitle(int volume, String title) {
+	chapterTitles.get(volume - 1).add(title);
+    }
+
+    public void addVolumesToChapterTitles(int amount) {
+	for (int i = 0; i < amount; i++) {
+	    chapterTitles.add(new ArrayList<String>());
+	}
+    }
+
+    public List<String> chapterTitles(int volume) {
+	return chapterTitles.get(volume - 1);
     }
 }

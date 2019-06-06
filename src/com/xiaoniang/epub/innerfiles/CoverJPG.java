@@ -36,8 +36,7 @@ public class CoverJPG extends InnerFile {
 	    }
 	}
     }
-    
-    public void addToZip(ZipOutputStream zos) throws IOException {
+    public CoverJPG addCoverToZip(ZipOutputStream zos) throws IOException {
 	String zenPath = innerPath().replaceAll("\\\\", "/");
 	ZipEntry zen = new ZipEntry(zenPath);
 	zos.putNextEntry(zen);
@@ -47,9 +46,10 @@ public class CoverJPG extends InnerFile {
 	while ((len = fis.read(buffer)) >= 0) {
 	    zos.write(buffer, 0, len);
 	}
-	System.out.println("[Zipped] " + innerPath());
+	System.out.println("[Added] " + innerPath());
 	zos.closeEntry();
 	fis.close();
+	return this;
     }
 
     public int width() {

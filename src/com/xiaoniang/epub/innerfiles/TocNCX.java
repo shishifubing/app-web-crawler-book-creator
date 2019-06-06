@@ -41,7 +41,7 @@ final class TocNCX extends InnerFile {
 		}
 		addContent("    <navPoint id=\"navPoint-" + j + "\" playOrder=\"" + j + "\">\r\n");
 		addContent("      <navLabel>\r\n");
-		addContent("        <text>Chapter " + i + "</text>\r\n");
+		addContent("        <text>" + escapeHtml(epubBook.chapterTitle(volume, j-2)) + "</text>\r\n");
 		addContent("      </navLabel>\r\n");
 		addContent("      <content src=\"Text/chapter_" + chapterFileIndex + ".xhtml\"/>\r\n");
 		addContent("    </navPoint>\r\n");

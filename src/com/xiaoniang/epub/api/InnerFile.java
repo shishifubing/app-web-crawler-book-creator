@@ -37,7 +37,7 @@ public abstract class InnerFile {
 	while ((len = fis.read(buffer)) >= 0) {
 	    zos.write(buffer, 0, len);
 	}
-	System.out.println("[Zipped] " + innerPath);
+	System.out.println("[Added] " + innerPath);
 	zos.closeEntry();
 	fis.close();
     }
