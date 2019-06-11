@@ -14,7 +14,7 @@ public abstract class InnerFile {
     private EpubBook epubBook;
     private int volume = -1;
 
-    public void addToZip(ZipOutputStream zos) throws IOException {
+    synchronized public void addToZip(ZipOutputStream zos) throws IOException {
 	String zenPath = innerPath.replaceAll("\\\\", "/");
 	ZipEntry zen = new ZipEntry(zenPath);
 	String fileContent = "";
