@@ -1,6 +1,8 @@
 package com.xiaoniang.epub.innerfiles;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 import org.jsoup.Jsoup;
@@ -11,62 +13,70 @@ import org.jsoup.select.Elements;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-public class ChapterXHTML extends InnerFile implements Runnable{
+public class ChapterXHTML extends InnerFile implements Runnable {
 	private final String url;
 	private final int volume;
 	private final int chapterIndex;
 	private final int chapterTitleIndex;
-	private final ZipOutputStream zos;
-	
-	ChapterXHTML(EpubBook epubBook, String url, int volume, int chapterIndex, int chapterTitleIndex, ZipOutputStream zos) {
+
+	ChapterXHTML(EpubBook epubBook, String url, int volume, int chapterIndex, int chapterTitleIndex,
+			ZipOutputStream zos) {
 		setEpubBook(epubBook);
 		this.url = url;
 		this.volume = volume;
 		this.chapterIndex = chapterIndex;
 		this.chapterTitleIndex = chapterTitleIndex;
-		this.zos = zos;
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	public static void downloadChapters(EpubBook epubBook, int targetVolume, ZipOutputStream zos) throws IOException {
-		Elements volumes = epubBook.frontPage().select("div.panel-group > *");
-		epubBook.addVolumesToChapterTitles(volumes.size());
 		int volumeIndex = 0;
 		int chapterIndex = 1;
 		int chapterIndexVolumeStart = 1;
-		for (Element volumeChapters : volumes) {
-			Elements chaptersLinks = volumeChapters.select("li.chapter-item > a");
-			if (chaptersLinks.isEmpty()) {
-				break;
-			}
+		TocNCX toc = new TocNCX(epubBook, volumeIndex);
+		ContentOPF content = new ContentOPF(epubBook, volumeIndex);
+		List<ChapterXHTML> chapters = new ArrayList<ChapterXHTML>();
+		for (ArrayList<String[]> volumeChapters : epubBook.chapterLinks()) {
 			volumeIndex++;
 			if (targetVolume != 0 && volumeIndex != targetVolume) {
-				chapterIndex += chaptersLinks.size();
+				chapterIndex += volumeChapters.size();
 			} else {
 				chapterIndexVolumeStart = chapterIndex;
-				for (Element chapterLink : chaptersLinks) {
-					epubBook.addChapterTitle(volumeIndex, chapterLink.select("span").text());
-					Thread newThread = new Thread (new ChapterXHTML(epubBook, chapterLink.attr("abs:href"), volumeIndex, chapterIndex++,
-							chapterIndex - chapterIndexVolumeStart, zos));
-					newThread.setName(chapterLink.select("span").text());
-					newThread.start();
-					try {
-						newThread.join();
-					} catch (InterruptedException e) {
-						System.out.println("[!] Interrupted thread " + newThread.getName());
+				for (String[] chapterLink : epubBook.chapterLinksVolume(volumeIndex)) {
+					String chapterFileName = "" + chapterIndex;
+					while (chapterFileName.length() < 4) {
+						chapterFileName = "0" + chapterFileName;
 					}
+					chapterFileName = "chapter_"+chapterFileName+".xhtml";
+					ChapterXHTML chapter = new ChapterXHTML(epubBook, chapterLink[1], volumeIndex,
+							chapterIndex++, chapterIndex - chapterIndexVolumeStart, zos);
+					if (chapters.size()<=chapterIndex-1) {
+					chapters.add(chapter);
+					} else {
+						chapters.add(chapterIndex-2, chapter);
+					}
+					toc.addNavPoint(chapterLink[0], chapterFileName);
+					content.addToManifestAndSpine(chapterFileName);
 				}
+				
 				if (targetVolume != 0) {
 					break;
 				}
 			}
 		}
-		chapterIndex--;
-		if (targetVolume == 0) {
-			chapterIndexVolumeStart = 1;
-			volumeIndex = 0;
+		for (ChapterXHTML chapter : chapters) {
+			try {
+				chapter.thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			chapter.addToZip(zos);
 		}
-		new TocNCX(epubBook, chapterIndexVolumeStart, chapterIndex, volumeIndex).addToZip(zos);
-		new ContentOPF(epubBook, chapterIndexVolumeStart, chapterIndex, volumeIndex).addToZip(zos);
+		toc.fill();
+		toc.addToZip(zos);
+		content.fill();
+		content.addToZip(zos);
 	}
 
 	@Override
@@ -96,7 +106,7 @@ public class ChapterXHTML extends InnerFile implements Runnable{
 			chapterFileIndex = "0" + chapterFileIndex;
 		}
 		setInnerPath(epubBook().innerFolderPath(3) + "chapter_" + chapterFileIndex + ".xhtml");
-		String chapterTitle = epubBook().chapterTitle(volume, chapterTitleIndex);
+		String chapterTitle = epubBook().chapterLink(volume, chapterTitleIndex, 0);
 		addContent("  <h3 id=\"chapter_" + chapterIndex + "\">" + escapeHtml(chapterTitle) + "</h3>\r\n");
 		chapterTitle = chapterTitle.replaceAll("[^a-zA-Z]", "");
 		for (Element paragraph : text) {
@@ -112,11 +122,6 @@ public class ChapterXHTML extends InnerFile implements Runnable{
 		}
 		addContent("</body>\r\n");
 		addContent("</html>");
-		try {
-			addToZip(zos);
-		} catch (IOException e) {
-			System.out.println("[!] Failure to add chapter "+chapterIndex+" to epub file");
-		}
 	}
 
 }
