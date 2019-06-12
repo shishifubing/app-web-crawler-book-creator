@@ -1,5 +1,6 @@
 package com.xiaoniang.epub.innerfiles;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class ChapterXHTML extends InnerFile implements Runnable {
 	private final int volume;
 	private final int chapterIndex;
 	private final int chapterTitleIndex;
+	private final ZipOutputStream zos;
 
 	ChapterXHTML(EpubBook epubBook, String url, int volume, int chapterIndex, int chapterTitleIndex,
 			ZipOutputStream zos) {
@@ -26,8 +28,10 @@ public class ChapterXHTML extends InnerFile implements Runnable {
 		this.volume = volume;
 		this.chapterIndex = chapterIndex;
 		this.chapterTitleIndex = chapterTitleIndex;
+		this.zos = zos;
 		thread = new Thread(this);
 		thread.start();
+
 	}
 
 	public static void downloadChapters(EpubBook epubBook, int targetVolume, ZipOutputStream zos) throws IOException {
@@ -48,18 +52,18 @@ public class ChapterXHTML extends InnerFile implements Runnable {
 					while (chapterFileName.length() < 4) {
 						chapterFileName = "0" + chapterFileName;
 					}
-					chapterFileName = "chapter_"+chapterFileName+".xhtml";
-					ChapterXHTML chapter = new ChapterXHTML(epubBook, chapterLink[1], volumeIndex,
-							chapterIndex++, chapterIndex - chapterIndexVolumeStart, zos);
-					if (chapters.size()<=chapterIndex-1) {
-					chapters.add(chapter);
+					chapterFileName = "chapter_" + chapterFileName + ".xhtml";
+					ChapterXHTML chapter = new ChapterXHTML(epubBook, chapterLink[1], volumeIndex, chapterIndex++,
+							chapterIndex - chapterIndexVolumeStart, zos);
+					if (chapters.size() <= chapterIndex - 1) {
+						chapters.add(chapter);
 					} else {
-						chapters.add(chapterIndex-2, chapter);
+						chapters.add(chapterIndex - 2, chapter);
 					}
 					toc.addNavPoint(chapterLink[0], chapterFileName);
 					content.addToManifestAndSpine(chapterFileName);
 				}
-				
+
 				if (targetVolume != 0) {
 					break;
 				}
@@ -71,7 +75,6 @@ public class ChapterXHTML extends InnerFile implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			chapter.addToZip(zos);
 		}
 		toc.fill();
 		toc.addToZip(zos);
@@ -95,7 +98,7 @@ public class ChapterXHTML extends InnerFile implements Runnable {
 		Document chapter = null;
 		while (chapter == null) {
 			try {
-				chapter = Jsoup.connect(url).get();
+				chapter = Jsoup.connect(url).cookies(epubBook().cookies()).timeout(0).get();
 			} catch (IOException e) {
 				System.out.println("[!] Cannot connect to the " + url);
 			}
@@ -122,6 +125,9 @@ public class ChapterXHTML extends InnerFile implements Runnable {
 		}
 		addContent("</body>\r\n");
 		addContent("</html>");
+		synchronized (zos) {
+			addToZip(zos);
+		}
 	}
 
 }

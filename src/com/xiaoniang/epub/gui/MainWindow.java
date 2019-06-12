@@ -1,4 +1,5 @@
 package com.xiaoniang.epub.gui;
+
 import java.io.IOException;
 
 import com.xiaoniang.epub.api.EpubBook;
@@ -17,36 +18,36 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 public class MainWindow extends Application {
 
-    @Override
-    public void start(Stage stage) {
-        initUI(stage);
-    }
+	@Override
+	public void start(Stage stage) {
+		initUI(stage);
+	}
 
-    private void initUI(Stage stage) {
-    	/*EpubBook epubBook = null;
-    	try {
-    		epubBook = new EpubBook("", "https://www.wuxiaworld.com/novel/renegade-immortal");
-		} catch (IOException e) {
-			System.out.println("Problems with the Internet connection");
-		}*/
-    	HBox root = new HBox();
-        root.setPadding(new Insets(0));
-        VBox menuPanel = new VBox();
-        VBox contentPanel = new VBox();
-        menuPanel.setMinSize(224, 600);
-        menuPanel.setMaxSize(224,600);
-        menuPanel.getChildren().add(new Button("1"));
-        contentPanel.getChildren().add(new Button("2"));
-        root.getChildren().addAll(menuPanel, contentPanel);
-        Scene scene = new Scene(root, 1024, 600);
-        stage.setTitle("Main Window");
-        stage.setScene(scene);
-        stage.show();
-    }
+	private void initUI(Stage stage) {
+		/*
+		 * EpubBook epubBook = null; try { epubBook = new EpubBook("",
+		 * "https://www.wuxiaworld.com/novel/renegade-immortal"); } catch (IOException
+		 * e) { System.out.println("Problems with the Internet connection"); }
+		 */
+		HBox root = new HBox();
+		root.setPadding(new Insets(0));
+		VBox menuPanel = new VBox();
+		VBox contentPanel = new VBox();
+		menuPanel.setMinSize(224, 600);
+		menuPanel.setMaxSize(224, 600);
+		menuPanel.getChildren().add(new Button("1"));
+		contentPanel.getChildren().add(new Button("2"));
+		root.getChildren().addAll(menuPanel, contentPanel);
+		Scene scene = new Scene(root, 1024, 600);
+		stage.setTitle("Main Window");
+		stage.setScene(scene);
+		stage.show();
+	}
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 }

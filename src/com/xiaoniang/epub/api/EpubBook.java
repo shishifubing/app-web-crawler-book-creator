@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 import org.jsoup.Jsoup;
@@ -42,6 +43,7 @@ public class EpubBook {
 	private final String urlNovelUpdates;
 	private final String coverLink;
 	private final Document wuxiaWorldPage;
+	private Map<String, String> cookies;
 	private final Document novelUpdatesPage;
 	private final String path;
 	private final String encoding;
@@ -68,14 +70,15 @@ public class EpubBook {
 		Document novelUpdatesPageDocument = null;
 		while (wuxiaWorldPageDocument == null) {
 			try {
-				wuxiaWorldPageDocument = Jsoup.connect(urlWuxiaWorld).get();
+				cookies = Jsoup.connect(urlWuxiaWorld).timeout(0).execute().cookies();
+				wuxiaWorldPageDocument = Jsoup.connect(urlWuxiaWorld).timeout(0).cookies(cookies).get();
 			} catch (IOException e) {
 				System.out.println("[!] Cannot connect to the " + urlWuxiaWorld);
 			}
 		}
 		while (novelUpdatesPageDocument == null) {
 			try {
-				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).get();
+				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).timeout(0).get();
 			} catch (IOException e) {
 				System.out.println("[!] Cannot connect to the " + urlNovelUpdates);
 			}
@@ -246,4 +249,7 @@ public class EpubBook {
 		return chapterLinks.get(volume - 1).get(chapter - 1)[type];
 	}
 
+	public Map<String, String> cookies() {
+		return cookies;
+	}
 }

@@ -17,7 +17,7 @@ public abstract class InnerFile {
 	private EpubBook epubBook;
 	private int volume = -1;
 	protected Thread thread;
-	
+
 	synchronized public void addToZip(ZipOutputStream zos) {
 		try {
 			String zenPath = innerPath.replaceAll("\\\\", "/");
@@ -49,8 +49,9 @@ public abstract class InnerFile {
 			e.printStackTrace();
 		}
 	}
+
 	public void createTestFile() {
-		try(PrintWriter writer = new PrintWriter(new File("test.xhtml"))) {
+		try (PrintWriter writer = new PrintWriter(new File("test.xhtml"))) {
 			for (String line : content) {
 				writer.print(line);
 			}
@@ -68,7 +69,7 @@ public abstract class InnerFile {
 			content.add(string);
 		}
 	}
-	
+
 	protected void addContent(List<String> list) {
 		for (String string : list) {
 			content.add(string);
