@@ -3,9 +3,9 @@ package com.xiaoniang.epub.innerfiles;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-public final class ContainerXML extends InnerFile {
+public final class Container extends InnerFile {
 
-	public ContainerXML(EpubBook epubBook) {
+	public Container(EpubBook epubBook) {
 		setInnerPath(epubBook.innerFolderPath(1) + "container.xml");
 		setEpubBook(epubBook);
 		addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");

@@ -3,8 +3,8 @@ package com.xiaoniang.epub.innerfiles;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-public class DescriptionXHTML extends InnerFile {
-	public DescriptionXHTML(EpubBook epubBook) {
+public class Description extends InnerFile {
+	public Description(EpubBook epubBook) {
 		setEpubBook(epubBook);
 		setInnerPath(epubBook.innerFolderPath(3) + "description.xhtml");
 		addContent("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
@@ -24,9 +24,11 @@ public class DescriptionXHTML extends InnerFile {
 		addContent("\r\n");
 		addContent("      <p>Summary:</p>\r\n");
 		addContent("  <blockquote style=\"margin: 0 0 0 0 px; border: none; padding: 0%;\">\r");
-		addContent("      <p>\r");
-		addContent("         " + escapeHtml(epubBook.description()) + "\r");
-		addContent("      </p>\r");
+		for (String line : epubBook.description()) {
+			addContent("      <p>\r");
+			addContent("         " + line + "\r");
+			addContent("      </p>\r");
+		}
 		addContent("  </blockquote>\r");
 		addContent("    <p>Story type: <a href=\"" + epubBook.storyType(1) + "\">" + epubBook.storyType(0)
 				+ "</a></p>\r\n");

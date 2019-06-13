@@ -20,20 +20,21 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
-import com.xiaoniang.epub.innerfiles.ChapterXHTML;
-import com.xiaoniang.epub.innerfiles.ContainerXML;
-import com.xiaoniang.epub.innerfiles.CoverJPG;
-import com.xiaoniang.epub.innerfiles.CoverXHTML;
-import com.xiaoniang.epub.innerfiles.DescriptionXHTML;
+import com.xiaoniang.epub.innerfiles.Chapter;
+import com.xiaoniang.epub.innerfiles.Container;
+import com.xiaoniang.epub.innerfiles.CoverSrc;
+import com.xiaoniang.epub.innerfiles.Cover;
+import com.xiaoniang.epub.innerfiles.Description;
 import com.xiaoniang.epub.innerfiles.Mimetype;
-import com.xiaoniang.epub.innerfiles.StylesheetCSS;
+import com.xiaoniang.epub.innerfiles.Stylesheet;
+import com.xiaoniang.epub.resources.LinkPairs;
 
 public class EpubBook {
 
 	private final List<ArrayList<String>> genres;
 	private final List<ArrayList<String[]>> chapterLinks;
 	private final List<String> tags;
-	private final String description;
+	private final List<String> description;
 	private final String[] storyType;
 	private final List<String> volumeTitles;
 	private final String[] innerFoldersPaths = { "OEBPS" + File.separator, "META-INF" + File.separator,
@@ -57,28 +58,29 @@ public class EpubBook {
 
 	public EpubBook(String outputPath, String link) throws IOException {
 		urlWuxiaWorld = link;
-		urlNovelUpdates = "https://www.novelupdates.com/series/" + link.split("novel")[1].substring(1);
+		urlNovelUpdates = LinkPairs.link(link);
 		path = outputPath;
 		genres = new ArrayList<ArrayList<String>>();
 		genres.add(new ArrayList<String>());
 		genres.add(new ArrayList<String>());
 		chapterLinks = new ArrayList<ArrayList<String[]>>();
 		volumeTitles = new ArrayList<String>();
+		description = new ArrayList<String>();
 		tags = new ArrayList<String>();
 		storyType = new String[2];
 		Document wuxiaWorldPageDocument = null;
 		Document novelUpdatesPageDocument = null;
 		while (wuxiaWorldPageDocument == null) {
 			try {
-				cookies = Jsoup.connect(urlWuxiaWorld).timeout(0).execute().cookies();
-				wuxiaWorldPageDocument = Jsoup.connect(urlWuxiaWorld).timeout(0).cookies(cookies).get();
+				cookies = Jsoup.connect(urlWuxiaWorld).timeout(10000).execute().cookies();
+				wuxiaWorldPageDocument = Jsoup.connect(urlWuxiaWorld).timeout(10000).cookies(cookies).get();
 			} catch (IOException e) {
 				System.out.println("[!] Cannot connect to the " + urlWuxiaWorld);
 			}
 		}
 		while (novelUpdatesPageDocument == null) {
 			try {
-				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).timeout(0).get();
+				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).timeout(10000).get();
 			} catch (IOException e) {
 				System.out.println("[!] Cannot connect to the " + urlNovelUpdates);
 			}
@@ -87,7 +89,9 @@ public class EpubBook {
 		novelUpdatesPage = novelUpdatesPageDocument;
 		title = wuxiaWorldPage.select("div.p-15 > *").first().text();
 		coverLink = novelUpdatesPage.select("div.seriesimg > *").first().attr("src");
-		description = novelUpdatesPage.select("div#editdescription").text();
+		for (Element line : novelUpdatesPage.select("div#editdescription > p")) {
+			description.add(InnerFile.escapeAllHtml(line.text()));
+		}
 		author = novelUpdatesPage.select("div#showauthors > *").first().text();
 		translator = wuxiaWorldPage.select("div.media-body > dl.dl-horizontal > dd").text();
 		storyType[0] = novelUpdatesPage.select("div#showtype > *").first().text();
@@ -128,11 +132,13 @@ public class EpubBook {
 			try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(epubFile)),
 					encodingCharset())) {
 				new Mimetype(this).addToZip(zos);
-				new ContainerXML(this).addToZip(zos);
-				new CoverXHTML(this, new CoverJPG(this).addCoverToZip(zos)).addToZip(zos);
-				new DescriptionXHTML(this).addToZip(zos);
-				new StylesheetCSS(this).addToZip(zos);
-				ChapterXHTML.downloadChapters(this, volume, zos);
+				new Container(this).addToZip(zos);
+				CoverSrc coverSrc = new CoverSrc(this);
+				coverSrc.addToZip(zos);
+				new Cover(this, coverSrc).addToZip(zos);
+				new Description(this).addToZip(zos);
+				new Stylesheet(this).addToZip(zos);
+				Chapter.downloadChapters(this, volume, zos);
 			} catch (IOException e) {
 				System.out.println("[!] Cannot create volume " + volume);
 			}
@@ -149,7 +155,7 @@ public class EpubBook {
 		return volumeTitles.get(index);
 	}
 
-	public String description() {
+	public List<String> description() {
 		return description;
 	}
 

@@ -3,9 +3,9 @@ package com.xiaoniang.epub.innerfiles;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-public final class StylesheetCSS extends InnerFile {
+public final class Stylesheet extends InnerFile {
 
-	public StylesheetCSS(EpubBook epubBook) {
+	public Stylesheet(EpubBook epubBook) {
 		setInnerPath(epubBook.innerFolderPath(2) + "stylesheet.css");
 		setEpubBook(epubBook);
 		addContent("h1, h2, h3, h4, h5, h6 {\r\n");

@@ -3,9 +3,9 @@ package com.xiaoniang.epub.innerfiles;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-public class CoverXHTML extends InnerFile {
+public class Cover extends InnerFile {
 
-	public CoverXHTML(EpubBook epubBook, CoverJPG cover) {
+	public Cover(EpubBook epubBook, CoverSrc coverSrc) {
 		setEpubBook(epubBook);
 		setInnerPath(epubBook.innerFolderPath(3) + "cover.xhtml");
 		addContent("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\r\n");
@@ -25,10 +25,10 @@ public class CoverXHTML extends InnerFile {
 		addContent("      height=\"100%\" width=\"100%\"\r");
 		addContent("      preserveAspectRatio=\"xMidYMid meet\"\r");
 		addContent("      version=\"1.1\"\r");
-		addContent("      viewBox=\"0 0 " + cover.width() + " " + cover.height() + "\"\r");
+		addContent("      viewBox=\"0 0 " + coverSrc.width() + " " + coverSrc.height() + "\"\r");
 		addContent("      xmlns:xlink=\"http://www.w3.org/1999/xlink\">\r");
-		addContent("      <image height=\"" + cover.height() + "\" width=\"" + cover.width() + "\"\r");
-		addContent("      xlink:href=\"../Images/cover.jpg\"/></svg>\r\n");
+		addContent("      <image height=\"" + coverSrc.height() + "\" width=\"" + coverSrc.width() + "\"\r");
+		addContent("      xlink:href=\"../Images/cover."+CoverSrc.extension()+"\"/></svg>\r\n");
 		addContent("  </div>\r\n");
 		addContent("</body>\r\n");
 		addContent("</html>");

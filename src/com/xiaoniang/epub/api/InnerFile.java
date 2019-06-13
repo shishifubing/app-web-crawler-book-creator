@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -17,6 +19,7 @@ public abstract class InnerFile {
 	private EpubBook epubBook;
 	private int volume = -1;
 	protected Thread thread;
+	private byte[] imageArray;
 
 	synchronized public void addToZip(ZipOutputStream zos) {
 		try {
@@ -26,8 +29,14 @@ public abstract class InnerFile {
 			for (String line : content) {
 				fileContent += line;
 			}
-			byte[] fileArray = fileContent.getBytes(epubBook.encodingCharset());
-			if (zenPath.endsWith("mimetype") || zenPath.endsWith(".jpg")) {
+			byte[] fileArray = null;
+			if (imageArray != null) {
+				fileArray = imageArray;
+			} else {
+				fileArray = fileContent.getBytes(epubBook.encodingCharset());
+			}
+			if (zenPath.endsWith("mimetype") || zenPath.endsWith(".jpg") 
+					|| zenPath.endsWith(".png")) {
 				zen.setMethod(ZipEntry.STORED);
 				CRC32 crc = new CRC32();
 				crc.update(fileArray);
@@ -60,8 +69,16 @@ public abstract class InnerFile {
 		}
 	}
 
-	protected static String escapeHtml(String input) {
+	protected static String escapeAllHtml(String input) {
 		return input.replaceAll("&", "&amp;").replaceAll("'", "&apos;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	}
+	protected static String escapeHtml(String input) {
+		String string = input;
+		Matcher matcher = Pattern.compile("(<([^\\s]+)\\s*)([^>]*)(>)([^<]*)(</\\2>)*").matcher(input);
+		while (matcher.find()) {
+			string = matcher.replaceAll(matcher.group(1)+InnerFile.escapeAllHtml(matcher.group(3))+matcher.group(4)+InnerFile.escapeAllHtml(matcher.group(5))+"</"+matcher.group(2)+">");
+		}
+		return string;
 	}
 
 	protected void addContent(String... line) {
@@ -110,5 +127,8 @@ public abstract class InnerFile {
 
 	public int volume() {
 		return volume;
+	}
+	public void setImageArray(byte[] array) {
+		imageArray = array;
 	}
 }

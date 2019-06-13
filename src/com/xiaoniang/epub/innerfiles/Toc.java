@@ -6,11 +6,11 @@ import java.util.List;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-final class TocNCX extends InnerFile {
+final class Toc extends InnerFile {
 	private final List<String> navPoints;
 	private int playOrder = 1;
 
-	TocNCX(EpubBook epubBook, int volume) {
+	Toc(EpubBook epubBook, int volume) {
 		setInnerPath(epubBook.innerFolderPath(0) + "toc.ncx");
 		setEpubBook(epubBook);
 		setVolume(volume);
