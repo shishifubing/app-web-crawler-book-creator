@@ -39,7 +39,7 @@ public class Content extends InnerFile {
 		addContent("    <dc:publisher>WuxiaWorld.com</dc:publisher>\r\n");
 		addContent("<dc:description>\r");
 		for (String line : epubBook().description()) {
-			addContent("               &lt;p&gt;"+line+"&lt;/p&gt;\r");
+			addContent("               &lt;p&gt;" + line + "&lt;/p&gt;\r");
 		}
 		addContent("</dc:description>\r");
 		addContent(
@@ -52,7 +52,7 @@ public class Content extends InnerFile {
 		addContent("<dc:source>http://WuxiaWorld.com</dc:source>");
 		addContent(
 				"    <dc:rights>All materials' copyrights reserved by their respective authors and the associated publishers. Please respect their rights. Works will be deleted upon request by copyright holders.</dc:rights>\r\n");
-		addContent("    <meta name=\"cover\" content=\"cover."+CoverSrc.extension()+"\" />\r\n");
+		addContent("    <meta name=\"cover\" content=\"cover." + CoverSrc.extension() + "\" />\r\n");
 		addContent("  </metadata>\r\n");
 		addContent("  <manifest>\r\n");
 		addContent("    <item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\" />\r\n");
@@ -60,7 +60,8 @@ public class Content extends InnerFile {
 				"    <item href=\"Text/cover.xhtml\" id=\"cover.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
 		addContent(
 				"    <item href=\"Text/description.xhtml\" id=\"description.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
-		addContent("    <item href=\"Images/cover."+CoverSrc.extension()+"\" id=\"cover."+CoverSrc.extension()+"\" media-type=\"image/"+CoverSrc.type()+"\"/>");
+		addContent("    <item href=\"Images/cover." + CoverSrc.extension() + "\" id=\"cover." + CoverSrc.extension()
+				+ "\" media-type=\"image/" + CoverSrc.type() + "\"/>");
 		addContent("    <item href=\"Styles/stylesheet.css\" id=\"stylesheet.css\" media-type=\"text/css\" />\r\n");
 		addContent(manifest);
 		addContent("  </manifest>\r\n");

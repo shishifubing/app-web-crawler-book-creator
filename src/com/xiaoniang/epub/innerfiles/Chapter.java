@@ -90,7 +90,7 @@ public class Chapter extends InnerFile implements Runnable {
 		Document chapter = null;
 		while (chapter == null) {
 			try {
-				chapter = Jsoup.connect(url).cookies(epubBook().cookies()).timeout(10000).get();
+				chapter = Jsoup.parse(Jsoup.connect(url).cookies(epubBook().cookies()).timeout(10000).get().html());
 			} catch (IOException e) {
 				// System.out.println("[!] Cannot connect to the " + url);
 			}
@@ -105,16 +105,8 @@ public class Chapter extends InnerFile implements Runnable {
 		addContent("  <h3 id=\"chapter_" + chapterIndex + "\">" + escapeAllHtml(chapterTitle) + "</h3>\r\n");
 		chapterTitle = chapterTitle.replaceAll("[^a-zA-Z]", "");
 		for (Element paragraph : text) {
-			String line = "";
-			if (isNodeValid(paragraph.nodeName())) {
-				line = escapeHtml(paragraph.html());
-			} else {
-				line = escapeAllHtml(paragraph.text());
-			}
-			if (paragraph.text().contentEquals("Next Chapter") || paragraph.text().contentEquals("Bookmark")) {
-				break;
-			} else if (paragraph.text().contentEquals("Previous Chapter")
-					|| paragraph.text().replaceAll("[^a-zA-Z]", "").contentEquals(chapterTitle)) {
+			String line = escapeAllHtml(paragraph.text());
+			if (!isParagraphTextValid(paragraph.text(), chapterTitle)) {
 				continue;
 			} else if (!paragraph.text().equals(null) && !paragraph.text().isEmpty()) {
 				addContent("  <p>" + line + "</p>\r\n");
@@ -141,9 +133,24 @@ public class Chapter extends InnerFile implements Runnable {
 		case "ins":
 		case "sub":
 		case "sup":
+		case "img":
 			return true;
 		}
 		return false;
+	}
+
+	private boolean isParagraphTextValid(String text, String chapterTitle) {
+		if (text.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || text.startsWith("[/expand]")
+				|| text.startsWith("[caption id=")) {
+			return false;
+		}
+		switch (text) {
+		case "Next Chapter":
+		case "Bookmark":
+		case "Previous Chapter":
+			return false;
+		}
+		return true;
 	}
 
 }

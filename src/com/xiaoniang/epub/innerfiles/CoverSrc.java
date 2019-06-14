@@ -20,8 +20,8 @@ public class CoverSrc extends InnerFile {
 
 	public CoverSrc(EpubBook epubBook) {
 		BufferedImage image = null;
-		extension = epubBook.coverLink().split("\\.")[epubBook.coverLink().split("\\.").length-1];
-		setInnerPath(epubBook.innerFolderPath(4) + "cover."+extension);
+		extension = epubBook.coverLink().split("\\.")[epubBook.coverLink().split("\\.").length - 1];
+		setInnerPath(epubBook.innerFolderPath(4) + "cover." + extension);
 		if (extension.contentEquals("jpg")) {
 			type = "jpeg";
 		} else {
@@ -36,7 +36,7 @@ public class CoverSrc extends InnerFile {
 				ImageIO.write(image, extension, baos);
 				setImageArray(baos.toByteArray());
 				baos.close();
-				
+
 			} catch (FileNotFoundException e) {
 				try {
 					image = ImageIO.read(new File("src/com/xiaoniang/epub/resources/cover.jpg"));
@@ -62,9 +62,11 @@ public class CoverSrc extends InnerFile {
 	public int height() {
 		return coverHeight;
 	}
+
 	public static String extension() {
 		return CoverSrc.extension;
 	}
+
 	public static String type() {
 		return CoverSrc.type;
 	}

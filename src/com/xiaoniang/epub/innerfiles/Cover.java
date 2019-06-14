@@ -28,7 +28,7 @@ public class Cover extends InnerFile {
 		addContent("      viewBox=\"0 0 " + coverSrc.width() + " " + coverSrc.height() + "\"\r");
 		addContent("      xmlns:xlink=\"http://www.w3.org/1999/xlink\">\r");
 		addContent("      <image height=\"" + coverSrc.height() + "\" width=\"" + coverSrc.width() + "\"\r");
-		addContent("      xlink:href=\"../Images/cover."+CoverSrc.extension()+"\"/></svg>\r\n");
+		addContent("      xlink:href=\"../Images/cover." + CoverSrc.extension() + "\"/></svg>\r\n");
 		addContent("  </div>\r\n");
 		addContent("</body>\r\n");
 		addContent("</html>");
