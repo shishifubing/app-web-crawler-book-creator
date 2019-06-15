@@ -1,22 +1,11 @@
 package com.xiaoniang.epub.gui;
 
-import java.io.IOException;
-
-import com.xiaoniang.epub.api.EpubBook;
-
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class MainWindow extends Application {
@@ -27,11 +16,6 @@ public class MainWindow extends Application {
 	}
 
 	private void initUI(Stage stage) {
-		/*
-		 * EpubBook epubBook = null; try { epubBook = new EpubBook("",
-		 * "https://www.wuxiaworld.com/novel/renegade-immortal"); } catch (IOException
-		 * e) { System.out.println("Problems with the Internet connection"); }
-		 */
 		HBox root = new HBox();
 		root.setPadding(new Insets(0));
 		VBox menuPanel = new VBox();

@@ -55,6 +55,8 @@ public abstract class InnerFile {
 			fis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			System.gc();
 		}
 	}
 

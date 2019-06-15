@@ -28,6 +28,7 @@ public class Chapter extends InnerFile implements Runnable {
 		this.chapterTitleIndex = chapterTitleIndex;
 		this.zos = zos;
 		thread = new Thread(this);
+		thread.setName(url);
 		thread.start();
 	}
 
@@ -118,7 +119,7 @@ public class Chapter extends InnerFile implements Runnable {
 			addToZip(zos);
 		}
 	}
-
+/*
 	private boolean isNodeValid(String name) {
 		switch (name) {
 		case "p":
@@ -133,12 +134,11 @@ public class Chapter extends InnerFile implements Runnable {
 		case "ins":
 		case "sub":
 		case "sup":
-		case "img":
 			return true;
 		}
 		return false;
 	}
-
+*/
 	private boolean isParagraphTextValid(String text, String chapterTitle) {
 		if (text.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || text.startsWith("[/expand]")
 				|| text.startsWith("[caption id=")) {

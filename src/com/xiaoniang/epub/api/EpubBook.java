@@ -27,7 +27,7 @@ import com.xiaoniang.epub.innerfiles.Cover;
 import com.xiaoniang.epub.innerfiles.Description;
 import com.xiaoniang.epub.innerfiles.Mimetype;
 import com.xiaoniang.epub.innerfiles.Stylesheet;
-import com.xiaoniang.epub.resources.LinkPairs;
+import com.xiaoniang.epub.resources.Resources;
 
 public class EpubBook {
 
@@ -58,7 +58,7 @@ public class EpubBook {
 
 	public EpubBook(String outputPath, String link) throws IOException {
 		urlWuxiaWorld = link;
-		urlNovelUpdates = LinkPairs.link(link);
+		urlNovelUpdates = Resources.link(link);
 		path = outputPath;
 		genres = new ArrayList<ArrayList<String>>();
 		genres.add(new ArrayList<String>());
