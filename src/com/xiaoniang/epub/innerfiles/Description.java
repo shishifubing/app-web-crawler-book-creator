@@ -32,15 +32,13 @@ public class Description extends InnerFile {
 		addContent("  </blockquote>\r");
 		addContent("    <p>Story type: <a href=\"" + epubBook.storyType(1) + "\">" + epubBook.storyType(0)
 				+ "</a></p>\r\n");
-		addContent("    <p>Story source: <a href=\"" + epubBook.urlWuxiaWorld() + "\">" + epubBook.urlWuxiaWorld()
-				+ "</a></p>\r\n");
 		addContent("    <p>Information source: <a href=\"" + epubBook.urlNovelUpdates() + "\">"
 				+ epubBook.urlNovelUpdates() + "</a></p>\r\n");
 		addContent("    <p>Genres: \r");
 		int i = 0;
-		for (String genre : epubBook.genres(1)) {
-			addContent("       " + genre);
-			if (++i == epubBook.genres(1).size()) {
+		for (String[] genre : epubBook.genres()) {
+			addContent("       <a href=\"" + genre[1] + "\">" + genre[0] + "</a>");
+			if (++i == epubBook.genres().size()) {
 				addContent(". \r\n");
 				addContent("    </p>\r\n");
 			} else {

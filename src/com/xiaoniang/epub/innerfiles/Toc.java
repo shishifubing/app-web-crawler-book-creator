@@ -13,7 +13,6 @@ final class Toc extends InnerFile {
 	Toc(EpubBook epubBook, int volume) {
 		setInnerPath(epubBook.innerFolderPath(0) + "toc.ncx");
 		setEpubBook(epubBook);
-		setVolume(volume);
 		navPoints = new ArrayList<String>();
 		addNavPoint("Cover", "cover.xhtml");
 		addNavPoint("Description", "description.xhtml");
@@ -34,14 +33,14 @@ final class Toc extends InnerFile {
 		addContent(" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\r\n");
 		addContent("<ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\">\r\n");
 		addContent("<head>\r\n");
-		addContent("    <meta content=\"" + epubBook().bookID() + epubBook().title() + epubBook().volumeTitle(volume())
+		addContent("    <meta content=\"" + epubBook().bookID() + epubBook().title()
 				+ "\" name=\"dtb:uid\"/>\r\n");
 		addContent("    <meta content=\"1\" name=\"dtb:depth\"/>\r\n");
 		addContent("    <meta content=\"0\" name=\"dtb:totalPageCount\"/>\r\n");
 		addContent("    <meta content=\"0\" name=\"dtb:maxPageNumber\"/>\r\n");
 		addContent("  </head>\r\n");
 		addContent("  <docTitle>\r\n");
-		addContent("    <text>" + epubBook().title() + epubBook().volumeTitle(volume()) + "</text>\r\n");
+		addContent("    <text>" + epubBook().title() + "</text>\r\n");
 		addContent("  </docTitle>\r\n");
 		addContent("  <navMap>\r\n");
 		addContent(navPoints);

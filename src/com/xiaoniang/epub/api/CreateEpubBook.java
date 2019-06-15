@@ -2,7 +2,8 @@ package com.xiaoniang.epub.api;
 
 import java.io.File;
 import java.io.IOException;
-import com.xiaoniang.epub.resources.Resources;
+import com.xiaoniang.epub.resources.Links;
+import com.xiaoniang.epub.resources.Log;
 
 public class CreateEpubBook {
 
@@ -10,15 +11,14 @@ public class CreateEpubBook {
 		
 		String path = "output" + File.separator;
 		new File(path).mkdir();
-		for (String url : Resources.links().keySet()) {
 			try {
-				System.out.println("[Start] url: " + url);
-				EpubBook epubBook = new EpubBook(path, url);
-				epubBook.create(new int[] { 0 });
+				Log.start();
+				Log.println("[Start]");
+				new EpubBook(path, "https://www.novelupdates.com/series/pure-love-%e2%9c%95-insult-complex/");
+				Log.end();
 			} catch (IOException e) {
-				System.out.println("[!] Couldn't create the Epub book. url: " + url);
+				Log.println("[!] Couldn't create the Epub book");
 				e.printStackTrace();
 			}
-		}
 	}
 }

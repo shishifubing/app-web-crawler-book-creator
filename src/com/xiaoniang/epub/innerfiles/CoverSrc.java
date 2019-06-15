@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
+import com.xiaoniang.epub.resources.Log;
 
 public class CoverSrc extends InnerFile {
 	private int coverHeight;
@@ -48,9 +49,11 @@ public class CoverSrc extends InnerFile {
 					baos.close();
 				} catch (IOException e1) {
 					System.out.println("[!] Issues with stock cover image");
+					e1.printStackTrace(Log.writer());
 				}
 			} catch (IOException e) {
 				System.out.println("[!] Download of the cover image was met with issues");
+				e.printStackTrace(Log.writer());
 			}
 		}
 	}

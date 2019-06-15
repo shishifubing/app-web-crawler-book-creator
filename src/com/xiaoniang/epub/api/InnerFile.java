@@ -11,17 +11,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+
+import com.xiaoniang.epub.resources.Log;
 
 public abstract class InnerFile {
 	private final List<String> content = new ArrayList<String>();
 	private String innerPath;
 	private EpubBook epubBook;
-	private int volume = -1;
 	protected Thread thread;
 	private byte[] imageArray;
 
-	synchronized public void addToZip(ZipOutputStream zos) {
+	synchronized public void addToZip() {
 		try {
 			String zenPath = innerPath.replaceAll("\\\\", "/");
 			ZipEntry zen = new ZipEntry(zenPath);
@@ -43,18 +43,25 @@ public abstract class InnerFile {
 				zen.setSize(fileArray.length);
 				zen.setCompressedSize(fileArray.length);
 			}
-			zos.putNextEntry(zen);
+			epubBook.zos().putNextEntry(zen);
 			ByteArrayInputStream fis = new ByteArrayInputStream(fileArray);
 			int len;
 			byte[] buffer = new byte[1024];
 			while ((len = fis.read(buffer)) >= 0) {
-				zos.write(buffer, 0, len);
+				epubBook.zos().write(buffer, 0, len);
 			}
-			//System.out.println("[Added] " + innerPath);
-			zos.closeEntry();
+			Log.println("[Added] " + innerPath);
+			epubBook.zos().closeEntry();
 			fis.close();
+			if (thread.isAlive()) {
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace(Log.writer());;
+				}
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(Log.writer());
 		} finally {
 			System.gc();
 		}
@@ -66,7 +73,7 @@ public abstract class InnerFile {
 				writer.print(line);
 			}
 		} catch (FileNotFoundException e) {
-
+			e.printStackTrace(Log.writer());
 		}
 	}
 
@@ -108,55 +115,37 @@ public abstract class InnerFile {
 		}
 		return string.replaceAll("&", "&amp;").replaceAll("'", "&apos;").replaceAll("http://\\.", "http://").replaceAll("https://\\.", "https://").replaceAll("href=\"#", "href=\""+url+"#").replaceAll("href=\"/cdn-cgi", "href=\"http://www.z-s.cc/cdn-cgi");
 	}
-
 	protected void addContent(String... line) {
 		for (String string : line) {
 			content.add(string);
 		}
 	}
-
 	protected void addContent(List<String> list) {
 		for (String string : list) {
 			content.add(string);
 		}
 	}
-
 	protected void addContent(int index, String line) {
 		content.add(index, line);
 	}
-
 	public List<String> content() {
 		return content;
 	}
-
 	public String content(int index) {
 		return content.get(index);
 	}
-
 	public void setInnerPath(String string) {
 		innerPath = string;
 	}
-
 	public String innerPath() {
 		return innerPath;
 	}
-
 	public void setEpubBook(EpubBook book) {
 		epubBook = book;
 	}
-
 	public EpubBook epubBook() {
 		return epubBook;
 	}
-
-	public void setVolume(int index) {
-		volume = index;
-	}
-
-	public int volume() {
-		return volume;
-	}
-
 	public void setImageArray(byte[] array) {
 		imageArray = array;
 	}

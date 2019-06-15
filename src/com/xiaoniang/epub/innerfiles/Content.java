@@ -10,12 +10,9 @@ public class Content extends InnerFile {
 
 	private final List<String> manifest = new ArrayList<String>();
 	private final List<String> spine = new ArrayList<String>();
-	private final int volume;
-
 	Content(EpubBook epubBook, int volume) {
 		setInnerPath(epubBook.innerFolderPath(0) + "content.opf");
 		setEpubBook(epubBook);
-		this.volume = volume;
 	}
 
 	public void addToManifestAndSpine(String fileName) {
@@ -30,8 +27,8 @@ public class Content extends InnerFile {
 		addContent(
 				"  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\r\n");
 		addContent("    <dc:identifier id=\"BookId\" opf:scheme=\"XN\">" + epubBook().bookID() + epubBook().title()
-				+ epubBook().volumeTitle(volume) + "</dc:identifier>\r\n");
-		addContent("    <dc:title>" + epubBook().title() + epubBook().volumeTitle(volume) + "</dc:title>\r\n");
+				 + "</dc:identifier>\r\n");
+		addContent("    <dc:title>" + epubBook().title()  + "</dc:title>\r\n");
 		addContent("    <dc:creator opf:file-as=\"" + epubBook().author() + "\" opf:role=\"aut\">" + epubBook().author()
 				+ "</dc:creator>\r\n");
 		addContent("    <dc:language>en</dc:language>\r\n");
@@ -44,10 +41,8 @@ public class Content extends InnerFile {
 		addContent("</dc:description>\r");
 		addContent(
 				"<dc:contributor opf:file-as=\"Programmer\" opf:role=\"oth\">XiaoNiang [https://github.com/XiaoNiang]</dc:contributor>");
-		addContent("<dc:contributor opf:file-as=\"Translator\" opf:role=\"trl\">" + epubBook().translator()
-				+ "</dc:contributor>");
-		for (String genre : epubBook().genres(0)) {
-			addContent("<dc:subject>" + genre + "</dc:subject>");
+		for (String[] genre : epubBook().genres()) {
+			addContent("<dc:subject>" + genre[0] + "</dc:subject>");
 		}
 		addContent("<dc:source>http://WuxiaWorld.com</dc:source>");
 		addContent(
