@@ -21,6 +21,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.xiaoniang.epub.innerfiles.Chapter;
 import com.xiaoniang.epub.innerfiles.Container;
 import com.xiaoniang.epub.innerfiles.CoverSrc;
@@ -69,7 +70,7 @@ public class EpubBook {
 				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).cookies(cookies).timeout(10000).get();
 			} catch (IOException e) {
 				Log.println("[!] Cannot connect to the " + urlNovelUpdates);
-				//e.printStackTrace(Log.writer());
+				// e.printStackTrace(Log.writer());
 			}
 		}
 		novelUpdatesPage = novelUpdatesPageDocument;
@@ -114,18 +115,23 @@ public class EpubBook {
 			Log.println(navigationPageUrl);
 			Document chapterNavigationPageDocument = null;
 			while (chapterNavigationPageDocument == null) {
-				try {
-					chapterNavigationPageDocument = Jsoup.connect(navigationPageUrl).timeout(10000).get();
+				try (final WebClient webClient = new WebClient()) {
+					chapterNavigationPageDocument = Jsoup.parse(webClient.getPage(navigationPageUrl));
 				} catch (IOException e) {
 					Log.println("   [!] Cannot connect to the " + navigationPageUrl);
-					//e.printStackTrace(Log.writer());
+					// e.printStackTrace(Log.writer());
 				}
 				Elements chapterElements = novelUpdatesPageDocument.select("table#myTable > tbody > tr");
 				ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
 				while (chapterElementsIterator.hasPrevious()) {
 					Element chapterElement = chapterElementsIterator.previous();
-					chapterLinks.add(chapterElement.select("td:eq(2) > a").attr("abs:href"));
-					Log.println("   "+chapterElement.select("td:eq(2) > a").attr("title"));
+					String chapterLink = chapterElement.select("td:eq(2) > a").attr("abs:href");
+					if (chapterLinks.contains(chapterLink)) {
+						Log.println("   [Repeat] " + chapterLink);
+					} else {
+						chapterLinks.add(chapterLink);
+						Log.println("   " + chapterLink);
+					}
 				}
 			}
 		}
@@ -134,7 +140,7 @@ public class EpubBook {
 		bookID = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + "-";
 		encodingCharset = StandardCharsets.UTF_8;
 		encoding = encodingCharset.name();
-		//Log.println(chapterLinks);
+		// Log.println(chapterLinks);
 	}
 
 	public void create() {
