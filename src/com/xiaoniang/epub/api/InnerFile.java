@@ -11,17 +11,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.xiaoniang.epub.resources.Log;
 
 public abstract class InnerFile {
 	private final List<String> content = new ArrayList<String>();
 	private String innerPath;
-	private EpubBook epubBook;
+	protected EpubBook epubBook;
 	protected Thread thread;
 	private byte[] imageArray;
 
-	synchronized public void addToZip() {
+	synchronized public void addToZip(ZipOutputStream zos) {
 		try {
 			String zenPath = innerPath.replaceAll("\\\\", "/");
 			ZipEntry zen = new ZipEntry(zenPath);
@@ -43,26 +44,25 @@ public abstract class InnerFile {
 				zen.setSize(fileArray.length);
 				zen.setCompressedSize(fileArray.length);
 			}
-			epubBook.zos().putNextEntry(zen);
+			zos.putNextEntry(zen);
 			ByteArrayInputStream fis = new ByteArrayInputStream(fileArray);
 			int len;
 			byte[] buffer = new byte[1024];
 			while ((len = fis.read(buffer)) >= 0) {
-				epubBook.zos().write(buffer, 0, len);
+				zos.write(buffer, 0, len);
 			}
 			Log.println("[Added] " + innerPath);
-			epubBook.zos().closeEntry();
+			zos.closeEntry();
 			fis.close();
-			if (thread.isAlive()) {
+			if (thread != null && thread.isAlive()) {
 				try {
 					thread.join();
 				} catch (InterruptedException e) {
-					e.printStackTrace(Log.writer());
-					;
+					e.printStackTrace(Log.stream());
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace(Log.writer());
+			e.printStackTrace(Log.stream());
 		} finally {
 			System.gc();
 		}
@@ -74,7 +74,7 @@ public abstract class InnerFile {
 				writer.print(line);
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace(Log.writer());
+			e.printStackTrace(Log.stream());
 		}
 	}
 

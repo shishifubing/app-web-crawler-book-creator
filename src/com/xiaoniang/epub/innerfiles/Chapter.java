@@ -1,6 +1,9 @@
 package com.xiaoniang.epub.innerfiles;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.util.zip.ZipOutputStream;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,14 +16,14 @@ import com.xiaoniang.epub.resources.Log;
 public class Chapter extends InnerFile implements Runnable {
 	private final String url;
 	private final int index;
+	private final ZipOutputStream zos;
 
-	public Chapter(EpubBook epubBook, String url, int index) {
+	public Chapter(EpubBook epubBook, ZipOutputStream zos, String chapterLink, int index) {
 		setEpubBook(epubBook);
-		this.url = url;
+		url = chapterLink;
 		this.index = index;
-		thread = new Thread(this);
-		thread.setName(url);
-		thread.start();
+		this.zos = zos;
+		thread = new Thread(this); thread.setName(url); thread.start();
 	}
 
 	@Override
@@ -39,13 +42,23 @@ public class Chapter extends InnerFile implements Runnable {
 		Document chapter = null;
 		while (chapter == null) {
 			try {
+				chapter = Jsoup.connect(this.url).cookies(epubBook.cookies()).followRedirects(true)
+						.execute().parse();
+			} catch (ConnectException e) {
+			}  catch (IOException e) {
+			}
+		}
+		Log.println("Added chapter: "+chapter.title());
+		
+		while (chapter == null) {
+			try {
 				chapter = Jsoup.parse(Jsoup.connect(url).cookies(epubBook().cookies()).timeout(10000).get().html());
 			} catch (IOException e) {
 				Log.println("[!] Cannot connect to the " + url);
-				e.printStackTrace(Log.writer());
+				e.printStackTrace(Log.stream());
 			}
 		}
-		Elements text = chapter.select("div.p-15 > div.fr-view > p");
+		Elements lineElements = chapter.select("div.p-15 > div.fr-view > p");
 		String chapterFileIndex = "" + index;
 		while (chapterFileIndex.length() < 4) {
 			chapterFileIndex = "0" + chapterFileIndex;
@@ -55,26 +68,21 @@ public class Chapter extends InnerFile implements Runnable {
 		// REPLACE addContent(" <h3 id=\"chapter_" + chapterIndex + "\">" +
 		// escapeAllHtml(chapterTitle) + "</h3>\r\n");
 		chapterTitle = chapterTitle.replaceAll("[^a-zA-Z]", "");
-		for (Element paragraph : text) {
-			String line = escapeAllHtml(paragraph.text());
-			if (!isParagraphTextValid(paragraph.text(), chapterTitle)) {
+		for (Element lineElement : lineElements) {
+			String line = escapeAllHtml(lineElement.text());
+			if (!lineIsValid(lineElement.text(), chapterTitle)) {
 				continue;
-			} else if (!paragraph.text().equals(null) && !paragraph.text().isEmpty()) {
+			} else if (!lineElement.text().equals(null) && !lineElement.text().isEmpty()) {
 				addContent("  <p>" + line + "</p>\r\n");
 			}
 		}
 		addContent("</body>\r\n");
 		addContent("</html>");
-		addToZip();
+		addToZip(zos);
+		
 	}
 
-	/*
-	 * private boolean isNodeValid(String name) { switch (name) { case "p": case
-	 * "a": case "b": case "strong": case "i": case "em": case "mark": case "small":
-	 * case "del": case "ins": case "sub": case "sup": return true; } return false;
-	 * }
-	 */
-	private boolean isParagraphTextValid(String text, String chapterTitle) {
+	private boolean lineIsValid(String text, String chapterTitle) {
 		if (text.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || text.startsWith("[/expand]")
 				|| text.startsWith("[caption id=")) {
 			return false;
@@ -83,6 +91,17 @@ public class Chapter extends InnerFile implements Runnable {
 		case "Next Chapter":
 		case "Bookmark":
 		case "Previous Chapter":
+			return false;
+		}
+		return true;
+	}
+
+	public boolean join() {
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			Log.println("Thread " + thread.getName() + " was interrupted");
+			e.printStackTrace(Log.stream());
 			return false;
 		}
 		return true;

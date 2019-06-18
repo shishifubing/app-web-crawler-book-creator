@@ -18,13 +18,9 @@ import java.util.zip.ZipOutputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.xiaoniang.epub.innerfiles.Chapter;
 import com.xiaoniang.epub.innerfiles.Container;
 import com.xiaoniang.epub.innerfiles.CoverSrc;
@@ -37,7 +33,7 @@ import com.xiaoniang.epub.resources.Log;
 public class EpubBook {
 
 	private final List<String[]> genres;
-	private final List<String> chapterLinks;
+	private final List<Chapter> chapters;
 	private final List<String> tags;
 	private final List<String> description;
 	private final String[] storyType;
@@ -56,7 +52,7 @@ public class EpubBook {
 	private final String bookID;
 	private final String timeOfCreation;
 	private final String dateOfCreation;
-	private ZipOutputStream zos;
+	private int chapterNavigationPagesAmount;
 
 	public EpubBook(String outputPath, String link) throws IOException {
 		if (link.endsWith("/")) {
@@ -65,7 +61,6 @@ public class EpubBook {
 			urlNovelUpdates = link + "/";
 		}
 		path = outputPath;
-		chapterLinks = new ArrayList<String>();
 		Document novelUpdatesPageDocument = null;
 		while (novelUpdatesPageDocument == null) {
 			try {
@@ -73,7 +68,7 @@ public class EpubBook {
 				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).cookies(cookies).timeout(10000).get();
 			} catch (IOException e) {
 				Log.println("[!] Cannot connect to the " + urlNovelUpdates);
-				// e.printStackTrace(Log.writer());
+				e.printStackTrace(Log.stream());
 			}
 		}
 		Log.println("Connected");
@@ -101,7 +96,7 @@ public class EpubBook {
 		}
 		Log.println("Got meta info");
 		Elements chapterNavigationPages = novelUpdatesPage.select("div.digg_pagination > a");
-		int chapterNavigationPagesAmount = 0;
+		chapterNavigationPagesAmount = 0;
 		for (Element chapterNavigationPage : chapterNavigationPages) {
 			String maybeNumber = chapterNavigationPage.text().replaceAll("[^0-9]", "");
 			if (maybeNumber.isEmpty() || maybeNumber == null) {
@@ -112,37 +107,13 @@ public class EpubBook {
 				chapterNavigationPagesAmount = index;
 			}
 		}
+		chapters = new ArrayList<Chapter>(chapterNavigationPagesAmount*15);
 		Log.println("Found the number of pages: " + chapterNavigationPagesAmount);
-		for (int i = chapterNavigationPagesAmount; i > 0; i--) {
-			String navigationPageUrl = urlNovelUpdates + "?pg=" + i;
-			Document chapterNavigationPageDocument = null;
-			while (chapterNavigationPageDocument == null) {
-				try (WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER)) {
-					webClient.getOptions().setThrowExceptionOnScriptError(false);
-					HtmlPage page = webClient.getPage(navigationPageUrl);
-					chapterNavigationPageDocument = Jsoup.parse(page.asXml(), "", Parser.xmlParser());
-				} catch (IOException e) {
-					Log.println("   [!] Cannot connect to the " + navigationPageUrl);
-					// e.printStackTrace(Log.writer());
-				}
-			}
-			Log.println("Got chapter page. url " + navigationPageUrl);
-			Elements chapterElements = chapterNavigationPageDocument.select("table#myTable > tbody > tr");
-			ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
-			while (chapterElementsIterator.hasPrevious()) {
-				Element chapterElement = chapterElementsIterator.previous();
-				String chapterLink = chapterElement.select("td:eq(2) > a").attr("href").replace("//", "");
-				chapterLinks.add(chapterLink);
-				Log.println("   " + chapterLink);
-			}
-			break;
-		}
 		dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 		bookID = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + "-";
 		encodingCharset = StandardCharsets.UTF_8;
 		encoding = encodingCharset.name();
-		Log.println(chapterLinks);
 	}
 
 	public void create() {
@@ -153,24 +124,53 @@ public class EpubBook {
 		}
 		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(epubFile)),
 				encodingCharset())) {
-			this.zos = zos;
-			new Mimetype(this).addToZip();
-			new Container(this).addToZip();
+			new Mimetype(this).addToZip(zos);
+			new Container(this).addToZip(zos);
 			CoverSrc coverSrc = new CoverSrc(this);
-			coverSrc.addToZip();
-			new Cover(this, coverSrc).addToZip();
-			new Description(this).addToZip();
-			new Stylesheet(this).addToZip();
-			int index = 0;
-			for (String chapterLink : chapterLinks) {
-				new Chapter(this, chapterLink, ++index);
+			coverSrc.addToZip(zos);
+			new Cover(this, coverSrc).addToZip(zos);
+			new Description(this).addToZip(zos);
+			new Stylesheet(this).addToZip(zos);
+			int chapterIndex = 0;
+			for (int i = chapterNavigationPagesAmount; i > 0; i--) {
+				String navigationPageUrl = urlNovelUpdates + "?pg=" + i;
+				Document chapterNavigationPage = null;
+				/*
+				while (chapterNavigationPage == null) {
+					try (WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER)) {
+						webClient.getOptions().setThrowExceptionOnScriptError(false);
+						HtmlPage page = webClient.getPage(navigationPageUrl);
+						chapterNavigationPage = Jsoup.parse(page.asXml(), "", Parser.xmlParser());
+					} catch (IOException e) {
+						Log.println("   [!] Cannot connect to the " + navigationPageUrl);
+						e.printStackTrace(Log.stream());
+					}
+				}
+				*/
+				while (chapterNavigationPage == null) {
+					try {
+						chapterNavigationPage = Jsoup.connect(navigationPageUrl)
+					            .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
+					            .timeout(10000)
+					            .execute().parse();
+					} catch (IOException e) {
+					}
+				}
+				Elements chapterElements = chapterNavigationPage.select("table#myTable > tbody > tr");
+				ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
+				while (chapterElementsIterator.hasPrevious()) {
+					Element chapterElement = chapterElementsIterator.previous();
+					String chapterLink = chapterElement.select("td:eq(2) > a").attr("href").replace("//", "https://");
+					chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex));
+				}
+			}
+			for (Chapter chapter : chapters) {
+				chapter.join();
 			}
 		} catch (IOException e) {
 			Log.println("   [!] Cannot create book: " + title);
-			e.printStackTrace(Log.writer());
-		} finally {
-			zos = null;
-		}
+			e.printStackTrace(Log.stream());
+		} 
 		EpubCheck check = new EpubCheck(epubFile);
 		if (check.validate()) {
 			Log.println("[Valdidation] Success!");
@@ -255,19 +255,9 @@ public class EpubBook {
 		return storyType[index];
 	}
 
-	public List<String> chapterLinks() {
-		return chapterLinks;
-	}
-
-	public String chapterLink(int index) {
-		return chapterLinks.get(index);
-	}
 
 	public Map<String, String> cookies() {
 		return cookies;
 	}
 
-	public ZipOutputStream zos() {
-		return zos;
-	}
 }

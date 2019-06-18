@@ -6,7 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HtmlUnit"/>
 	<classpathentry kind="lib" path="C:/Code/Java/Libraries/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="C:/Code/Java/Libraries/jsoup-1.11.3.jar"/>
 	<classpathentry kind="lib" path="C:/Code/Java/Libraries/epubcheck-4.2.1/target/epubcheck.jar"/>
