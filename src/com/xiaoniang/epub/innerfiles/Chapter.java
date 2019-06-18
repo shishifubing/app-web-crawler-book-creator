@@ -51,8 +51,9 @@ public class Chapter extends InnerFile implements Runnable {
 			chapterFileIndex = "0" + chapterFileIndex;
 		}
 		setInnerPath(epubBook().innerFolderPath(3) + "chapter_" + chapterFileIndex + ".xhtml");
-		String chapterTitle =""; //REPLACE OLD ALGORITHM= epubBook().chapterLink(volume, chapterTitleIndex, 0);
-		//REPLACE addContent("  <h3 id=\"chapter_" + chapterIndex + "\">" + escapeAllHtml(chapterTitle) + "</h3>\r\n");
+		String chapterTitle = ""; // REPLACE OLD ALGORITHM= epubBook().chapterLink(volume, chapterTitleIndex, 0);
+		// REPLACE addContent(" <h3 id=\"chapter_" + chapterIndex + "\">" +
+		// escapeAllHtml(chapterTitle) + "</h3>\r\n");
 		chapterTitle = chapterTitle.replaceAll("[^a-zA-Z]", "");
 		for (Element paragraph : text) {
 			String line = escapeAllHtml(paragraph.text());
@@ -66,26 +67,13 @@ public class Chapter extends InnerFile implements Runnable {
 		addContent("</html>");
 		addToZip();
 	}
-/*
-	private boolean isNodeValid(String name) {
-		switch (name) {
-		case "p":
-		case "a":
-		case "b":
-		case "strong":
-		case "i":
-		case "em":
-		case "mark":
-		case "small":
-		case "del":
-		case "ins":
-		case "sub":
-		case "sup":
-			return true;
-		}
-		return false;
-	}
-*/
+
+	/*
+	 * private boolean isNodeValid(String name) { switch (name) { case "p": case
+	 * "a": case "b": case "strong": case "i": case "em": case "mark": case "small":
+	 * case "del": case "ins": case "sub": case "sup": return true; } return false;
+	 * }
+	 */
 	private boolean isParagraphTextValid(String text, String chapterTitle) {
 		if (text.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || text.startsWith("[/expand]")
 				|| text.startsWith("[caption id=")) {

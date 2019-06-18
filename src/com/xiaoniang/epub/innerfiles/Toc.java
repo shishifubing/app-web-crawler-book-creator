@@ -33,8 +33,7 @@ final class Toc extends InnerFile {
 		addContent(" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\r\n");
 		addContent("<ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\">\r\n");
 		addContent("<head>\r\n");
-		addContent("    <meta content=\"" + epubBook().bookID() + epubBook().title()
-				+ "\" name=\"dtb:uid\"/>\r\n");
+		addContent("    <meta content=\"" + epubBook().bookID() + epubBook().title() + "\" name=\"dtb:uid\"/>\r\n");
 		addContent("    <meta content=\"1\" name=\"dtb:depth\"/>\r\n");
 		addContent("    <meta content=\"0\" name=\"dtb:totalPageCount\"/>\r\n");
 		addContent("    <meta content=\"0\" name=\"dtb:maxPageNumber\"/>\r\n");

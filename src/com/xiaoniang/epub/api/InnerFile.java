@@ -57,7 +57,8 @@ public abstract class InnerFile {
 				try {
 					thread.join();
 				} catch (InterruptedException e) {
-					e.printStackTrace(Log.writer());;
+					e.printStackTrace(Log.writer());
+					;
 				}
 			}
 		} catch (IOException e) {
@@ -87,65 +88,81 @@ public abstract class InnerFile {
 		int endTagStart = string.length();
 		while (matcher.find()) {
 			String endTag = "</" + matcher.group(1) + ">";
-			//System.out.println("[LoopStart]\n    "+endTag);
-			while (matcher.start()>=endTagStart) {
+			// System.out.println("[LoopStart]\n "+endTag);
+			while (matcher.start() >= endTagStart) {
 				endTagStart = string.length();
 			}
 			Matcher closingMatcher = Pattern.compile(endTag).matcher(string.substring(matcher.start(), endTagStart));
 			if (!closingMatcher.find()) {
-				//System.out.println("    String: "+string.substring(matcher.start(), endTagStart));
+				// System.out.println(" String: "+string.substring(matcher.start(),
+				// endTagStart));
 				string = string.substring(0, endTagStart) + endTag + string.substring(endTagStart);
-				//System.out.println("    Valid String: "+string);
+				// System.out.println(" Valid String: "+string);
 				endTagStart -= endTag.length();
 			} else {
-				endTagStart = matcher.start()+closingMatcher.start();
-				//System.out.println("    Valid string: "+string.substring(matcher.start(), endTagStart+endTag.length()));
+				endTagStart = matcher.start() + closingMatcher.start();
+				// System.out.println(" Valid string: "+string.substring(matcher.start(),
+				// endTagStart+endTag.length()));
 			}
 			if (matcher.group(2).contains("data-cfemail")) {
-				string = string.substring(0,string.indexOf(matcher.group(0))+matcher.group(1).length()+1)+">[Content is protected]"+string.substring(string.indexOf(endTag));
+				string = string.substring(0, string.indexOf(matcher.group(0)) + matcher.group(1).length() + 1)
+						+ ">[Content is protected]" + string.substring(string.indexOf(endTag));
 			}
 			if (matcher.group(1).contains("img")) {
 				Matcher imageCorrector = Pattern.compile("src=\"[^\"]*\"").matcher(matcher.group(2));
 				if (imageCorrector.find()) {
-					string = string.replace(matcher.group(0), "<a "+imageCorrector.group(0)+">").replace("</img>", "</a>").replace("src=\"", "href=\"");
+					string = string.replace(matcher.group(0), "<a " + imageCorrector.group(0) + ">")
+							.replace("</img>", "</a>").replace("src=\"", "href=\"");
 					string = escapeHtml(string, url);
 				}
 			}
-			//System.out.println("[LoopEnd]");
+			// System.out.println("[LoopEnd]");
 		}
-		return string.replaceAll("&", "&amp;").replaceAll("'", "&apos;").replaceAll("http://\\.", "http://").replaceAll("https://\\.", "https://").replaceAll("href=\"#", "href=\""+url+"#").replaceAll("href=\"/cdn-cgi", "href=\"http://www.z-s.cc/cdn-cgi");
+		return string.replaceAll("&", "&amp;").replaceAll("'", "&apos;").replaceAll("http://\\.", "http://")
+				.replaceAll("https://\\.", "https://").replaceAll("href=\"#", "href=\"" + url + "#")
+				.replaceAll("href=\"/cdn-cgi", "href=\"http://www.z-s.cc/cdn-cgi");
 	}
+
 	protected void addContent(String... line) {
 		for (String string : line) {
 			content.add(string);
 		}
 	}
+
 	protected void addContent(List<String> list) {
 		for (String string : list) {
 			content.add(string);
 		}
 	}
+
 	protected void addContent(int index, String line) {
 		content.add(index, line);
 	}
+
 	public List<String> content() {
 		return content;
 	}
+
 	public String content(int index) {
 		return content.get(index);
 	}
+
 	public void setInnerPath(String string) {
 		innerPath = string;
 	}
+
 	public String innerPath() {
 		return innerPath;
 	}
+
 	public void setEpubBook(EpubBook book) {
 		epubBook = book;
 	}
+
 	public EpubBook epubBook() {
 		return epubBook;
 	}
+
 	public void setImageArray(byte[] array) {
 		imageArray = array;
 	}

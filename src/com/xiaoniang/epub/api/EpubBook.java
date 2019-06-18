@@ -18,10 +18,13 @@ import java.util.zip.ZipOutputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import com.adobe.epubcheck.api.EpubCheck;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.xiaoniang.epub.innerfiles.Chapter;
 import com.xiaoniang.epub.innerfiles.Container;
 import com.xiaoniang.epub.innerfiles.CoverSrc;
@@ -73,6 +76,7 @@ public class EpubBook {
 				// e.printStackTrace(Log.writer());
 			}
 		}
+		Log.println("Connected");
 		novelUpdatesPage = novelUpdatesPageDocument;
 		title = novelUpdatesPage.select("div.w-blog-content > div.seriestitlenu").first().text();
 		Log.println("Title: " + title);
@@ -95,6 +99,7 @@ public class EpubBook {
 		for (Element tag : tagElements) {
 			tags.add("<a href=\"" + tag.attr("href") + "\">" + tag.text() + "</a>");
 		}
+		Log.println("Got meta info");
 		Elements chapterNavigationPages = novelUpdatesPage.select("div.digg_pagination > a");
 		int chapterNavigationPagesAmount = 0;
 		for (Element chapterNavigationPage : chapterNavigationPages) {
@@ -107,40 +112,37 @@ public class EpubBook {
 				chapterNavigationPagesAmount = index;
 			}
 		}
+		Log.println("Found the number of pages: " + chapterNavigationPagesAmount);
 		for (int i = chapterNavigationPagesAmount; i > 0; i--) {
-			String navigationPageUrl = urlNovelUpdates;
-			if (i != 1) {
-				navigationPageUrl += "?pg=" + i;
-			}
-			Log.println(navigationPageUrl);
+			String navigationPageUrl = urlNovelUpdates + "?pg=" + i;
 			Document chapterNavigationPageDocument = null;
 			while (chapterNavigationPageDocument == null) {
-				try (final WebClient webClient = new WebClient()) {
-					chapterNavigationPageDocument = Jsoup.parse(webClient.getPage(navigationPageUrl));
+				try (WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER)) {
+					webClient.getOptions().setThrowExceptionOnScriptError(false);
+					HtmlPage page = webClient.getPage(navigationPageUrl);
+					chapterNavigationPageDocument = Jsoup.parse(page.asXml(), "", Parser.xmlParser());
 				} catch (IOException e) {
 					Log.println("   [!] Cannot connect to the " + navigationPageUrl);
 					// e.printStackTrace(Log.writer());
 				}
-				Elements chapterElements = novelUpdatesPageDocument.select("table#myTable > tbody > tr");
-				ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
-				while (chapterElementsIterator.hasPrevious()) {
-					Element chapterElement = chapterElementsIterator.previous();
-					String chapterLink = chapterElement.select("td:eq(2) > a").attr("abs:href");
-					if (chapterLinks.contains(chapterLink)) {
-						Log.println("   [Repeat] " + chapterLink);
-					} else {
-						chapterLinks.add(chapterLink);
-						Log.println("   " + chapterLink);
-					}
-				}
 			}
+			Log.println("Got chapter page. url " + navigationPageUrl);
+			Elements chapterElements = chapterNavigationPageDocument.select("table#myTable > tbody > tr");
+			ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
+			while (chapterElementsIterator.hasPrevious()) {
+				Element chapterElement = chapterElementsIterator.previous();
+				String chapterLink = chapterElement.select("td:eq(2) > a").attr("href").replace("//", "");
+				chapterLinks.add(chapterLink);
+				Log.println("   " + chapterLink);
+			}
+			break;
 		}
 		dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 		bookID = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + "-";
 		encodingCharset = StandardCharsets.UTF_8;
 		encoding = encodingCharset.name();
-		// Log.println(chapterLinks);
+		Log.println(chapterLinks);
 	}
 
 	public void create() {

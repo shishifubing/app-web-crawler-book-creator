@@ -9,25 +9,19 @@ public class Log {
 	static private PrintWriter writer;
 
 	public static void println(String line) {
-		if (writer == null) {
-			start();
-		}
+		startIfDead();
 		writer.println(line);
 	}
 
 	public static void println(List<String> list) {
-		if (writer == null) {
-			start();
-		}
+		startIfDead();
 		for (String line : list) {
 			writer.println(line);
 		}
 	}
 
 	public static void print(String string) {
-		if (writer == null) {
-			start();
-		}
+		startIfDead();
 		writer.print(string);
 	}
 
@@ -45,5 +39,10 @@ public class Log {
 
 	public static PrintWriter writer() {
 		return writer;
+	}
+	private static void startIfDead() {
+		if (writer==null) {
+			start();
+		}
 	}
 }
