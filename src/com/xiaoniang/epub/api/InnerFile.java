@@ -22,7 +22,7 @@ public abstract class InnerFile {
 	protected Thread thread;
 	private byte[] imageArray;
 
-	synchronized public void addToZip(ZipOutputStream zos) {
+	public void addToZip(ZipOutputStream zos) {
 		try {
 			String zenPath = innerPath.replaceAll("\\\\", "/");
 			ZipEntry zen = new ZipEntry(zenPath);
@@ -54,13 +54,6 @@ public abstract class InnerFile {
 			Log.println("[Added] " + innerPath);
 			zos.closeEntry();
 			fis.close();
-			if (thread != null && thread.isAlive()) {
-				try {
-					thread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace(Log.stream());
-				}
-			}
 		} catch (IOException e) {
 			e.printStackTrace(Log.stream());
 		} finally {

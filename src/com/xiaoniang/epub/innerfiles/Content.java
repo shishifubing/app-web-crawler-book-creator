@@ -11,7 +11,7 @@ public class Content extends InnerFile {
 	private final List<String> manifest = new ArrayList<String>();
 	private final List<String> spine = new ArrayList<String>();
 
-	Content(EpubBook epubBook, int volume) {
+	public Content(EpubBook epubBook) {
 		setInnerPath(epubBook.innerFolderPath(0) + "content.opf");
 		setEpubBook(epubBook);
 	}
@@ -22,7 +22,7 @@ public class Content extends InnerFile {
 		spine.add("    <itemref idref=\"" + fileName + "\" />\r\n");
 	}
 
-	public void fill() {
+	public Content fill() {
 		addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
 		addContent("<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");
 		addContent(
@@ -70,5 +70,6 @@ public class Content extends InnerFile {
 		addContent("    <reference href=\"Text/cover.xhtml\" title=\"Cover\" type=\"cover\" />\r\n");
 		addContent("  </guide>\r\n");
 		addContent("</package>");
+		return this;
 	}
 }

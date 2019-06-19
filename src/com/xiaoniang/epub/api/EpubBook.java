@@ -15,6 +15,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,11 +24,13 @@ import org.jsoup.select.Elements;
 import com.adobe.epubcheck.api.EpubCheck;
 import com.xiaoniang.epub.innerfiles.Chapter;
 import com.xiaoniang.epub.innerfiles.Container;
+import com.xiaoniang.epub.innerfiles.Content;
 import com.xiaoniang.epub.innerfiles.CoverSrc;
 import com.xiaoniang.epub.innerfiles.Cover;
 import com.xiaoniang.epub.innerfiles.Description;
 import com.xiaoniang.epub.innerfiles.Mimetype;
 import com.xiaoniang.epub.innerfiles.Stylesheet;
+import com.xiaoniang.epub.innerfiles.Toc;
 import com.xiaoniang.epub.resources.Log;
 
 public class EpubBook {
@@ -64,11 +67,13 @@ public class EpubBook {
 		Document novelUpdatesPageDocument = null;
 		while (novelUpdatesPageDocument == null) {
 			try {
-				cookies = Jsoup.connect(urlNovelUpdates).timeout(10000).execute().cookies();
-				novelUpdatesPageDocument = Jsoup.connect(urlNovelUpdates).cookies(cookies).timeout(10000).get();
+				Response response = Jsoup.connect(urlNovelUpdates).userAgent(
+						"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
+						.timeout(10000).execute();
+				cookies = response.cookies();
+				novelUpdatesPageDocument = response.parse();
 			} catch (IOException e) {
 				Log.println("[!] Cannot connect to the " + urlNovelUpdates);
-				e.printStackTrace(Log.stream());
 			}
 		}
 		Log.println("Connected");
@@ -107,7 +112,7 @@ public class EpubBook {
 				chapterNavigationPagesAmount = index;
 			}
 		}
-		chapters = new ArrayList<Chapter>(chapterNavigationPagesAmount*15);
+		chapters = new ArrayList<Chapter>(chapterNavigationPagesAmount * 15);
 		Log.println("Found the number of pages: " + chapterNavigationPagesAmount);
 		dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
@@ -131,28 +136,17 @@ public class EpubBook {
 			new Cover(this, coverSrc).addToZip(zos);
 			new Description(this).addToZip(zos);
 			new Stylesheet(this).addToZip(zos);
+			Content content = new Content(this);
+			Toc toc = new Toc(this);
 			int chapterIndex = 0;
 			for (int i = chapterNavigationPagesAmount; i > 0; i--) {
 				String navigationPageUrl = urlNovelUpdates + "?pg=" + i;
 				Document chapterNavigationPage = null;
-				/*
-				while (chapterNavigationPage == null) {
-					try (WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER)) {
-						webClient.getOptions().setThrowExceptionOnScriptError(false);
-						HtmlPage page = webClient.getPage(navigationPageUrl);
-						chapterNavigationPage = Jsoup.parse(page.asXml(), "", Parser.xmlParser());
-					} catch (IOException e) {
-						Log.println("   [!] Cannot connect to the " + navigationPageUrl);
-						e.printStackTrace(Log.stream());
-					}
-				}
-				*/
 				while (chapterNavigationPage == null) {
 					try {
-						chapterNavigationPage = Jsoup.connect(navigationPageUrl)
-					            .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
-					            .timeout(10000)
-					            .execute().parse();
+						chapterNavigationPage = Jsoup.connect(navigationPageUrl).userAgent(
+								"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
+								.timeout(10000).cookies(cookies).get();
 					} catch (IOException e) {
 					}
 				}
@@ -161,16 +155,18 @@ public class EpubBook {
 				while (chapterElementsIterator.hasPrevious()) {
 					Element chapterElement = chapterElementsIterator.previous();
 					String chapterLink = chapterElement.select("td:eq(2) > a").attr("href").replace("//", "https://");
-					chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex));
+					chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex, content, toc));
 				}
 			}
 			for (Chapter chapter : chapters) {
 				chapter.join();
 			}
+			toc.fill().addToZip(zos);
+			content.fill().addToZip(zos);
 		} catch (IOException e) {
 			Log.println("   [!] Cannot create book: " + title);
 			e.printStackTrace(Log.stream());
-		} 
+		}
 		EpubCheck check = new EpubCheck(epubFile);
 		if (check.validate()) {
 			Log.println("[Valdidation] Success!");
@@ -254,7 +250,6 @@ public class EpubBook {
 	public String storyType(int index) {
 		return storyType[index];
 	}
-
 
 	public Map<String, String> cookies() {
 		return cookies;

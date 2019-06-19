@@ -6,11 +6,11 @@ import java.util.List;
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
-final class Toc extends InnerFile {
+public final class Toc extends InnerFile {
 	private final List<String> navPoints;
 	private int playOrder = 1;
 
-	Toc(EpubBook epubBook, int volume) {
+	public Toc(EpubBook epubBook) {
 		setInnerPath(epubBook.innerFolderPath(0) + "toc.ncx");
 		setEpubBook(epubBook);
 		navPoints = new ArrayList<String>();
@@ -27,7 +27,7 @@ final class Toc extends InnerFile {
 		navPoints.add("    </navPoint>\r\n");
 	}
 
-	public void fill() {
+	public Toc fill() {
 		addContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n");
 		addContent("<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\"\r\n");
 		addContent(" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\r\n");
@@ -45,5 +45,6 @@ final class Toc extends InnerFile {
 		addContent(navPoints);
 		addContent("  </navMap>\r\n");
 		addContent("</ncx>");
+		return this;
 	}
 }

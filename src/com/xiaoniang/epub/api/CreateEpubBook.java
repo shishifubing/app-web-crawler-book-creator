@@ -11,7 +11,7 @@ public class CreateEpubBook {
 		new File(path).mkdir();
 		try {
 			Log.println("[Start]");
-			new EpubBook(path, "https://www.novelupdates.com/series/pure-love-✕-insult-complex/").create();;
+			new EpubBook(path, "https://www.novelupdates.com/series/renegade-immortal/").create();
 		} catch (IOException e) {
 			Log.println("[!] Couldn't create the Epub book");
 			e.printStackTrace(Log.stream());
