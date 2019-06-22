@@ -98,7 +98,9 @@ public class Chapter extends InnerFile implements Runnable {
 
 	public boolean join() {
 		try {
-			thread.join();
+			if (thread.isAlive()) {
+				thread.join();
+			}
 		} catch (InterruptedException e) {
 			Log.println("Thread " + thread.getName() + " was interrupted");
 			e.printStackTrace(Log.stream());

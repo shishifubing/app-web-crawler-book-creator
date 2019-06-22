@@ -152,9 +152,11 @@ public class EpubBook {
 				}
 				Elements chapterElements = chapterNavigationPage.select("table#myTable > tbody > tr");
 				ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
+				List<String[]> tempChapterLinks = new ArrayList<String[]>(chapterElements.size());
 				while (chapterElementsIterator.hasPrevious()) {
 					Element chapterElement = chapterElementsIterator.previous();
 					String chapterLink = chapterElement.select("td:eq(2) > a").attr("href").replace("//", "https://");
+					//String chapterName = 
 					chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex, content, toc));
 				}
 			}
