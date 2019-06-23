@@ -1,7 +1,6 @@
 package com.xiaoniang.epub.api;
 
 import java.io.File;
-import java.io.IOException;
 import com.xiaoniang.epub.resources.Log;
 
 public class CreateEpubBook {
@@ -12,11 +11,9 @@ public class CreateEpubBook {
 		try {
 			Log.println("[Start]");
 			new EpubBook(path, "https://www.novelupdates.com/series/renegade-immortal/").create();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Log.println("[!] Couldn't create the Epub book");
 			e.printStackTrace(Log.stream());
-		} finally {
-			Log.close();
 		}
 	}
 }

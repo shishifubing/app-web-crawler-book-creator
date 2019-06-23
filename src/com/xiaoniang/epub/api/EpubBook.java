@@ -11,7 +11,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
@@ -31,6 +30,7 @@ import com.xiaoniang.epub.innerfiles.Description;
 import com.xiaoniang.epub.innerfiles.Mimetype;
 import com.xiaoniang.epub.innerfiles.Stylesheet;
 import com.xiaoniang.epub.innerfiles.Toc;
+import com.xiaoniang.epub.resources.Links;
 import com.xiaoniang.epub.resources.Log;
 
 public class EpubBook {
@@ -64,6 +64,7 @@ public class EpubBook {
 			urlNovelUpdates = link + "/";
 		}
 		path = outputPath;
+		Links.fill();
 		Document novelUpdatesPageDocument = null;
 		while (novelUpdatesPageDocument == null) {
 			try {
@@ -138,35 +139,20 @@ public class EpubBook {
 			new Stylesheet(this).addToZip(zos);
 			Content content = new Content(this);
 			Toc toc = new Toc(this);
-			int chapterIndex = 0;
-			for (int i = chapterNavigationPagesAmount; i > 0; i--) {
-				String navigationPageUrl = urlNovelUpdates + "?pg=" + i;
-				Document chapterNavigationPage = null;
-				while (chapterNavigationPage == null) {
-					try {
-						chapterNavigationPage = Jsoup.connect(navigationPageUrl).userAgent(
-								"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
-								.timeout(10000).cookies(cookies).get();
-					} catch (IOException e) {
-					}
-				}
-				Elements chapterElements = chapterNavigationPage.select("table#myTable > tbody > tr");
-				ListIterator<Element> chapterElementsIterator = chapterElements.listIterator(chapterElements.size());
-				List<String[]> tempChapterLinks = new ArrayList<String[]>(chapterElements.size());
-				while (chapterElementsIterator.hasPrevious()) {
-					Element chapterElement = chapterElementsIterator.previous();
-					String chapterLink = chapterElement.select("td:eq(2) > a").attr("href").replace("//", "https://");
-					//String chapterName = 
-					chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex, content, toc));
-				}
-			}
+			Chapter.getChapters(urlNovelUpdates, this, zos, content, toc);
+			Log.println("Started joining threads");
 			for (Chapter chapter : chapters) {
+				Log.println("   Thread " + chapter.thread.getName() + " is about to be joined");
 				chapter.join();
+				Log.println("   Thread " + chapter.thread.getName() + " is joined");
 			}
-			toc.fill().addToZip(zos);
-			content.fill().addToZip(zos);
+			Log.println("All threads are joined");
+			synchronized (zos) {
+				toc.fill().addToZip(zos);
+				content.fill().addToZip(zos);
+			}
 		} catch (IOException e) {
-			Log.println("   [!] Cannot create book: " + title);
+			Log.println("   [!] Cannot create the book: " + title);
 			e.printStackTrace(Log.stream());
 		}
 		EpubCheck check = new EpubCheck(epubFile);
@@ -256,5 +242,7 @@ public class EpubBook {
 	public Map<String, String> cookies() {
 		return cookies;
 	}
-
+	public void addChapter(ZipOutputStream zos, String chapterLink, int chapterIndex, String title, Content content, Toc toc) {
+		chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex, title, content, toc));
+	}
 }

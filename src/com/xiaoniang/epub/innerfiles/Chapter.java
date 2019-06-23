@@ -1,8 +1,14 @@
 package com.xiaoniang.epub.innerfiles;
 
+import java.io.EOFException;
 import java.io.IOException;
-import java.net.ConnectException;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipOutputStream;
+
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -12,6 +18,7 @@ import org.jsoup.select.Elements;
 
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
+import com.xiaoniang.epub.resources.Links;
 import com.xiaoniang.epub.resources.Log;
 
 public class Chapter extends InnerFile implements Runnable {
@@ -20,15 +27,45 @@ public class Chapter extends InnerFile implements Runnable {
 	private final ZipOutputStream zos;
 	private final Content content;
 	private final Toc toc;
+	private String title;
 
-	public Chapter(EpubBook epubBook, ZipOutputStream zos, String chapterLink, int index, Content content, Toc toc) {
+	public Chapter(EpubBook epubBook, ZipOutputStream zos, String chapterLink, int chapterIndex, String title, Content content, Toc toc) {
 		setEpubBook(epubBook);
 		url = chapterLink;
-		this.index = index;
+		this.index = chapterIndex;
 		this.zos = zos;
 		this.toc = toc;
 		this.content = content;
-		thread = new Thread(this); thread.setName(url); thread.start();
+		this.title = title;
+		thread = new Thread(this);
+		thread.setName("Chapter_" + chapterIndex);
+		thread.start();
+	}
+	
+	static public void getChapters(String urlNovelUpdates, EpubBook epubBook, ZipOutputStream zos, Content content, Toc toc) {
+		if (Links.links().containsKey(urlNovelUpdates)) {
+			Log.println("Contains "+urlNovelUpdates+". "+Links.link(urlNovelUpdates));
+		} else {
+			Log.println("Doesn't contain "+urlNovelUpdates);
+		}
+		Document document = null;
+		while (document == null) {
+			try {
+				document = Jsoup.connect(urlNovelUpdates).timeout(10000).get();
+			} catch (Exception e) {
+			}
+		}
+		int chapterIndex = 0;
+		switch (Links.link(urlNovelUpdates).split("/")[2].toLowerCase()) {
+		case "www.wuxiaworld.com":
+		}
+		Elements chapters = document.select("div.p-15 > div.panel-group > * > a");
+		for (Element chapter : chapters) {
+			String chapterLink = chapter.attr("abs:hres");
+			String chapterName = chapter.text();
+			epubBook.addChapter(zos, chapterLink, ++chapterIndex, chapterName, content, toc);
+		}
+		
 	}
 
 	@Override
@@ -48,12 +85,17 @@ public class Chapter extends InnerFile implements Runnable {
 		String url = null;
 		while (chapter == null) {
 			try {
-				Connection.Response response = Jsoup.connect(this.url).followRedirects(true).cookies(epubBook.cookies()).timeout(10000)
-						.execute();
+				Connection.Response response = Jsoup.connect(this.url).followRedirects(true)
+						.timeout(10000).execute();
 				chapter = response.parse();
 				url = response.url().toString();
-			} catch (ConnectException e) {
-			} catch (IOException e) {
+			} catch (SSLHandshakeException e) {
+			} catch (EOFException e) {
+			} catch (SSLException e) {
+			} catch (SocketException e) {
+			} catch (Exception e) {
+				Log.println("Cannot get Chapter " + index + ". url: " + this.url);
+				e.printStackTrace(Log.stream());
 			}
 		}
 		String chapterFileIndex = "" + index;
@@ -61,7 +103,7 @@ public class Chapter extends InnerFile implements Runnable {
 			chapterFileIndex = "0" + chapterFileIndex;
 		}
 		setInnerPath(epubBook().innerFolderPath(3) + "chapter_" + chapterFileIndex + ".xhtml");
-		String chapterTitle = chapter.select(getTitleSelector(url)).text(); 
+		String chapterTitle = chapter.select(getTitleSelector(url)).text();
 		addContent(" <h3 id=\"chapter_" + index + "\">" + escapeAllHtml(chapterTitle) + "</h3>\r\n");
 		toc.addNavPoint(chapterTitle, "chapter_" + chapterFileIndex);
 		content.addToManifestAndSpine("chapter_" + chapterFileIndex);
@@ -77,8 +119,8 @@ public class Chapter extends InnerFile implements Runnable {
 		}
 		addContent("</body>\r\n");
 		addContent("</html>");
-		synchronized (zos) { 
-			addToZip(zos); 
+		synchronized (zos) {
+			addToZip(zos);
 		}
 	}
 
@@ -108,20 +150,26 @@ public class Chapter extends InnerFile implements Runnable {
 		}
 		return true;
 	}
+
 	public String getTextSelector(String url) {
 		String website = url.split("/")[2];
 		switch (website.toLowerCase()) {
-		case "www.wuxiaworld.com": 
+		case "www.wuxiaworld.com":
 			return "div.p-15 > div.fr-view > p";
 		}
 		return "p";
 	}
+
 	public String getTitleSelector(String url) {
 		String website = url.split("/")[2];
 		switch (website.toLowerCase()) {
-		case "www.wuxiaworld.com": 
+		case "www.wuxiaworld.com":
 			return "div.p-15 > div.caption clearfix > div:eq(2)";
 		}
 		return "*";
+	}
+
+	public String url() {
+		return url;
 	}
 }
