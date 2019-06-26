@@ -37,6 +37,7 @@ public class EpubBook {
 
 	private final List<String[]> genres;
 	private final List<Chapter> chapters;
+	private final List<String[]> chaptersInfo;
 	private final List<String> tags;
 	private final List<String> description;
 	private final String[] storyType;
@@ -44,9 +45,9 @@ public class EpubBook {
 			"OEBPS" + File.separator + "Styles" + File.separator, "OEBPS" + File.separator + "Text" + File.separator,
 			"OEBPS" + File.separator + "Images" + File.separator };
 	private final String urlNovelUpdates;
+	private final String urlWuxiaWorld;
 	private final String coverLink;
 	private Map<String, String> cookies;
-	private final Document novelUpdatesPage;
 	private final String path;
 	private final String encoding;
 	private final Charset encodingCharset;
@@ -55,37 +56,44 @@ public class EpubBook {
 	private final String bookID;
 	private final String timeOfCreation;
 	private final String dateOfCreation;
-	private int chapterNavigationPagesAmount;
 
 	public EpubBook(String outputPath, String link) throws IOException {
-		if (link.endsWith("/")) {
-			urlNovelUpdates = link;
-		} else {
-			urlNovelUpdates = link + "/";
-		}
+		urlNovelUpdates = Links.link(link);
+		urlWuxiaWorld = link;
 		path = outputPath;
-		Links.fill();
-		Document novelUpdatesPageDocument = null;
-		while (novelUpdatesPageDocument == null) {
+		Document novelUpdatesPage = null;
+		while (novelUpdatesPage == null) {
 			try {
-				Response response = Jsoup.connect(urlNovelUpdates).userAgent(
-						"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
-						.timeout(10000).execute();
-				cookies = response.cookies();
-				novelUpdatesPageDocument = response.parse();
+				novelUpdatesPage = Jsoup.connect(urlNovelUpdates).timeout(10000).get();
 			} catch (IOException e) {
 				Log.println("[!] Cannot connect to the " + urlNovelUpdates);
 			}
 		}
-		Log.println("Connected");
-		novelUpdatesPage = novelUpdatesPageDocument;
+		Document wuxiaWorldPage = null;
+		while (wuxiaWorldPage == null) {
+			try {
+				Response response = Jsoup.connect(link).timeout(10000).execute();
+				cookies = response.cookies();
+				wuxiaWorldPage = response.parse();
+			} catch (IOException e) {
+				Log.println("[!] Cannot connect to the " + urlNovelUpdates);
+			}
+		}
+		Elements chaptersElements = wuxiaWorldPage.select("li.chapter-item > a");
+		chaptersInfo = new ArrayList<String[]>(chaptersElements.size());
+		chapters = new ArrayList<Chapter>(chaptersElements.size());
+		for (Element chapter : chaptersElements) {
+			String chapterLink = chapter.attr("abs:href");
+			String chapterName = InnerFile.escapeHtml(chapter.text());
+			chaptersInfo.add(new String[] { chapterName, chapterLink });
+		}
 		title = novelUpdatesPage.select("div.w-blog-content > div.seriestitlenu").first().text();
 		Log.println("Title: " + title);
 		coverLink = novelUpdatesPage.select("div.seriesimg > *").first().attr("src");
 		Elements descriptionElements = novelUpdatesPage.select("div#editdescription > p");
 		description = new ArrayList<String>(descriptionElements.size());
 		for (Element line : novelUpdatesPage.select("div#editdescription > p")) {
-			description.add(InnerFile.escapeAllHtml(line.text()));
+			description.add(InnerFile.escapeHtml(line.text()));
 		}
 		author = novelUpdatesPage.select("div#showauthors > *").first().text();
 		Element storyTypeElement = novelUpdatesPage.select("div#showtype > *").first();
@@ -100,21 +108,6 @@ public class EpubBook {
 		for (Element tag : tagElements) {
 			tags.add("<a href=\"" + tag.attr("href") + "\">" + tag.text() + "</a>");
 		}
-		Log.println("Got meta info");
-		Elements chapterNavigationPages = novelUpdatesPage.select("div.digg_pagination > a");
-		chapterNavigationPagesAmount = 0;
-		for (Element chapterNavigationPage : chapterNavigationPages) {
-			String maybeNumber = chapterNavigationPage.text().replaceAll("[^0-9]", "");
-			if (maybeNumber.isEmpty() || maybeNumber == null) {
-				continue;
-			}
-			int index = Integer.parseInt(chapterNavigationPage.text());
-			if (index > chapterNavigationPagesAmount) {
-				chapterNavigationPagesAmount = index;
-			}
-		}
-		chapters = new ArrayList<Chapter>(chapterNavigationPagesAmount * 15);
-		Log.println("Found the number of pages: " + chapterNavigationPagesAmount);
 		dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 		bookID = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + "-";
@@ -139,24 +132,42 @@ public class EpubBook {
 			new Stylesheet(this).addToZip(zos);
 			Content content = new Content(this);
 			Toc toc = new Toc(this);
-			Chapter.getChapters(urlNovelUpdates, this, zos, content, toc);
-			Log.println("Started joining threads");
+			int chapterIndex = 0;
+			long time = System.currentTimeMillis();
+			Log.println("Started fetching chapters");
+			double tempTime = System.currentTimeMillis();
+			for (String[] chapterInfo : chaptersInfo) {
+				chapters.add(new Chapter(this, zos, chapterInfo[1], ++chapterIndex, chapterInfo[0], content, toc));
+				if (chapterIndex%500==0) {
+					for (Chapter chapter : chapters) {
+						if (chapter.thread.isAlive()) {
+							chapter.join();
+						}
+					}
+					Log.println(chapterIndex+" chapters are fetched");
+					double timeNow = System.currentTimeMillis();
+					double timeElapsed = (timeNow - tempTime) / 1000;
+					tempTime = timeNow;
+					Log.println("Time elapsed: " + timeElapsed + "s");
+				}
+			}
 			for (Chapter chapter : chapters) {
-				Log.println("   Thread " + chapter.thread.getName() + " is about to be joined");
-				chapter.join();
-				Log.println("   Thread " + chapter.thread.getName() + " is joined");
+				if (chapter.thread.isAlive()) {
+					chapter.join();
+				}
+				toc.addNavPoint(chapter);
+				content.addToManifestAndSpine(chapter);
 			}
-			Log.println("All threads are joined");
-			synchronized (zos) {
-				toc.fill().addToZip(zos);
-				content.fill().addToZip(zos);
-			}
+			Log.println("All "+chapterIndex+" chapters are fetched");
+			double timeElapsed = ((double) System.currentTimeMillis() - (double) time) / 1000;
+			Log.println("Time elapsed: " + timeElapsed + "s");
+			toc.fill().addToZip(zos);
+			content.fill().addToZip(zos);
 		} catch (IOException e) {
-			Log.println("   [!] Cannot create the book: " + title);
+			Log.println("[!] Cannot create the book: " + title);
 			e.printStackTrace(Log.stream());
 		}
-		EpubCheck check = new EpubCheck(epubFile);
-		if (check.validate()) {
+		if (new EpubCheck(epubFile).validate()) {
 			Log.println("[Valdidation] Success!");
 		} else {
 			Log.println("[Valdidation] Failure!");
@@ -242,7 +253,8 @@ public class EpubBook {
 	public Map<String, String> cookies() {
 		return cookies;
 	}
-	public void addChapter(ZipOutputStream zos, String chapterLink, int chapterIndex, String title, Content content, Toc toc) {
-		chapters.add(new Chapter(this, zos, chapterLink, ++chapterIndex, title, content, toc));
+
+	public String urlWuxiaWorld() {
+		return urlWuxiaWorld;
 	}
 }

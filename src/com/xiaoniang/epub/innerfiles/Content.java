@@ -16,13 +16,14 @@ public class Content extends InnerFile {
 		setEpubBook(epubBook);
 	}
 
-	public void addToManifestAndSpine(String fileName) {
-		manifest.add("    <item href=\"Text/" + fileName + "\" id=\"" + fileName
-				+ "\" media-type=\"application/xhtml+xml\" />\r\n");
-		spine.add("    <itemref idref=\"" + fileName + "\" />\r\n");
+	synchronized public void addToManifestAndSpine(Chapter chapter) {
+		manifest.add("    <item href=\"Text/" + chapter.fileName() + "\" id=\"" + chapter.fileName()
+				+ "\" media-type=\"application/xhtml+xml\"/>\r\n");
+		spine.add("    <itemref idref=\"" + chapter.fileName() + "\"/>\r\n");
 	}
 
 	public Content fill() {
+		timeOfCreation = System.currentTimeMillis();
 		addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
 		addContent("<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\" version=\"2.0\">\r\n");
 		addContent(
@@ -48,26 +49,26 @@ public class Content extends InnerFile {
 		addContent("<dc:source>http://WuxiaWorld.com</dc:source>");
 		addContent(
 				"    <dc:rights>All materials' copyrights reserved by their respective authors and the associated publishers. Please respect their rights. Works will be deleted upon request by copyright holders.</dc:rights>\r\n");
-		addContent("    <meta name=\"cover\" content=\"cover." + CoverSrc.extension() + "\" />\r\n");
+		addContent("    <meta name=\"cover\" content=\"cover." + CoverSrc.extension() + "\"/>\r\n");
 		addContent("  </metadata>\r\n");
 		addContent("  <manifest>\r\n");
-		addContent("    <item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\" />\r\n");
+		addContent("    <item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\"/>\r\n");
 		addContent(
-				"    <item href=\"Text/cover.xhtml\" id=\"cover.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
+				"    <item href=\"Text/cover.xhtml\" id=\"cover.xhtml\" media-type=\"application/xhtml+xml\"/>\r\n");
 		addContent(
 				"    <item href=\"Text/description.xhtml\" id=\"description.xhtml\" media-type=\"application/xhtml+xml\" />\r\n");
 		addContent("    <item href=\"Images/cover." + CoverSrc.extension() + "\" id=\"cover." + CoverSrc.extension()
 				+ "\" media-type=\"image/" + CoverSrc.type() + "\"/>");
-		addContent("    <item href=\"Styles/stylesheet.css\" id=\"stylesheet.css\" media-type=\"text/css\" />\r\n");
+		addContent("    <item href=\"Styles/stylesheet.css\" id=\"stylesheet.css\" media-type=\"text/css\"/>\r\n");
 		addContent(manifest);
 		addContent("  </manifest>\r\n");
 		addContent("  <spine toc=\"ncx\">\r\n");
 		addContent("    <itemref idref=\"cover.xhtml\" />\r\n");
-		addContent("    <itemref idref=\"description.xhtml\" />\r\n");
+		addContent("    <itemref idref=\"description.xhtml\"/>\r\n");
 		addContent(spine);
 		addContent("  </spine>\r\n");
 		addContent("  <guide>\r\n");
-		addContent("    <reference href=\"Text/cover.xhtml\" title=\"Cover\" type=\"cover\" />\r\n");
+		addContent("    <reference href=\"Text/cover.xhtml\" title=\"Cover\" type=\"cover\"/>\r\n");
 		addContent("  </guide>\r\n");
 		addContent("</package>");
 		return this;

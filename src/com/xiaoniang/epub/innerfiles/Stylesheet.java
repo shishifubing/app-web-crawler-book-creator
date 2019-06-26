@@ -6,6 +6,7 @@ import com.xiaoniang.epub.api.InnerFile;
 public final class Stylesheet extends InnerFile {
 
 	public Stylesheet(EpubBook epubBook) {
+		timeOfCreation = System.currentTimeMillis();
 		setInnerPath(epubBook.innerFolderPath(2) + "stylesheet.css");
 		setEpubBook(epubBook);
 		addContent("h1, h2, h3, h4, h5, h6 {\r\n");

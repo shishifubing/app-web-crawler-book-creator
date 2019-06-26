@@ -21,6 +21,7 @@ public abstract class InnerFile {
 	protected EpubBook epubBook;
 	protected Thread thread;
 	private byte[] imageArray;
+	protected long timeOfCreation;
 
 	public void addToZip(ZipOutputStream zos) {
 		try {
@@ -51,7 +52,9 @@ public abstract class InnerFile {
 			while ((len = fis.read(buffer)) >= 0) {
 				zos.write(buffer, 0, len);
 			}
-			Log.println("[Added] " + innerPath);
+			//String[] temp = zenPath.split("/");
+			//double timeElapsed = ((double)System.currentTimeMillis()-(double)timeOfCreation)/1000;
+			//Log.println("    [Added] " + temp[temp.length-1]+". Time elapsed: "+timeElapsed+"s");
 			zos.closeEntry();
 			fis.close();
 		} catch (IOException e) {
@@ -71,10 +74,10 @@ public abstract class InnerFile {
 		}
 	}
 
-	protected static String escapeAllHtml(String input) {
-		return input.replaceAll("&", "&amp;").replaceAll("'", "&apos;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	protected static String escapeHtml(String input) {
+		return input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
-
+/*
 	protected static String escapeHtml(String input, String url) {
 		String string = input;
 		Matcher matcher = Pattern.compile("<(\\s*[^>/\\s]+)(\\s*[^>]*)>").matcher(string);
@@ -115,7 +118,7 @@ public abstract class InnerFile {
 				.replaceAll("https://\\.", "https://").replaceAll("href=\"#", "href=\"" + url + "#")
 				.replaceAll("href=\"/cdn-cgi", "href=\"http://www.z-s.cc/cdn-cgi");
 	}
-
+*/
 	protected void addContent(String... line) {
 		for (String string : line) {
 			content.add(string);
