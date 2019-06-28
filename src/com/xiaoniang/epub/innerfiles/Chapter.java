@@ -92,16 +92,19 @@ public class Chapter extends InnerFile implements Runnable {
 	}
 
 	private boolean lineIsValid(String line, String chapterTitle) {
-		if (line.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || line.startsWith("[/expand]")
-				|| line.startsWith("[caption id=")
-				|| line.replaceAll("[^a-zA-Z]", "").contains(chapterTitle)) {
+		switch (line.toLowerCase()) {
+		case "next chapter":
+		case "bookmark":
+		case "previous chapter":
+		case "teaser":
+		case "previous":
 			return false;
 		}
-		switch (line) {
-		case "Next Chapter":
-		case "Bookmark":
-		case "Previous Chapter":
-		case "Teaser":
+		String formattedLine = line.replaceAll("[^a-zA-Z]", "");
+		if (formattedLine.contains(chapterTitle) 
+				|| chapterTitle.contains(formattedLine)
+				|| line.startsWith("[/expand]")
+				|| line.startsWith("[caption id=")) {
 			return false;
 		}
 		return true;
@@ -127,4 +130,5 @@ public class Chapter extends InnerFile implements Runnable {
 	public String title() {
 		return title;
 	}
+
 }

@@ -138,11 +138,9 @@ public class EpubBook {
 			double tempTime = System.currentTimeMillis();
 			for (String[] chapterInfo : chaptersInfo) {
 				chapters.add(new Chapter(this, zos, chapterInfo[1], ++chapterIndex, chapterInfo[0], content, toc));
-				if (chapterIndex%500==0) {
+				if (chapterIndex%100==0) {
 					for (Chapter chapter : chapters) {
-						if (chapter.thread.isAlive()) {
-							chapter.join();
-						}
+						chapter.join();
 					}
 					Log.println(chapterIndex+" chapters are fetched");
 					double timeNow = System.currentTimeMillis();
@@ -152,9 +150,7 @@ public class EpubBook {
 				}
 			}
 			for (Chapter chapter : chapters) {
-				if (chapter.thread.isAlive()) {
-					chapter.join();
-				}
+				chapter.join();
 				toc.addNavPoint(chapter);
 				content.addToManifestAndSpine(chapter);
 			}

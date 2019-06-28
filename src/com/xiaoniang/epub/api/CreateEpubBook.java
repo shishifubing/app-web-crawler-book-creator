@@ -10,7 +10,9 @@ public class CreateEpubBook {
 	public static void main(String[] args) {
 		String path = "output" + File.separator;
 		new File(path).mkdir();
+		Log.start();
 		Links.fill();
+		/*
 		for (String link : Links.links().keySet()) {
 			Log.println("\n[Start]");
 			try {
@@ -21,5 +23,6 @@ public class CreateEpubBook {
 			}
 			Log.println("[End]\n");
 		}
+		*/
 	}
 }
