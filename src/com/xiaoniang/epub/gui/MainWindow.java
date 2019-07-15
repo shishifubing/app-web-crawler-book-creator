@@ -31,7 +31,7 @@ public class MainWindow extends Application {
 		stage.show();
 	}
 
-	public static void main(String[] args) {
+	public static void start(String[] args) {
 		launch(args);
 	}
 }

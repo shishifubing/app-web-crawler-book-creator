@@ -85,6 +85,7 @@ public class EpubBook {
 		for (Element chapter : chaptersElements) {
 			String chapterLink = chapter.attr("abs:href");
 			String chapterName = InnerFile.escapeHtml(chapter.text());
+			Log.println(chapterLink+"   |   "+chapterName);
 			chaptersInfo.add(new String[] { chapterName, chapterLink });
 		}
 		title = novelUpdatesPage.select("div.w-blog-content > div.seriestitlenu").first().text();
