@@ -6,7 +6,6 @@ import com.xiaoniang.epub.api.InnerFile;
 public final class Container extends InnerFile {
 
 	public Container(EpubBook epubBook) {
-		timeOfCreation = System.currentTimeMillis();
 		setInnerPath(epubBook.innerFolderPath(1) + "container.xml");
 		setEpubBook(epubBook);
 		addContent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");

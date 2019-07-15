@@ -21,7 +21,6 @@ public class CoverSrc extends InnerFile {
 	private static String type;
 
 	public CoverSrc(EpubBook epubBook) {
-		timeOfCreation = System.currentTimeMillis();
 		BufferedImage image = null;
 		extension = epubBook.coverLink().split("\\.")[epubBook.coverLink().split("\\.").length - 1];
 		if (extension.contentEquals("jpg")) {
@@ -31,7 +30,8 @@ public class CoverSrc extends InnerFile {
 		}
 		setInnerPath(epubBook.innerFolderPath(4) + "cover." + extension);
 		while (image == null) {
-			if (epubBook.coverLink().equals(null) || epubBook.coverLink().isEmpty()) {
+			if (epubBook.coverLink().equals(null) || epubBook.coverLink().isEmpty()
+					|| epubBook.coverLink().contains("img/noimagefound.jpg")) {
 				image = setDefaultCover();
 			}
 			try (InputStream in = new URL(epubBook.coverLink()).openStream()) {
@@ -45,7 +45,12 @@ public class CoverSrc extends InnerFile {
 			} catch (FileNotFoundException e) {
 				image = setDefaultCover();
 			} catch (ConnectException e) {
+				Log.println("Connection timed out: " + epubBook.coverLink());
+				Log.println("Setting default cover");
+				image = setDefaultCover();
 			} catch (IOException e) {
+				Log.println("IOException: ");
+				e.printStackTrace(Log.stream());
 			}
 		}
 	}

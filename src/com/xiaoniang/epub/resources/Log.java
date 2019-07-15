@@ -13,8 +13,9 @@ abstract public class Log {
 	}
 
 	public static void println(List<String> list) {
+		startIfDead();
 		for (String line : list) {
-			println(line);
+			stream.println("   "+line);
 		}
 	}
 
@@ -26,7 +27,6 @@ abstract public class Log {
 	public static void start() {
 		try {
 			stream = new PrintStream(new File("src/com/xiaoniang/epub/resources/log.txt"));
-			
 		} catch (FileNotFoundException e) {
 			System.out.println("[!] Didn't find the log file");
 		}

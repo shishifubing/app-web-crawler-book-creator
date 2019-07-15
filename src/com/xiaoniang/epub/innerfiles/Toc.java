@@ -8,25 +8,18 @@ import com.xiaoniang.epub.api.InnerFile;
 
 public final class Toc extends InnerFile {
 	private final List<String> navPoints;
+	private int playOrder = 1;
 
 	public Toc(EpubBook epubBook) {
 		setInnerPath(epubBook.innerFolderPath(0) + "toc.ncx");
 		setEpubBook(epubBook);
 		navPoints = new ArrayList<String>();
-		addNavPoint("Cover", "cover.xhtml", 1);
-		addNavPoint("Description", "description.xhtml", 2);
+		addNavPoint("Cover", "cover.xhtml");
+		addNavPoint("Description", "description.xhtml");
 	}
 
-	synchronized public void addNavPoint(Chapter chapter) {
-		navPoints.add("    <navPoint id=\"navPoint-" + (chapter.index()+2) + "\" playOrder=\"" + (chapter.index()+2) + "\">\r\n");
-		navPoints.add("      <navLabel>\r\n");
-		navPoints.add("        <text>" + chapter.title() + "</text>\r\n");
-		navPoints.add("      </navLabel>\r\n");
-		navPoints.add("      <content src=\"Text/" + chapter.fileName() + "\"/>\r\n");
-		navPoints.add("    </navPoint>\r\n");
-	}
-	synchronized public void addNavPoint(String navPointLabel, String fileName, int index) {
-		navPoints.add("    <navPoint id=\"navPoint-" + index + "\" playOrder=\"" + index + "\">\r\n");
+	public void addNavPoint(String navPointLabel, String fileName) {
+		navPoints.add("    <navPoint id=\"navPoint-" + playOrder + "\" playOrder=\"" + playOrder++ + "\">\r\n");
 		navPoints.add("      <navLabel>\r\n");
 		navPoints.add("        <text>" + navPointLabel + "</text>\r\n");
 		navPoints.add("      </navLabel>\r\n");
@@ -35,7 +28,6 @@ public final class Toc extends InnerFile {
 	}
 
 	public Toc fill() {
-		timeOfCreation = System.currentTimeMillis();
 		addContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n");
 		addContent("<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\"\r\n");
 		addContent(" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\r\n");

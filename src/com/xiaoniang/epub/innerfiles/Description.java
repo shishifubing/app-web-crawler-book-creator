@@ -5,7 +5,6 @@ import com.xiaoniang.epub.api.InnerFile;
 
 public class Description extends InnerFile {
 	public Description(EpubBook epubBook) {
-		timeOfCreation = System.currentTimeMillis();
 		setEpubBook(epubBook);
 		setInnerPath(epubBook.innerFolderPath(3) + "description.xhtml");
 		addContent("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
@@ -35,8 +34,6 @@ public class Description extends InnerFile {
 				+ "</a></p>\r\n");
 		addContent("    <p>Information source: <a href=\"" + epubBook.urlNovelUpdates() + "\">"
 				+ epubBook.urlNovelUpdates() + "</a></p>\r\n");
-		addContent("    <p>Story source: <a href=\"" + epubBook.urlWuxiaWorld() + "\">"
-				+ epubBook.urlWuxiaWorld() + "</a></p>\r\n");
 		addContent("    <p>Genres: \r");
 		int i = 0;
 		for (String[] genre : epubBook.genres()) {
