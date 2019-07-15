@@ -125,7 +125,6 @@ public class Chapter extends InnerFile implements Runnable {
 	}
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 	private boolean lineIsValid(String line, String chapterTitle) {
 		switch (line.toLowerCase()) {
 		case "next chapter":
@@ -146,20 +145,10 @@ public class Chapter extends InnerFile implements Runnable {
 				|| text.startsWith("[caption id=")) {
 			return false;
 		}
-=======
-	private boolean lineIsValid(String text, String chapterTitle) {
-		if (text.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || text.startsWith("[/expand]")
-				|| text.startsWith("[caption id=")) {
-			return false;
-		}
->>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 		switch (text) {
 		case "Next Chapter":
 		case "Bookmark":
 		case "Previous Chapter":
-<<<<<<< HEAD
->>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
-=======
 >>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 			return false;
 		}

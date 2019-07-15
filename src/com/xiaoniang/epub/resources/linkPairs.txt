@@ -1,5 +1,4 @@
 <<<<<<< HEAD
-<<<<<<< HEAD
 https://www.novelupdates.com/series/douluo-dalu-2-the-unrivaled-tang-sect/,https://www.wuxiaworld.com/novel/the-unrivaled-tang-sect/
 https://www.novelupdates.com/series/the-great-ruler/,https://www.wuxiaworld.com/novel/the-great-ruler/
 https://www.novelupdates.com/series/spirit-realm/,https://www.wuxiaworld.com/novel/spirit-realm/
@@ -55,8 +54,6 @@ https://www.novelupdates.com/series/perfect-world/,https://www.wuxiaworld.com/no
 https://www.novelupdates.com/series/dragon-king-with-seven-stars/,https://www.wuxiaworld.com/novel/dragon-king-with-seven-stars/
 https://www.novelupdates.com/series/imperial-god-emperor/,https://www.wuxiaworld.com/novel/imperial-god-emperor/
 =======
-=======
->>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 https://www.wuxiaworld.com/novel/martial-god-asura, https://www.novelupdates.com/series/martial-god-asura/
 https://www.wuxiaworld.com/novel/ancient-strengthening-technique,https://www.novelupdates.com/series/ancient-strengthening-technique/
 https://www.wuxiaworld.com/novel/martial-world,https://www.novelupdates.com/series/martial-world/
@@ -111,9 +108,5 @@ https://www.wuxiaworld.com/novel/the-novels-extra,https://www.novelupdates.com/s
 https://www.wuxiaworld.com/novel/trash-of-the-counts-family,https://www.novelupdates.com/series/trash-of-the-counts-family/
 https://www.wuxiaworld.com/novel/stop-friendly-fire,https://www.novelupdates.com/series/stop-friendly-fire/
 https://www.wuxiaworld.com/novel/dragon-maken-war,https://www.novelupdates.com/series/dragon-maken-war/
-<<<<<<< HEAD
-https://www.wuxiaworld.com/novel/i-reincarnated-for-nothing,https://www.novelupdates.com/series/i-reincarnated-for-nothing/
->>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
-=======
 https://www.wuxiaworld.com/novel/i-reincarnated-for-nothing,https://www.novelupdates.com/series/i-reincarnated-for-nothing/
 >>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
