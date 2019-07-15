@@ -40,6 +40,7 @@ public class Links {
 				stream.println(key+","+linkPairs.get(key));
 			}
 			*/
+			/*
 			Document allNovels = null;
 			while (allNovels == null) {
 				try {
@@ -72,8 +73,10 @@ public class Links {
 				}
 				stream1.println(","+linkElement.attr("abs:href"));
 			}
+			*/
 		} catch (IOException e) {
 			e.printStackTrace(Log.stream());
 		}
+		
 	}
 }

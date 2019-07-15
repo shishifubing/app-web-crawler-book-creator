@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="C:/Code/Java/Libraries/epubcheck-4.2.1/target/epubcheck.jar"/>
 	<classpathentry kind="lib" path="C:/Code/Java/Libraries/bsf-2.4.0/lib/bsf.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX12"/>
+	<classpathentry kind="lib" path="C:/Code/Java/Libraries/jgit-5.4.0.201906121030-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
