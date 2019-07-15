@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 1 [!] Cannot connect to the https://www.novelupdates.com/series/Asa
 The-Legend-Forgotten/
 2 [!] Cannot connect to the https://www.novelupdates.com/series/Asa
@@ -20,6 +21,8 @@ The-Legend-Forgotten/
 10 [!] Cannot connect to the https://www.novelupdates.com/series/Asa
 The-Legend-Forgotten/
 =======
+=======
+>>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 [Start]
 Connected
 Title: Renegade Immortal
@@ -38918,4 +38921,7 @@ org.jsoup.HttpStatusException: HTTP error fetching URL. Status=404, URL=https://
 	at org.jsoup.helper.HttpConnection.execute(HttpConnection.java:306)
 	at com.xiaoniang.epub.innerfiles.Chapter.run(Chapter.java:54)
 	at java.base/java.lang.Thread.run(Thread.java:835)
+<<<<<<< HEAD
+>>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
+=======
 >>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors

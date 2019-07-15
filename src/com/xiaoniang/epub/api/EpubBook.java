@@ -140,6 +140,7 @@ public class EpubBook {
 			Content content = new Content(this);
 			Toc toc = new Toc(this);
 <<<<<<< HEAD
+<<<<<<< HEAD
 			int chapterIndex = 0;
 			long time = System.currentTimeMillis();
 			Log.println("Started fetching chapters");
@@ -165,6 +166,11 @@ public class EpubBook {
 			Chapter.getChapters(urlNovelUpdates, this, zos, content, toc);
 			Log.println("Started joining threads");
 			for (Chapter chapter : chapters) {
+=======
+			Chapter.getChapters(urlNovelUpdates, this, zos, content, toc);
+			Log.println("Started joining threads");
+			for (Chapter chapter : chapters) {
+>>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 				Log.println("   Thread " + chapter.thread.getName() + " is about to be joined");
 				chapter.join();
 				Log.println("   Thread " + chapter.thread.getName() + " is joined");
@@ -173,6 +179,9 @@ public class EpubBook {
 			synchronized (zos) {
 				toc.fill().addToZip(zos);
 				content.fill().addToZip(zos);
+<<<<<<< HEAD
+>>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
+=======
 >>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 			}
 		} catch (IOException e) {
