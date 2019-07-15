@@ -1,6 +1,8 @@
 package com.xiaoniang.epub.api;
 
 import java.io.File;
+
+import com.xiaoniang.epub.resources.Links;
 import com.xiaoniang.epub.resources.Log;
 
 public class CreateEpubBook {
@@ -8,7 +10,6 @@ public class CreateEpubBook {
 	public static void main(String[] args) {
 		String path = "output" + File.separator;
 		new File(path).mkdir();
-<<<<<<< HEAD
 		Log.start();
 		Links.fill();
 		/*
@@ -21,14 +22,6 @@ public class CreateEpubBook {
 				e.printStackTrace(Log.stream());
 			}
 			Log.println("[End]\n");
-=======
-		try {
-			Log.println("[Start]");
-			new EpubBook(path, "https://www.novelupdates.com/series/renegade-immortal/").create();
-		} catch (Exception e) {
-			Log.println("[!] Couldn't create the Epub book");
-			e.printStackTrace(Log.stream());
->>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 		}
 		*/
 	}

@@ -6,6 +6,7 @@ import com.xiaoniang.epub.api.InnerFile;
 public class Cover extends InnerFile {
 
 	public Cover(EpubBook epubBook, CoverSrc coverSrc) {
+		timeOfCreation = System.currentTimeMillis();
 		setEpubBook(epubBook);
 		setInnerPath(epubBook.innerFolderPath(3) + "cover.xhtml");
 		addContent("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\r\n");

@@ -1,16 +1,9 @@
 package com.xiaoniang.epub.innerfiles;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipOutputStream;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
-
-import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,54 +11,24 @@ import org.jsoup.select.Elements;
 
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
-import com.xiaoniang.epub.resources.Links;
 import com.xiaoniang.epub.resources.Log;
 
 public class Chapter extends InnerFile implements Runnable {
 	private final String url;
 	private final int index;
 	private final ZipOutputStream zos;
-	private final Content content;
-	private final Toc toc;
+	private String fileName;
 	private String title;
 
-	public Chapter(EpubBook epubBook, ZipOutputStream zos, String chapterLink, int chapterIndex, String title, Content content, Toc toc) {
+	public Chapter(EpubBook epubBook, ZipOutputStream zos, String url, int index, String title, Content content, Toc toc) {
 		setEpubBook(epubBook);
-		url = chapterLink;
-		this.index = chapterIndex;
+		this.url = url;
+		this.index = index;
 		this.zos = zos;
-		this.toc = toc;
-		this.content = content;
 		this.title = title;
 		thread = new Thread(this);
-		thread.setName("Chapter_" + chapterIndex);
+		thread.setName("Chapter_" + index);
 		thread.start();
-	}
-	
-	static public void getChapters(String urlNovelUpdates, EpubBook epubBook, ZipOutputStream zos, Content content, Toc toc) {
-		if (Links.links().containsKey(urlNovelUpdates)) {
-			Log.println("Contains "+urlNovelUpdates+". "+Links.link(urlNovelUpdates));
-		} else {
-			Log.println("Doesn't contain "+urlNovelUpdates);
-		}
-		Document document = null;
-		while (document == null) {
-			try {
-				document = Jsoup.connect(urlNovelUpdates).timeout(10000).get();
-			} catch (Exception e) {
-			}
-		}
-		int chapterIndex = 0;
-		switch (Links.link(urlNovelUpdates).split("/")[2].toLowerCase()) {
-		case "www.wuxiaworld.com":
-		}
-		Elements chapters = document.select("div.p-15 > div.panel-group > * > a");
-		for (Element chapter : chapters) {
-			String chapterLink = chapter.attr("abs:hres");
-			String chapterName = chapter.text();
-			epubBook.addChapter(zos, chapterLink, ++chapterIndex, chapterName, content, toc);
-		}
-		
 	}
 
 	@Override
@@ -82,20 +45,23 @@ public class Chapter extends InnerFile implements Runnable {
 		addContent("\r\n");
 		addContent("<body>\r\n");
 		Document chapter = null;
-		String url = null;
 		while (chapter == null) {
+			timeOfCreation = System.currentTimeMillis();
 			try {
-				Connection.Response response = Jsoup.connect(this.url).followRedirects(true)
-						.timeout(10000).execute();
+				Response response = Jsoup.connect(url).cookies(epubBook.cookies())
+						.execute();
+				if (response.statusCode()!=200) {
+					Log.println("\n\n[Status Message]\n----------------------------------------");
+					Log.println(response.statusMessage());
+					Log.println("----------------------------------------\n");
+					continue;
+				} 
 				chapter = response.parse();
-				url = response.url().toString();
-			} catch (SSLHandshakeException e) {
-			} catch (EOFException e) {
-			} catch (SSLException e) {
-			} catch (SocketException e) {
-			} catch (Exception e) {
-				Log.println("Cannot get Chapter " + index + ". url: " + this.url);
-				e.printStackTrace(Log.stream());
+			} catch (IOException e) {
+				//Log.println("[Error]\n----------------------------------------");
+				//Log.println("Cannot get Chapter " + index + ". url: " + url);
+				//e.printStackTrace(Log.stream());
+				//Log.println("----------------------------------------\n");
 			}
 		}
 		String chapterFileIndex = "" + index;
@@ -103,20 +69,21 @@ public class Chapter extends InnerFile implements Runnable {
 			chapterFileIndex = "0" + chapterFileIndex;
 		}
 		setInnerPath(epubBook().innerFolderPath(3) + "chapter_" + chapterFileIndex + ".xhtml");
-		String chapterTitle = chapter.select(getTitleSelector(url)).text();
-		addContent(" <h3 id=\"chapter_" + index + "\">" + escapeAllHtml(chapterTitle) + "</h3>\r\n");
-		toc.addNavPoint(chapterTitle, "chapter_" + chapterFileIndex);
-		content.addToManifestAndSpine("chapter_" + chapterFileIndex);
+		fileName = "chapter_" + chapterFileIndex + ".xhtml";
+		String chapterTitle = title;
+		addContent(" <h3 id=\"chapter_" + index + "\">" + escapeHtml(chapterTitle) + "</h3>\r\n");
 		chapterTitle = chapterTitle.replaceAll("[^a-zA-Z]", "");
-		Elements lineElements = chapter.select(getTextSelector(url));
+		Elements lineElements = chapter.select("div.p-15 > div.fr-view > p");
 		for (Element lineElement : lineElements) {
-			String line = escapeAllHtml(lineElement.text());
+			String line = escapeHtml(lineElement.text());
 			if (!lineIsValid(lineElement.text(), chapterTitle)) {
 				continue;
 			} else if (!lineElement.text().equals(null) && !lineElement.text().isEmpty()) {
 				addContent("  <p>" + line + "</p>\r\n");
 			}
 		}
+		addContent("    \r\r\n\n\n<p>Chapter source: <a href=\"" + url + "\">"
+				+ url + "</a></p>\r\n");
 		addContent("</body>\r\n");
 		addContent("</html>");
 		synchronized (zos) {
@@ -124,7 +91,6 @@ public class Chapter extends InnerFile implements Runnable {
 		}
 	}
 
-<<<<<<< HEAD
 	private boolean lineIsValid(String line, String chapterTitle) {
 		switch (line.toLowerCase()) {
 		case "next chapter":
@@ -139,22 +105,10 @@ public class Chapter extends InnerFile implements Runnable {
 				|| chapterTitle.contains(formattedLine)
 				|| line.startsWith("[/expand]")
 				|| line.startsWith("[caption id=")) {
-=======
-	private boolean lineIsValid(String text, String chapterTitle) {
-		if (text.replaceAll("[^a-zA-Z]", "").startsWith(chapterTitle) || text.startsWith("[/expand]")
-				|| text.startsWith("[caption id=")) {
-			return false;
-		}
-		switch (text) {
-		case "Next Chapter":
-		case "Bookmark":
-		case "Previous Chapter":
->>>>>>> parent of 2493f63... Returned back to wuxiaworld, average time of downloading 500 chapters - 50s, all 55 books were downloaded in 1:30 hours, no errors
 			return false;
 		}
 		return true;
 	}
-
 	public boolean join() {
 		try {
 			if (thread.isAlive()) {
@@ -167,27 +121,14 @@ public class Chapter extends InnerFile implements Runnable {
 		}
 		return true;
 	}
-
-	public String getTextSelector(String url) {
-		String website = url.split("/")[2];
-		switch (website.toLowerCase()) {
-		case "www.wuxiaworld.com":
-			return "div.p-15 > div.fr-view > p";
-		}
-		return "p";
+	public int index() {
+		return index;
 	}
-
-	public String getTitleSelector(String url) {
-		String website = url.split("/")[2];
-		switch (website.toLowerCase()) {
-		case "www.wuxiaworld.com":
-			return "div.p-15 > div.caption clearfix > div:eq(2)";
-		}
-		return "*";
+	public String fileName() {
+		return fileName;
 	}
-
-	public String url() {
-		return url;
+	public String title() {
+		return title;
 	}
 
 }
