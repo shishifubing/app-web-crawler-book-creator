@@ -1,11 +1,12 @@
 package com.xiaoniang.epub.gui;
 
+import com.xiaoniang.epub.resources.Links;
+
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.ListView;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainWindow extends Application {
@@ -16,22 +17,22 @@ public class MainWindow extends Application {
 	}
 
 	private void initUI(Stage stage) {
-		HBox root = new HBox();
-		root.setPadding(new Insets(0));
-		VBox menuPanel = new VBox();
-		VBox contentPanel = new VBox();
-		menuPanel.setMinSize(224, 600);
-		menuPanel.setMaxSize(224, 600);
-		menuPanel.getChildren().add(new Button("1"));
-		contentPanel.getChildren().add(new Button("2"));
-		root.getChildren().addAll(menuPanel, contentPanel);
+		ListView<Button> root = new ListView<Button>();
+
+		for (String link : Links.links().keySet()) {
+			Button button = new Button(link);
+			root.getItems().add(button);
+			button.setPrefSize(924, 40);
+		}
+		root.setStyle("-fx-background-color: BEIGE;");  
 		Scene scene = new Scene(root, 1024, 600);
+		scene.setFill(Color.CYAN);
 		stage.setTitle("Main Window");
 		stage.setScene(scene);
 		stage.show();
 	}
 
-	public static void start(String[] args) {
+	public static void create(String[] args) {
 		launch(args);
 	}
 }

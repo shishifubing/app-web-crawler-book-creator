@@ -85,7 +85,6 @@ public class EpubBook {
 		for (Element chapter : chaptersElements) {
 			String chapterLink = chapter.attr("abs:href");
 			String chapterName = InnerFile.escapeHtml(chapter.text());
-			Log.println(chapterLink+"   |   "+chapterName);
 			chaptersInfo.add(new String[] { chapterName, chapterLink });
 		}
 		title = novelUpdatesPage.select("div.w-blog-content > div.seriestitlenu").first().text();
@@ -139,9 +138,11 @@ public class EpubBook {
 			double tempTime = System.currentTimeMillis();
 			for (String[] chapterInfo : chaptersInfo) {
 				chapters.add(new Chapter(this, zos, chapterInfo[1], ++chapterIndex, chapterInfo[0], content, toc));
-				if (chapterIndex%100==0) {
+				if (chapterIndex%500==0) {
 					for (Chapter chapter : chapters) {
-						chapter.join();
+						if (chapter.thread.isAlive()) {
+							chapter.join();
+						}
 					}
 					Log.println(chapterIndex+" chapters are fetched");
 					double timeNow = System.currentTimeMillis();
@@ -151,7 +152,9 @@ public class EpubBook {
 				}
 			}
 			for (Chapter chapter : chapters) {
-				chapter.join();
+				if (chapter.thread.isAlive()) {
+					chapter.join();
+				}
 				toc.addNavPoint(chapter);
 				content.addToManifestAndSpine(chapter);
 			}
