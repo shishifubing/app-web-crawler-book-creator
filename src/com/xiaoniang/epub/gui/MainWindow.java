@@ -9,6 +9,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import com.xiaoniang.epub.gui.*;
+
 public class MainWindow extends Application {
 
 	@Override
@@ -17,14 +19,14 @@ public class MainWindow extends Application {
 	}
 
 	private void initUI(Stage stage) {
-		ListView<Button> root = new ListView<Button>();
+		ListView<Button> root = new ListViewController;
 
-		for (String link : Links.links().keySet()) {
+		/*for (String link : Links.links().keySet()) {
 			Button button = new Button(link);
 			root.getItems().add(button);
 			button.setPrefSize(924, 40);
 		}
-		root.setStyle("-fx-background-color: BEIGE;");  
+		root.setStyle("-fx-background-color: BEIGE;");  */
 		Scene scene = new Scene(root, 1024, 600);
 		scene.setFill(Color.CYAN);
 		stage.setTitle("Main Window");

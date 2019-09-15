@@ -1,8 +1,32 @@
-//<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.ListView?>
 <?import demo.ListViewController?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml" alignment="CENTER">
-     <ListView fx:id="listView"/>
-</GridPane>
+<ListView fx:id="ListView" layoutX="0" layoutY="30" prefWidth="600" prefHeight="300">
+    <HBox fx:id="listBox" alignment="CENTER_LEFT">
+        <padding><Insets top="5" bottom="5" left="5"></Insets> </padding>
+        <HBox alignment="CENTER_LEFT" prefWidth="170" minWidth="88">
+            <Label fx:id="surveyName" text="Field A" styleClass="Name"></Label>
+        </HBox>
+        <VBox styleClass="Description" prefWidth="155" minWidth="86">
+
+            <HBox>
+                <HBox styleClass="surveyDesIcon" prefWidth="20" prefHeight="16"></HBox>
+                <Label fx:id="surveyCode" text="PRW3456HJ"></Label>
+            </HBox>
+            <HBox>
+                <HBox styleClass="DateIcon" prefWidth="20" prefHeight="16"></HBox>
+                <Label fx:id="Date" text="PRW3456HJ"></Label>
+            </HBox>
+        </VBox>
+        <HBox fx:id="Status" prefWidth="160" minWidth="80">
+            <Label fx:id="StatusLabel" text="Checking Files.."/>
+        </HBox>
+        <HBox fx:id="StatusIcon1" prefWidth="50" prefHeight="50" alignment="CENTER">
+            <Label styleClass="StatusIcon1" prefWidth="24" prefHeight="24" alignment="CENTER"/>
+        </HBox>
+        <HBox fx:id="StatusIcon2" prefWidth="50" prefHeight="50" styleClass="StatusIconBox" alignment="CENTER">
+            <Hyperlink styleClass="StatusIcon2" prefWidth="24" maxHeight="24" alignment="CENTER"/>
+        </HBox>
+    </HBox>
+</ListView>

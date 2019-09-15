@@ -21,7 +21,7 @@ public class ListViewController
 
     public ListViewController()
     {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/listview.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/listview.fxml"));
         fxmlLoader.setController(this);
         try
         {
@@ -50,5 +50,9 @@ public class ListViewController
                 return new ListViewCell();
             }
         });
+    }
+    
+    public ListView getListView() {
+    	return listView;
     }
 }
