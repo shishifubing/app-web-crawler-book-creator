@@ -20,7 +20,7 @@ public class MainWindow extends Application {
 
 	private void initUI(Stage stage) {
 		ListView<Button> root = new ListViewController;
-		вапрапроапо
+		
 		/*for (String link : Links.links().keySet()) {
 			Button button = new Button(link);
 			root.getItems().add(button);
