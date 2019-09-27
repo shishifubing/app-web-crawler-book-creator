@@ -32,7 +32,7 @@ public class Data
     public void setInfo(String string)
     {
         label1.setText(string);
-        label2.setText(string);
+        //label2.setText(string);
     }
 
     public HBox getBox()
