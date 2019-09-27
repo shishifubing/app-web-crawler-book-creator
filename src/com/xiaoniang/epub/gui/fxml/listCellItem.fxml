@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.xiaoniang.epub.gui.Data?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
-
+<?import javafx.scene.layout.HBox?>
 <HBox xmlns:fx="http://javafx.com/fxml" fx:id="hBox">
-<children>
-    <Label  fx:id="label1"/>
-</children>
+    <Label fx:id="label1"/>
 </HBox>

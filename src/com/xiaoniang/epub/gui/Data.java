@@ -15,7 +15,7 @@ public class Data
     @FXML
     private Label label2;
 
-    public Data()
+    Data()
     {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/listCellItem.fxml"));
         fxmlLoader.setController(this);
@@ -29,13 +29,13 @@ public class Data
         }
     }
 
-    public void setInfo(String string)
+    void setInfo(String string)
     {
         label1.setText(string);
         //label2.setText(string);
     }
 
-    public HBox getBox()
+    HBox getBox()
     {
         return hBox;
     }
