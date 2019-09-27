@@ -8,35 +8,35 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
-
-import com.xiaoniang.epub.gui.*;
 
 public class ListViewController
 {
     @FXML
-    private ListView listView;
-    private Set<String> stringSet;
-    ObservableList observableList = FXCollections.observableArrayList();
+    private ListView<String> listView;
+    private Set<String> stringSet = new HashSet();
+    ObservableList<String> observableList = FXCollections.observableArrayList();
+    private Scene scene;
 
     public ListViewController()
     {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/listview.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/ListView.fxml"));
         fxmlLoader.setController(this);
         try
         {
             Parent parent = (Parent)fxmlLoader.load();
-            Scene scene = new Scene(parent, 400.0 ,500.0);
+            scene = new Scene(parent, 400.0 ,500.0);
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+        	throw new RuntimeException(e);      
         }
     }
 
     public void setListView()
     {
-        stringSet.add("String 1");
+    	stringSet.add("String 1");
         stringSet.add("String 2");
         stringSet.add("String 3");
         stringSet.add("String 4");
@@ -52,7 +52,7 @@ public class ListViewController
         });
     }
     
-    public ListView getListView() {
-    	return listView;
+    public Scene getScene() {
+    	return scene;
     }
 }
