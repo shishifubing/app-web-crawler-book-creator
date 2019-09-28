@@ -25,6 +25,7 @@ public class MainWindow extends Application {
 	private void initUI(Stage stage) {
 		
 		ArrayList<String> strings = new ArrayList<String>();
+		Links.fill();
 		for (String link : Links.links().keySet()) {
 			strings.add(link);
 			/*Button button = new Button(link);
