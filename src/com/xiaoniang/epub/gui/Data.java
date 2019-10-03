@@ -8,12 +8,14 @@ import java.io.IOException;
 
 public class Data
 {
-    @FXML
-    private HBox hBox;
-    @FXML
-    private Label label1;
-    @FXML
-    private Label label2;
+    @FXML private HBox hBox;
+    @FXML private Label label1;
+    @FXML private Label label2;
+    @FXML private Label label3;
+    @FXML private Label label4;
+    @FXML private Label label5;
+    @FXML private Label label6;
+
 
     Data()
     {
@@ -31,8 +33,12 @@ public class Data
 
     void setInfo(String string)
     {
-        label1.setText(string);
-        //label2.setText(string);
+        label1.setText("1");
+        label2.setText("2");
+        label3.setText("3");
+        label4.setText("4");
+        label5.setText("5");
+        label6.setText(string);
     }
 
     HBox getBox()

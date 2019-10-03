@@ -18,20 +18,14 @@ public class MainWindow extends Application {
 		System.out.println("GUI is initiated");
 		ArrayList<String> strings = new ArrayList<String>();
 		Links.fill();
-		for (String link : Links.links().keySet()) {
-			strings.add(link);
-			/*Button button = new Button(link);
-			root.getItems().add(button);
-			button.setPrefSize(924, 40);*/
-		}
-		ListViewController controller = new ListViewController();
-		controller.setListView();
+		MainWindowController mainWindowController = new MainWindowController();
+		mainWindowController.setListView();
 		/*root.setStyle("-fx-background-color: BEIGE;");  
 		Scene scene = new Scene(root, 1024, 600);
 		scene.setFill(Color.CYAN);
 		stage.setTitle("Main Window");
 		stage.setScene(scene);*/
-		stage.setScene(controller.getScene());
+		stage.setScene(mainWindowController.getScene());
 		stage.show();
 	}
 
