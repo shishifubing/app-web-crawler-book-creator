@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.xiaoniang.epub.gui.Data?>
+<?import com.xiaoniang.epub.gui.windowlist.listcell.Data?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 

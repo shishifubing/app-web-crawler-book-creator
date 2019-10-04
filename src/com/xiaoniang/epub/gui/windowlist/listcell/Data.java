@@ -1,5 +1,6 @@
-package com.xiaoniang.epub.gui;
+package com.xiaoniang.epub.gui.windowlist.listcell;
 
+import com.xiaoniang.epub.api.EpubBook;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -19,7 +20,7 @@ public class Data
 
     Data()
     {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/listCellItem.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("listCellItem.fxml"));
         fxmlLoader.setController(this);
         try
         {
@@ -31,14 +32,14 @@ public class Data
         }
     }
 
-    void setInfo(String string)
+    void setInfo(EpubBook book)
     {
-        label1.setText("1");
-        label2.setText("2");
-        label3.setText("3");
-        label4.setText("4");
-        label5.setText("5");
-        label6.setText(string);
+        label1.setText(book.author());
+        label2.setText(book.title());
+        label3.setText(""+book.tags().size());
+        label4.setText("0");
+        label5.setText("0");
+        label6.setText("0");
     }
 
     HBox getBox()

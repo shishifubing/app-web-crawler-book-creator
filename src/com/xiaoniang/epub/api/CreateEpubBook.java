@@ -1,10 +1,9 @@
 package com.xiaoniang.epub.api;
 
-import java.io.File;
-
-import com.xiaoniang.epub.gui.MainWindow;
+import com.xiaoniang.epub.gui.windowlist.MainWindow;
 import com.xiaoniang.epub.resources.Links;
-import com.xiaoniang.epub.resources.Log;
+
+import java.io.File;
 
 public class CreateEpubBook {
 

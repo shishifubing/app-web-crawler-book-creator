@@ -1,5 +1,15 @@
 package com.xiaoniang.epub.api;
 
+import com.adobe.epubcheck.api.EpubCheck;
+import com.xiaoniang.epub.innerfiles.*;
+import com.xiaoniang.epub.resources.Links;
+import com.xiaoniang.epub.resources.Log;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,25 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
-
-import org.jsoup.Connection.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.adobe.epubcheck.api.EpubCheck;
-import com.xiaoniang.epub.innerfiles.Chapter;
-import com.xiaoniang.epub.innerfiles.Container;
-import com.xiaoniang.epub.innerfiles.Content;
-import com.xiaoniang.epub.innerfiles.CoverSrc;
-import com.xiaoniang.epub.innerfiles.Cover;
-import com.xiaoniang.epub.innerfiles.Description;
-import com.xiaoniang.epub.innerfiles.Mimetype;
-import com.xiaoniang.epub.innerfiles.Stylesheet;
-import com.xiaoniang.epub.innerfiles.Toc;
-import com.xiaoniang.epub.resources.Links;
-import com.xiaoniang.epub.resources.Log;
 
 public class EpubBook {
 
@@ -114,6 +105,64 @@ public class EpubBook {
 		encodingCharset = StandardCharsets.UTF_8;
 		encoding = encodingCharset.name();
 	}
+
+    public EpubBook(String link) throws IOException {
+        urlNovelUpdates = Links.link(link);
+        urlWuxiaWorld = link;
+        path = "";
+        Document novelUpdatesPage = null;
+        while (novelUpdatesPage == null) {
+            try {
+                novelUpdatesPage = Jsoup.connect(urlNovelUpdates).timeout(10000).get();
+            } catch (IOException e) {
+                Log.println("[!] Cannot connect to the " + urlNovelUpdates);
+            }
+        }
+        Document wuxiaWorldPage = null;
+        while (wuxiaWorldPage == null) {
+            try {
+                Response response = Jsoup.connect(link).timeout(10000).execute();
+                cookies = response.cookies();
+                wuxiaWorldPage = response.parse();
+            } catch (IOException e) {
+                Log.println("[!] Cannot connect to the " + urlNovelUpdates);
+            }
+        }
+        Elements chaptersElements = wuxiaWorldPage.select("li.chapter-item > a");
+        chaptersInfo = new ArrayList<String[]>(chaptersElements.size());
+        chapters = new ArrayList<Chapter>(chaptersElements.size());
+        for (Element chapter : chaptersElements) {
+            String chapterLink = chapter.attr("abs:href");
+            String chapterName = InnerFile.escapeHtml(chapter.text());
+            chaptersInfo.add(new String[] { chapterName, chapterLink });
+        }
+        title = novelUpdatesPage.select("div.w-blog-content > div.seriestitlenu").first().text();
+        Log.println("Title: " + title);
+        coverLink = novelUpdatesPage.select("div.seriesimg > *").first().attr("src");
+        Elements descriptionElements = novelUpdatesPage.select("div#editdescription > p");
+        description = new ArrayList<String>(descriptionElements.size());
+        for (Element line : novelUpdatesPage.select("div#editdescription > p")) {
+            description.add(InnerFile.escapeHtml(line.text()));
+        }
+        author = novelUpdatesPage.select("div#showauthors > *").first().text();
+        Element storyTypeElement = novelUpdatesPage.select("div#showtype > *").first();
+        storyType = new String[] { storyTypeElement.text(), storyTypeElement.attr("href") };
+        Elements genreElements = novelUpdatesPage.select("div#seriesgenre > *");
+        genres = new ArrayList<String[]>(genreElements.size());
+        for (Element genre : genreElements) {
+            genres.add(new String[] { genre.text(), genre.attr("href") });
+        }
+        Elements tagElements = novelUpdatesPage.select("div#showtags > *");
+        tags = new ArrayList<String>(tagElements.size());
+        for (Element tag : tagElements) {
+            tags.add("<a href=\"" + tag.attr("href") + "\">" + tag.text() + "</a>");
+        }
+        dateOfCreation = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        timeOfCreation = LocalTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
+        bookID = "WuxiaWorld.com-" + "XiaoNiang-" + dateOfCreation + "-";
+        encodingCharset = StandardCharsets.UTF_8;
+        encoding = encodingCharset.name();
+    }
 
 	public void create() {
 		File epubFile = new File(path() + title() + ".epub");

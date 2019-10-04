@@ -9,10 +9,8 @@
     <HBox alignment="CENTER_LEFT">
         <Label fx:id="label1"></Label>
     </HBox>
-    <VBox>
         <Label fx:id="label2"></Label>
         <Label fx:id="label3"/>
-    </VBox>
     <HBox fx:id="Status">
         <Label fx:id="label4"/>
     </HBox>

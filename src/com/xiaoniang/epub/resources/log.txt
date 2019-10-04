@@ -1,16 +1,4 @@
-
-[Start]
 Title: Unrivaled Tang Sect
-Started fetching chapters
-500 chapters are fetched
-Time elapsed: 34.759s
-1000 chapters are fetched
-Time elapsed: 23.005s
-All 1466 chapters are fetched
-Time elapsed: 80.758s
-[Valdidation] Success!
-[End]
-
-
-[Start]
 Title: The Great Ruler
+Title: Spirit Realm
+Title: Skyfire Avenue
