@@ -30,7 +30,7 @@ public class Data
         {
             throw new RuntimeException(e);
         }
-    }0
+    }0 
 
     void setInfo(EpubBook book)
     {
