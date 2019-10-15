@@ -18,19 +18,15 @@ public class Data
     @FXML private Label label6;
 
 
-    Data()
-    {
+    Data() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("listCellItem.fxml"));
         fxmlLoader.setController(this);
-        try
-        {
+        try {
             fxmlLoader.load();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }0 
+    }
 
     void setInfo(EpubBook book)
     {
