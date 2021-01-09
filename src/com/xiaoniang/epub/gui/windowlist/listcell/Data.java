@@ -7,16 +7,21 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import java.io.IOException;
 
-public class Data
-{
-    @FXML private HBox hBox;
-    @FXML private Label label1;
-    @FXML private Label label2;
-    @FXML private Label label3;
-    @FXML private Label label4;
-    @FXML private Label label5;
-    @FXML private Label label6;
-
+public class Data {
+    @FXML
+    private HBox hBox;
+    @FXML
+    private Label label1;
+    @FXML
+    private Label label2;
+    @FXML
+    private Label label3;
+    @FXML
+    private Label label4;
+    @FXML
+    private Label label5;
+    @FXML
+    private Label label6;
 
     Data() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("listCellItem.fxml"));
@@ -28,18 +33,16 @@ public class Data
         }
     }
 
-    void setInfo(EpubBook book)
-    {
+    void setInfo(EpubBook book) {
         label1.setText(book.author());
         label2.setText(book.title());
-        label3.setText(""+book.tags().size());
+        label3.setText("" + book.tags().size());
         label4.setText("0");
         label5.setText("0");
         label6.setText("0");
     }
 
-    HBox getBox()
-    {
+    HBox getBox() {
         return hBox;
     }
 }
