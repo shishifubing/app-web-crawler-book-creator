@@ -53,11 +53,12 @@ public abstract class InnerFile {
                 zos.write(buffer, 0, len);
             }
 
-            // String[] temp = zenPath.split("/");
-            // double timeElapsed =
-            // ((double)System.currentTimeMillis()-(double)timeOfCreation)/1000;
-            // Log.println(" [Added] " + temp[temp.length-1]+". Time elapsed:
-            // "+timeElapsed+"s");
+            /*
+             * String[] temp = zenPath.split("/"); double timeElapsed =
+             * ((double)System.currentTimeMillis()-(double)timeOfCreation)/1000;
+             * Log.println(" [Added] " + temp[temp.length-1]+". Time elapsed:
+             * "+timeElapsed+"s");
+             */
 
             zos.closeEntry();
             fis.close();
