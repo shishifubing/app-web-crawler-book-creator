@@ -2,7 +2,6 @@ package com.xiaoniang.epub.innerfiles;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.xiaoniang.epub.api.EpubBook;
 import com.xiaoniang.epub.api.InnerFile;
 
