@@ -1,5 +1,4 @@
 package com.xiaoniang.epub.api;
-
 import com.xiaoniang.epub.gui.windowlist.MainWindow;
 import com.xiaoniang.epub.resources.Links;
 
