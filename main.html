@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="main1">
+        <p>main1</p>
+    </div>
+    <div id="main2">
+        <p>main2</p>
+    </div>
+</body>
+<script>
+    var request = new XMLHttpRequest();
+    request.open("GET", 'https://novelfull.com/throne-of-magical-arcana/chapter-474-blood-power.html');
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            document.getElementById("main1").innerHTML = "<p>" + request.responseText + "</p>";
+        }
+        document.getElementById("main2").innerHTML = "fuck";
+    };
+    request.send();
+</script>
+
+</html>
