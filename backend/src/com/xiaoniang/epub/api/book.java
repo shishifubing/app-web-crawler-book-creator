@@ -1,4 +1,4 @@
-package com.xiaoniang.epub.api;
+/*package com.xiaoniang.epub.api;
 
 import com.adobe.epubcheck.api.EpubCheck;
 import com.xiaoniang.epub.innerfiles.*;

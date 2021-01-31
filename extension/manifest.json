@@ -9,11 +9,16 @@
     "content_scripts": [
         {
             "matches": [
-                "*://*.mozilla.org/*"
+                "file:///*"
             ],
             "js": [
-                "borderify.js"
+                "Main.js"
             ]
         }
-    ]
+    ],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "book-creator@example.com"
+        }
+    }
 }
