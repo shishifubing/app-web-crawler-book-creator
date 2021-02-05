@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:identifier id="BookId" opf:scheme="XN">some id</dc:identifier>
+    <dc:title>title</dc:title>
+    <dc:creator opf:file-as="author" opf:role="aut">author</dc:creator>
+    <dc:language>en</dc:language>
+    <dc:date opf:event="creation">some date in ISO format</dc:date>
+    <dc:publisher>name of the publisher</dc:publisher>
+    <dc:description>
+        text of description
+    </dc:description>
+    <dc:contributor opf:file-as="Assembler" opf:role="oth">https://github.com/borinskikh</dc:contributor>
+    <dc:subject>Some subject</dc:subject>
+    <dc:source>source</dc:source>
+    <dc:rights>All materials' copyrights reserved by their respective authors and the associated publishers. Please respect their rights. Works will be deleted upon request by copyright holders.</dc:rights>
+    <meta name="cover" content="cover.jpg"/>
+</metadata>
+<manifest>
+    <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+    <item href="Text/cover.xhtml" id="cover.xhtml" media-type="application/xhtml+xml"/>
+    <item href="Text/description.xhtml" id="description.xhtml" media-type="application/xhtml+xml" />
+    <item href="Images/cover.jpg" id="cover.jpg" media-type="image/jpeg"/>    <item href="Styles/stylesheet.css" id="stylesheet.css" media-type="text/css"/>
+    /* example chapter item
+    <item href="Text/chapter_0001.xhtml" id="chapter_0001.xhtml" media-type="application/xhtml+xml"/>
+    */
+</manifest>
+<spine toc="ncx">
+    <itemref idref="cover.xhtml" />
+    <itemref idref="description.xhtml"/>
+    /* example chapter item
+    <itemref idref="chapter_0001.xhtml"/>
+    */
+</spine>
+<guide>
+    <reference href="Text/cover.xhtml" title="Cover" type="cover"/>
+</guide>
+</package>

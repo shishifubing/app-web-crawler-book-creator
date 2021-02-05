@@ -30,6 +30,16 @@
     <artifactId>mssql-jdbc</artifactId>
     <version>9.2.0.jre15</version>
 </dependency>
+<dependency>
+  <groupId>org.jsoup</groupId>
+  <artifactId>jsoup</artifactId>
+  <version>1.13.1</version>
+</dependency>
+<dependency>
+  <groupId>org.w3c</groupId>
+  <artifactId>epubcheck</artifactId>
+  <version>4.2.4</version>
+</dependency>
 
   </dependencies>
 
