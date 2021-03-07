@@ -1,5 +1,6 @@
 import requests
 import re
+import os
 from bs4 import BeautifulSoup, SoupStrainer
 
 
@@ -31,10 +32,11 @@ def getLinksFromSitemaps():
         links = []
         for link in sitemmap1.findAll(string=re.compile(
                 'https://www.wuxiaworld.com/novel/7-killers')):
-            links.append(link.string.lstrip())
+            links.append(link.string.strip())
         for link in sitemmap2.findAll(string=re.compile(
                 'https://www.wuxiaworld.com/novel/7-killers')):
-            links.append(link.string.lstrip())
+            links.append(link.string.strip())
+
         return links
 
 
@@ -60,12 +62,28 @@ def getChapter(domainURL, chapterURL):
             for relativeLink in chapterText(src=re.compile('^/')):
                 relativeLink['src'] = domainURL+relativeLink['src']
             chapter.smooth()
-            with open("./chapters/chapter1.html", 'w', encoding="utf-8") as openedFile:
+            global chapterCount
+            chapterCountString = str(chapterCount)
+            placeholder = '000000'
+            chapterCountString = placeholder[0:(
+                6-len(chapterCountString)-1)]+chapterCountString
+
+            with open(f'./book/chapters/chapter_{chapterCountString}.html', 'w', encoding="utf-8") as openedFile:
                 openedFile.write(chapterText.prettify(formatter="html"))
+                chapterCount += 1
     else:
-        print(response.status_code)
+        print(chapterURL, response.status_code)
 
 
 domainURL = 'https://www.wuxiaworld.com'
+chapterCount = 1
+while True:
+    try:
+        os.makedirs('./book/chapters')
+    except FileExistsError:
+        break
+    else:
+        break
+
 for link in getLinksFromSitemaps():
     getChapter(domainURL, link)
