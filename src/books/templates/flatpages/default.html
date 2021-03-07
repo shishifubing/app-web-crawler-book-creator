@@ -39,11 +39,6 @@
                 {% include 'flatpages/topbar.html' %}
 
                 {{flatpage.content}}
-                {% if books %}
-                {% for book in books %}
-                <p>{{ book.id }} {{book.author}} {{book.title}}</p>
-                {% endfor %}
-                {% endif %}
 
             </div>
             <!-- End of Main Content -->
