@@ -10,9 +10,10 @@ response = requests.get(chapterURL, headers=headers)
 print(response.status_code)
 
 chapter = BeautifulSoup(response.content, 'html.parser')
-cssSelector = '#chapter-content'
+cssSelectorChapterText = '#chapter-content'
+cssSelectorRemoveElements = 'script, style, .chapter-wrapper>a:last-child'
 try:
-    chapterText = chapter.select(cssSelector, limit=1)[0]
+    chapterText = chapter.select(cssSelectorChapterText, limit=1)[0]
 except IndexError:
     print('no results')
 else:
