@@ -2,6 +2,7 @@ import requests
 import re
 import os
 from bs4 import BeautifulSoup, SoupStrainer
+from books.models import Books, Chapters
 
 
 def getSitemap():
@@ -77,13 +78,14 @@ def getChapter(domainURL, chapterURL):
 
 domainURL = 'https://www.wuxiaworld.com'
 chapterCount = 1
-while True:
-    try:
-        os.makedirs('./book/chapters')
-    except FileExistsError:
-        break
-    else:
-        break
+print(Books.objects.all())
+# while True:
+#    try:
+#        os.makedirs('./book/chapters')
+#    except FileExistsError:
+#        break
+#    else:
+#        break
 
-for link in getLinksFromSitemaps():
-    getChapter(domainURL, link)
+# for link in getLinksFromSitemaps():
+#    getChapter(domainURL, link)
