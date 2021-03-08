@@ -3,8 +3,27 @@
 
     {% if books %}
 
-    <div>
-        {{books}}
+    <div class="d-flex flex-column ">
+        {% for book in books.items %}
+
+        <div class="card">
+
+            {{ book }}
+
+            {% for chapter in book %}
+
+            <div class="li offset-1">
+
+                {{ chapter }}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endfor%}
+
     </div>
 
     {% else %}

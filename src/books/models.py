@@ -16,33 +16,42 @@ class Book(models.Model):
     @staticmethod
     def getLinksFromSitemaps():
 
-        sitemapURL = 'https://www.wuxiaworld.com/sitemap.xml'
+        def updateLinks(links, sitemapURL, headers, isChapter=True):
+            response = requests.get(sitemapURL, headers=headers)
+            if (response.status_code == 200):
+                try:
+                    sitemap = BeautifulSoup(
+                        response.content, 'lxml-xml', parse_only=SoupStrainer('loc')).findAll('loc')
+                except IndexError:
+                    print('no results')
+                else:
+                    if (not isChapter):
+                        for linkNode in sitemap:
+                            novelLink = linkNode.get_text().strip()
+                            links.update({novelLink: list()})
+                    else:
+                        for linkNode in sitemap:
+                            chapterLink = linkNode.get_text().strip()
+                            novelLink = links['links'][0] + \
+                                '/novel/' + chapterLink.split('/')[4]
+                            if novelLink in links:
+                                links[novelLink].append(chapterLink)
+                            else:
+                                links.update({novelLink: list()})
+            else:
+                return response.status_code
+
+        sitemapURL = 'https://www.wuxiaworld.com/sitemap/novels'
+        chaptersURL1 = 'https://www.wuxiaworld.com/sitemap/chapters/1'
+        chaptersURL2 = 'https://www.wuxiaworld.com/sitemap/chapters/2'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0'}
-        response = requests.get(sitemapURL, headers=headers)
-        if (response.status_code == 200):
-            try:
-                sitemap = BeautifulSoup(
-                    response.content, 'lxml-xml').findAll('loc')
-            except IndexError:
-                print('no results')
-            else:
-                links = {'links': ['https://www.wuxiaworld.com']}
-                for linkNode in sitemap:
-                    novelLink = linkNode.string.strip()
-                    links.update({novelLink: ['null']})
-        else:
-            return response.status_code
+        links = {'links': ['https://www.wuxiaworld.com']}
 
-            # for linkNode in BeautifulSoup(
-            #        chapters, 'lxml-xml', parse_only=onlyLinks):
-            #    chapterLink = linkNode.string.strip()
-            #    novelLink = links['links'][0] + \
-            #        '/novel/' + chapterLink.split('/')[4]
-            #    if novelLink in links:
-            #        links[novelLink].append(chapterLink)
-            #    else:
-            #        links.update({novelLink: list()})
+        updateLinks(links, sitemapURL, headers, False)
+        updateLinks(links, chaptersURL1, headers)
+        updateLinks(links, chaptersURL2, headers)
+        return links
 
 
 class Chapter(models.Model):
