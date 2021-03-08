@@ -1,0 +1,13 @@
+<!-- Main Content -->
+<div id="content">
+
+    {% if books %}
+    {% for book in books %}
+    <p>{{ book.id }} {{book.author}} {{book.title}}</p>
+    {% endfor %}
+    {% else %}
+    {{flatpage.content}}
+    {% endif %}
+
+</div>
+<!-- End of Main Content -->

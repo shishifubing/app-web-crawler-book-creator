@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - {{flatpage.title}}</title>
+    <title>{{flatpage.title}}</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static '/bootstrap/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -23,7 +23,7 @@
 
 </head>
 
-<body id="page-top">
+<body id="page-top" class="container-fluid p-0 m-0">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -33,20 +33,9 @@
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
-            <!-- Main Content -->
-            <div id="content">
+            {% include 'flatpages/topbar.html' %}
 
-                {% include 'flatpages/topbar.html' %}
-
-                {{flatpage.content}}
-                {% if books %}
-                {% for book in books %}
-                <p>{{ book.id }} {{book.author}} {{book.title}}</p>
-                {% endfor %}
-                {% endif %}
-
-            </div>
-            <!-- End of Main Content -->
+            {% include 'flatpages/content.html' %}
 
             {% include 'flatpages/footer.html' %}
 
