@@ -6,9 +6,9 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 
 def results(request, bookID):
     flatPage = get_object_or_404(FlatPage, url='/books/')
-    books = get_list_or_404(Book.objects.all())
+    books = Book.objects.all()
     template_name = 'flatpages/default.html'
-    context = {'flatpage': flatPage, 'books': books}
+    context = {'flatpage': flatPage, 'books': Book.getLinksFromSitemaps()}
     return render(request, template_name, context)
 
 
