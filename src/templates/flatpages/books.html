@@ -1,0 +1,27 @@
+<div class="d-flex flex-column ">
+    {% for book in books %}
+
+    <div class="card border">
+
+        {{ book.id }}
+
+        {{ book.author }}
+
+        {{ book.title }}
+
+        {{ book.link }}
+
+        {% for chapter in book.chapters.all %}
+        <div class="li offset-1">
+
+            {{ chapter.id }}
+
+            {{ chapter.link }}
+
+        </div>
+        {% endfor %}
+    </div>
+
+    {% endfor %}
+
+</div>

@@ -3,33 +3,16 @@
 
     {% if books %}
 
-    <div class="d-flex flex-column ">
-        {% for book in books.items %}
-
-        <div class="card">
-
-            {{ book }}
-
-            {% for chapter in book %}
-
-            <div class="li offset-1">
-
-                {{ chapter }}
-
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-        {% endfor%}
-
+    <div>
+        {% include 'flatpages/books.html' %}
     </div>
 
     {% else %}
+
     <div>
-        {{flatpage.content}}
+        <p>No books or chapters</p>
     </div>
+
     {% endif %}
 
 </div>
