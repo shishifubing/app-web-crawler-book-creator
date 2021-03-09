@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 def results(request, bookID):
     flatPage = get_object_or_404(FlatPage, url='/books/')
     template_name = 'flatpages/default.html'
-    context = {'flatpage': flatPage, 'books': Book.objects.all()}
+    context = {'flatpage': flatPage, 'books': Book.objects.all()[:5]}
     return render(request, template_name, context)
 
 
