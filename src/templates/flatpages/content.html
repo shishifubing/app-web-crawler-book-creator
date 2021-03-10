@@ -7,6 +7,10 @@
         {% include 'flatpages/books.html' %}
     </div>
 
+    {% elif content %}
+
+    {{ content.text|safe }}
+
     {% else %}
 
     <div>

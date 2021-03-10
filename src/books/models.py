@@ -23,10 +23,12 @@ class Book(models.Model):
     author = models.CharField(verbose_name='book author', max_length=100)
     title = models.CharField(verbose_name='book title', max_length=200)
     link = models.CharField(verbose_name='chapter link', max_length=200)
+    url = models.CharField(verbose_name='book url',
+                           max_length=100, default='/no-url/')
     chapters = models.ManyToManyField(Chapter)
 
     def __str__(self):
-        return self.link
+        return self.title
 
     @staticmethod
     def getLinksFromSitemaps():
@@ -109,12 +111,22 @@ class Book(models.Model):
             else:
                 print(chapter.link, response.status_code)
 
+
+class Sitemap(models.Model):
+    url = models.CharField(verbose_name='chapter link',
+                           max_length=200, default='no-url')
+    title = models.CharField(verbose_name='chapter title',
+                             max_length=200, default='no-title')
+    text = models.TextField(verbose_name='chapter text', default="empty")
+
+    def __str__(self):
+        return self.title
+
     @staticmethod
-    def getSitemap():
-        sitemapURL = 'https://www.wuxiaworld.com/sitemap/chapters/2'
+    def getNewSitemap(url):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0',
                    'Accept': 'text/html'}
-        response = requests.get(sitemapURL, headers=headers)
+        response = requests.get(url, headers=headers)
         if (response.status_code == 200):
             try:
                 onlyLinks = SoupStrainer('loc')
@@ -123,5 +135,9 @@ class Book(models.Model):
             except IndexError:
                 print('no results')
             else:
-                with open('./books/logic/sitemaps/chapters2.xml', 'w', encoding="utf-8") as openedFile:
-                    openedFile.write(sitemap.prettify(formatter="html"))
+                return sitemap.prettify(formatter='html')
+
+    @staticmethod
+    def getListOfChapters(sitemapString):
+        return BeautifulSoup(
+            sitemapString, 'lxml-xml').findAll('loc')
