@@ -24,14 +24,13 @@ def chapters(request, bookURL, chapterNumber):
     for novelURL in links:
         book = Book.objects.get(link=novelURL)
         count = 0
-        for chapterLink in links[novelURL]:
-            chapter = Chapter(number=count, text='no-text',
-                              title=novelURL + str(count), link=chapterLink)
-            chapter.save()
-            book.chapters.add()
-            book.save()
-
-            count += 1
+        for chapterLink in Chapter.objects.all():
+            # chapter = Chapter(number=count, text='no-text',
+            #                  title = novelURL + str(count), link = chapterLink)
+            chapterLink.delete()
+            # book.chapters.add()
+            # book.save()
+            # count += 1
     context = {'content': Sitemap.get(url=url1)}
     template_name = ''
     return render(request, DEFAULT_TEMPLATE, context)
