@@ -9,23 +9,28 @@ from bs4 import BeautifulSoup, SoupStrainer
 
 
 class Chapter(models.Model):
-    number = models.IntegerField(verbose_name='chapter number', null=False)
-    text = models.TextField(verbose_name='chapter text')
+    chapterNumber = models.IntegerField(
+        verbose_name='chapter number', null=False)
+    content = models.TextField(verbose_name='chapter text')
     title = models.CharField(verbose_name='chapter title',
                              max_length=200, default="title")
-    link = models.CharField(verbose_name='chapter link', max_length=200)
+    sourceUrl = models.CharField(verbose_name='chapter link', max_length=200)
 
     def __str__(self):
-        return self.link
+        return self.title
 
 
 class Book(models.Model):
-    author = models.CharField(verbose_name='book author', max_length=100)
-    title = models.CharField(verbose_name='book title', max_length=200)
-    link = models.CharField(verbose_name='chapter link', max_length=200)
-    url = models.CharField(verbose_name='book url',
-                           max_length=100, default='/no-url/')
-    chapters = models.ManyToManyField(Chapter)
+    author = models.CharField(
+        verbose_name='author', max_length=200, default='no author')
+    title = models.CharField(verbose_name='title',
+                             max_length=200, default='no title')
+    sourceUrl = models.CharField(
+        verbose_name='Source', max_length=200, default='no source link')
+    siteUrl = models.CharField(verbose_name='Site url', default='/no-url/',
+                               max_length=200)
+
+    chapters = models.ManyToManyField(Chapter, related_name='book')
 
     def __str__(self):
         return self.title
@@ -113,31 +118,20 @@ class Book(models.Model):
 
 
 class Sitemap(models.Model):
-    url = models.CharField(verbose_name='chapter link',
-                           max_length=200, default='no-url')
+    sourceUrl = models.CharField(verbose_name='chapter link',
+                                 max_length=200, default='no-url')
     title = models.CharField(verbose_name='chapter title',
                              max_length=200, default='no-title')
-    text = models.TextField(verbose_name='chapter text', default="empty")
+    content = models.TextField(verbose_name='chapter text', default="empty")
 
     def __str__(self):
         return self.title
 
     @staticmethod
-    def getNewSitemap(url):
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0',
-                   'Accept': 'text/html'}
-        response = requests.get(url, headers=headers)
-        if (response.status_code == 200):
-            try:
-                onlyLinks = SoupStrainer('loc')
-                sitemap = BeautifulSoup(
-                    response.content, 'lxml-xml', parse_only=onlyLinks)
-            except IndexError:
-                print('no results')
-            else:
-                return sitemap.prettify(formatter='html')
-
-    @staticmethod
-    def getListOfChapters(sitemapString):
-        return BeautifulSoup(
-            sitemapString, 'lxml-xml').findAll('loc')
+    def getUrls(sitemap):
+        links = []
+        linksList = BeautifulSoup(
+            sitemap.content, 'lxml-xml').findAll('loc')
+        for link in linksList:
+            links.append(link.string)
+        return links
