@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from .models import Book, Chapter, Sitemap
+from .models import Book, Sitemap, Chapter
 from django.shortcuts import render
 from django.contrib.flatpages.models import FlatPage
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -14,6 +14,8 @@ def getPage(url):
     response = requests.get(url, headers=headers)
     if (response.status_code == 200):
         return response.content
+    else:
+        print('\n\n FUCKED UP \n\n')
 
 
 def results(request, bookID):
@@ -23,32 +25,20 @@ def results(request, bookID):
 
 def chapters(request, bookURL, chapterNumber):
     novelsUrl = 'https://www.wuxiaworld.com/sitemap/novels'
-    chaptersUrl1 = 'https://wuxiaworld.com/sitemap/chapters/1'
-    chaptersUrl2 = 'https://wuxiaworld.com/sitemap/chapters/2'
-    novelsSitemap = Sitemap.objects.get(sourceUrl=novelsUrl)
-    chaptersSitemap1 = Sitemap.objects.get(sourceUrl=chaptersUrl1)
-    chaptersSitemap1.content = getPage(chaptersUrl1)
-    chaptersSitemap1.save()
-    chaptersSitemap2 = Sitemap.objects.get(sourceUrl=chaptersUrl2)
-    chaptersSitemap2.content = getPage(chaptersUrl2)
-    chaptersSitemap2.save()
-    content = ''
+    novelUrl = 'https://www.wuxiaworld.com/novel/i-shall-seal-the-heavens'
+    #novelsSitemap = Sitemap.objects.get(sourceUrl=novelsUrl)
+    #content = ''
     amount = 0
     for chapter in Chapter.objects.all():
         chapter.delete()
-    for chapterUrl in Sitemap.getUrls(chaptersSitemap1):
-        book = Book.objects.get(
-            sourceUrl='https://www.wuxiaworld.com/novel/' + chapterUrl.split('/')[4])
-        if (book.siteUrl.replace('/', '') == chapterUrl.split('/')[4]):
-            chapters = book.chapters
-            number = chapters.all().count()+1
-            title = book.title + ' - Chapter ' + str(number)
-            chapter = chapters.create(chapterNumber=number, title=title,
-                                      content='content', sourceUrl=chapterUrl)
-            chapters.add(chapter)
-            amount += 1
-            if (amount == 200):
-                break
+    book = Book.objects.get(sourceUrl=novelUrl)
+    for chapterUrl in Book.getChapterUrls(getPage(novelUrl)):
+        number = Chapter.objects.filter(book=book).count()+1
+        title = book.title + ' - Chapter ' + str(number)
+        Chapter.objects.create(book=book, chapterNumber=number, title=title,
+                               content='content', sourceUrl=chapterUrl)
+        amount += 1
+    # book.chapters.set(chaptersList)
     # links = Book.getLinksFromSitemaps()
     # for novelURL in links:
     #    book = Book.objects.get(link=novelURL)

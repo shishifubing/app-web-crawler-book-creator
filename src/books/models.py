@@ -8,18 +8,6 @@ from bs4 import BeautifulSoup, SoupStrainer
 # Create your models here.
 
 
-class Chapter(models.Model):
-    chapterNumber = models.IntegerField(
-        verbose_name='chapter number', null=False)
-    content = models.TextField(verbose_name='chapter text')
-    title = models.CharField(verbose_name='chapter title',
-                             max_length=200, default="title")
-    sourceUrl = models.CharField(verbose_name='chapter link', max_length=200)
-
-    def __str__(self):
-        return self.title
-
-
 class Book(models.Model):
     author = models.CharField(
         verbose_name='author', max_length=200, default='no author')
@@ -30,51 +18,20 @@ class Book(models.Model):
     siteUrl = models.CharField(verbose_name='Site url', default='/no-url/',
                                max_length=200)
 
-    chapters = models.ManyToManyField(Chapter, related_name='book')
-
     def __str__(self):
         return self.title
 
     @staticmethod
-    def getLinksFromSitemaps():
-
-        def updateLinks(links, sitemapURL, headers, isChapter=True):
-            response = requests.get(sitemapURL, headers=headers)
-            if (response.status_code == 200):
-                try:
-                    sitemap = BeautifulSoup(
-                        response.content, 'lxml-xml', parse_only=SoupStrainer('loc')).findAll('loc')
-                except IndexError:
-                    print('no results')
-                else:
-                    if (not isChapter):
-                        for linkNode in sitemap:
-                            novelLink = linkNode.get_text().strip()
-                            links.update({novelLink: list()})
-                    else:
-                        for linkNode in sitemap:
-                            chapterLink = linkNode.get_text().strip()
-                            novelLink = links['links'][0] + \
-                                '/novel/' + chapterLink.split('/')[4]
-                            if novelLink in links:
-                                links[novelLink].append(chapterLink)
-                            else:
-                                links.update({novelLink: list()})
-            else:
-                return response.status_code
-
-        sitemapURL = 'https://www.wuxiaworld.com/sitemap/novels'
-        chaptersURL1 = 'https://www.wuxiaworld.com/sitemap/chapters/1'
-        chaptersURL2 = 'https://www.wuxiaworld.com/sitemap/chapters/2'
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0'}
-
-        links = {'links': ['https://www.wuxiaworld.com']}
-
-        updateLinks(links, sitemapURL, headers, False)
-        updateLinks(links, chaptersURL1, headers)
-        updateLinks(links, chaptersURL2, headers)
-        return links
+    def getChapterUrls(pageString):
+        links = []
+        try:
+            for url in BeautifulSoup(
+                    pageString, 'lxml', parse_only=SoupStrainer('li')).select('.chapter-item > a'):
+                links.append('https://www.wuxiaworld.com' + url['href'])
+        except IndexError:
+            print('\n\nNO RESULTS\n\n')
+        else:
+            return links
 
     @staticmethod
     def getChapter(domainURL, chapter, number):
@@ -117,6 +74,20 @@ class Book(models.Model):
                 print(chapter.link, response.status_code)
 
 
+class Chapter(models.Model):
+    book = models.ForeignKey(
+        Book, related_name='chapters', on_delete=models.CASCADE)
+    chapterNumber = models.IntegerField(
+        verbose_name='chapter number', null=False)
+    content = models.TextField(verbose_name='chapter text')
+    title = models.CharField(verbose_name='chapter title',
+                             max_length=200, default="title")
+    sourceUrl = models.CharField(verbose_name='chapter link', max_length=200)
+
+    def __str__(self):
+        return self.title
+
+
 class Sitemap(models.Model):
     sourceUrl = models.CharField(verbose_name='chapter link',
                                  max_length=200, default='no-url')
@@ -127,11 +98,10 @@ class Sitemap(models.Model):
     def __str__(self):
         return self.title
 
-    @staticmethod
-    def getUrls(sitemap):
+    def getUrls(self):
         links = []
         linksList = BeautifulSoup(
-            sitemap.content, 'lxml-xml').findAll('loc')
+            self.content, 'lxml-xml').findAll('loc')
         for link in linksList:
             links.append(link.string)
         return links

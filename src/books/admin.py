@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Chapter, Sitemap
+from .models import Book, Sitemap, Chapter
 # Register your models here.
 
 admin.site.register(Book)
