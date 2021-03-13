@@ -22,6 +22,25 @@ class Book(models.Model):
         return self.title
 
     @staticmethod
+    def getPage(url):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0'}
+        response = requests.get(url, headers=headers)
+        if (response.status_code == 200):
+            return response.content
+        else:
+            print('\n\n NOT CONNECTED \n\n')
+
+    @staticmethod
+    def getChapterUrls(pageString):
+        links = []
+        for link in BeautifulSoup(
+                pageString, 'lxml-xml').select('ul.list-chapter > li > a'):
+            links.append(('https://readnovelfull.com' +
+                          link['href'], link.string))
+        return links
+
+    @staticmethod
     def getChapterUrls(pageString):
         links = []
         try:
@@ -100,8 +119,7 @@ class Sitemap(models.Model):
 
     def getUrls(self):
         links = []
-        linksList = BeautifulSoup(
-            self.content, 'lxml-xml').findAll('loc')
-        for link in linksList:
+        for link in BeautifulSoup(
+                self.content, 'lxml-xml').findAll('loc'):
             links.append(link.string)
         return links

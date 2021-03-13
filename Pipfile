@@ -8,6 +8,7 @@ bs4 = "*"
 requests = "*"
 django = "*"
 lxml = "*"
+selenium = "*"
 
 [dev-packages]
 autopep8 = "*"
