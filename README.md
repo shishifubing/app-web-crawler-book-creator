@@ -1,6 +1,8 @@
 # Description
 
-Web crawler I was building in java, then started remaking using Django, boring
+Web crawler I was building in java and then decided to remake using Django
+
+boring
 
 # Status
 
