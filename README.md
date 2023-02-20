@@ -9,7 +9,9 @@ Web scraper I was building in java a long time ago and started remaking using Dj
 
 </div>
 
-## Features
+## About The Project
+
+### Features
 
 - Boring
 
