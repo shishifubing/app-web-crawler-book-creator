@@ -2,10 +2,11 @@
 
 # [`app-web-crawler-book-creator`][url-repo]
 
-[![License][shield-license]][url-license]
-[![Status][shield-status-abandoned]][url-repo]
-
 Web scraper I was building in java a long time ago and started remaking using Django
+
+[![License][badge-license]][url-license]
+[![Status][badge-status-abandoned]][url-repo]
+
 
 </div>
 
@@ -24,7 +25,7 @@ Web scraper I was building in java a long time ago and started remaking using Dj
 
 <!-- external links -->
 
-<!-- shield links -->
+<!-- badge links -->
 
-[shield-status-abandoned]: https://img.shields.io/badge/status-abandoned-red?style=for-the-badge
-[shield-license]: https://img.shields.io/github/license/shishifubing/snippets-javascript-assignments.svg?style=for-the-badge
+[badge-status-abandoned]: https://img.shields.io/badge/status-abandoned-red?style=for-the-badge
+[badge-license]: https://img.shields.io/github/license/shishifubing/snippets-javascript-assignments.svg?style=for-the-badge
